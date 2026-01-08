@@ -98,11 +98,11 @@ class PdfPlumberExtractor:
                 if use_parallel and len(target_indices) >= _MIN_PAGES_FOR_PARALLEL:
                     try:
                         return self._extract_text_parallel(path, target_indices)
-                    except (RuntimeError, OSError) as e:
+                    except (RuntimeError, OSError, FileNotFoundError, BrokenPipeError) as e:
                         # Fall back to sequential on macOS multiprocessing issues
                         # (e.g., spawn errors when running from stdin/Jupyter)
                         error_str = str(e).lower()
-                        if "spawn" in error_str or "stdin" in error_str or "fork" in error_str:
+                        if any(kw in error_str for kw in ("spawn", "stdin", "fork", "pickle", "broken pipe")):
                             pass  # Fall through to sequential
                         else:
                             raise
@@ -190,10 +190,10 @@ class PdfPlumberExtractor:
                 if use_parallel and len(target_indices) >= _MIN_PAGES_FOR_PARALLEL:
                     try:
                         return self._extract_tables_parallel(path, target_indices)
-                    except (RuntimeError, OSError) as e:
+                    except (RuntimeError, OSError, FileNotFoundError, BrokenPipeError) as e:
                         # Fall back to sequential on macOS multiprocessing issues
                         error_str = str(e).lower()
-                        if "spawn" in error_str or "stdin" in error_str or "fork" in error_str:
+                        if any(kw in error_str for kw in ("spawn", "stdin", "fork", "pickle", "broken pipe")):
                             pass  # Fall through to sequential
                         else:
                             raise
@@ -314,10 +314,10 @@ class PdfPlumberExtractor:
                 if use_parallel and len(target_indices) >= _MIN_PAGES_FOR_PARALLEL:
                     try:
                         return self._extract_text_by_page_parallel(path, target_indices)
-                    except (RuntimeError, OSError) as e:
+                    except (RuntimeError, OSError, FileNotFoundError, BrokenPipeError) as e:
                         # Fall back to sequential on macOS multiprocessing issues
                         error_str = str(e).lower()
-                        if "spawn" in error_str or "stdin" in error_str or "fork" in error_str:
+                        if any(kw in error_str for kw in ("spawn", "stdin", "fork", "pickle", "broken pipe")):
                             pass  # Fall through to sequential
                         else:
                             raise

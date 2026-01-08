@@ -3,7 +3,6 @@
 import csv
 import io
 import json
-import re
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Optional
@@ -110,9 +109,6 @@ class ExtractedTable:
 class TableExtractor:
     """Extract tables from PDFs."""
 
-    # Pre-compiled pattern for figure reference detection
-    _FIGURE_PATTERN = re.compile(r"(?i)^fig(?:ure)?\.?\s*\d|^image\s*\d")
-
     def __init__(self, backend: Extractor):
         """Initialize with an extraction backend.
 
@@ -153,15 +149,13 @@ class TableExtractor:
         return validated_tables
 
     def _is_valid_table(self, data: list[list[Any]]) -> bool:
-        """Validate that data looks like a real table, not a figure or noise.
+        """Validate that data looks like a real table.
 
-        Filters out:
-        - Single column "tables" (likely figure text)
-        - Inconsistent column counts (likely OCR noise)
-        - Mostly empty cells (sparse/broken extraction)
-        - Figure references (text like "Figure 1", "Fig. 2")
-
-        Uses single-pass iteration for efficiency.
+        Uses minimal validation to avoid filtering out real tables.
+        Only filters out:
+        - Empty tables
+        - Single-row tables (no header + data)
+        - Single-column tables (likely not tabular data)
 
         Args:
             data: 2D list of cell values.
@@ -169,68 +163,28 @@ class TableExtractor:
         Returns:
             True if this looks like a valid table.
         """
+        # Need at least 2 rows (header + 1 data row)
         if not data or len(data) < 2:
             return False
 
-        # Single pass to collect all statistics
-        col_count_freq: dict[int, int] = {}
-        total_cells = 0
-        non_empty_cells = 0
-        figure_refs = 0
-        garbled_count = 0
-
-        for row in data:
-            row_len = len(row)
-            col_count_freq[row_len] = col_count_freq.get(row_len, 0) + 1
-            total_cells += row_len
-
-            for cell in row:
-                if cell:
-                    cell_str = str(cell).strip()
-                    if cell_str:
-                        non_empty_cells += 1
-
-                        # Check for figure reference
-                        if self._FIGURE_PATTERN.match(cell_str):
-                            figure_refs += 1
-
-                        # Check for garbled text (reversed OCR)
-                        if len(cell_str) > 5:
-                            words = cell_str.split()
-                            if words:
-                                # All words with len > 2 start and end with uppercase
-                                long_words = [w for w in words if len(w) > 2]
-                                if long_words and all(
-                                    w[0].isupper() and w[-1].isupper()
-                                    for w in long_words
-                                ):
-                                    garbled_count += 1
-
-        if not col_count_freq:
+        # Count columns in each row
+        col_counts = [len(row) for row in data]
+        if not col_counts:
             return False
 
-        # Find most common column count
-        most_common_cols = max(col_count_freq.keys(), key=lambda k: col_count_freq[k])
-
-        # Require at least 2 columns
-        if most_common_cols < 2:
+        # Need at least 2 columns
+        max_cols = max(col_counts)
+        if max_cols < 2:
             return False
 
-        # Require most rows to have consistent column count (50% threshold - relaxed for real-world tables)
-        consistent_rows = col_count_freq[most_common_cols]
-        if consistent_rows < len(data) * 0.5:
-            return False
+        # Count non-empty cells - need at least some content
+        non_empty = sum(
+            1 for row in data for cell in row
+            if cell is not None and str(cell).strip()
+        )
 
-        # Require at least 15% non-empty cells (relaxed for sparse tables)
-        if total_cells == 0 or non_empty_cells / total_cells < 0.15:
-            return False
-
-        # Reject if too many cells look like figure references (30% threshold)
-        if figure_refs / total_cells > 0.3:
-            return False
-
-        # Reject if it looks like reversed/garbled text (50% threshold - relaxed)
-        if garbled_count / total_cells > 0.5:
+        # Need at least 1 non-empty cell
+        if non_empty == 0:
             return False
 
         return True
