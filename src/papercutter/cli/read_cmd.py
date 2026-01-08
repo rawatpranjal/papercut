@@ -1,8 +1,6 @@
 """Read command for extracting text from specific parts of PDFs."""
 
-import json
 from pathlib import Path
-from typing import Optional
 
 import typer
 from rich.console import Console
@@ -14,19 +12,19 @@ console = Console()
 
 def read(
     pdf_path: Path = typer.Argument(..., help="Path to PDF file"),
-    pages: Optional[str] = typer.Option(
+    pages: str | None = typer.Option(
         None,
         "--pages",
         "-p",
         help="Page range: '5' or '5-10' or '5,8,10-12'",
     ),
-    section: Optional[str] = typer.Option(
+    section: str | None = typer.Option(
         None,
         "--section",
         "-s",
         help="Section ID or title (requires prior indexing)",
     ),
-    chapter: Optional[int] = typer.Option(
+    chapter: int | None = typer.Option(
         None,
         "--chapter",
         "-c",

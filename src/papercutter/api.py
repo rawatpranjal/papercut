@@ -10,7 +10,7 @@ For more control, use the underlying classes directly.
 """
 
 from pathlib import Path
-from typing import Optional, Union
+from typing import Union
 
 from papercutter.core.figures import ExtractedFigure, FigureExtractor
 from papercutter.core.references import Reference, ReferenceExtractor
@@ -21,9 +21,9 @@ from papercutter.fetchers.arxiv import ArxivFetcher
 from papercutter.fetchers.base import Document
 from papercutter.fetchers.doi import DOIFetcher
 from papercutter.fetchers.nber import NBERFetcher
+from papercutter.fetchers.registry import get_registry
 from papercutter.fetchers.ssrn import SSRNFetcher
 from papercutter.fetchers.url import URLFetcher
-from papercutter.fetchers.registry import get_registry
 
 PathLike = Union[Path, str]
 
@@ -116,7 +116,7 @@ def fetch_nber(nber_id: str, output_dir: PathLike = ".") -> Document:
 def fetch_url(
     url: str,
     output_dir: PathLike = ".",
-    name: Optional[str] = None,
+    name: str | None = None,
 ) -> Document:
     """Fetch a paper from a direct URL.
 
@@ -197,7 +197,7 @@ def _get_backend() -> PdfPlumberExtractor:
 
 def extract_text(
     pdf_path: PathLike,
-    pages: Optional[list[int]] = None,
+    pages: list[int] | None = None,
 ) -> str:
     """Extract text from a PDF.
 
@@ -224,7 +224,7 @@ def extract_text_chunked(
     pdf_path: PathLike,
     chunk_size: int = 4000,
     overlap: int = 200,
-    pages: Optional[list[int]] = None,
+    pages: list[int] | None = None,
 ) -> list[str]:
     """Extract text from a PDF as overlapping chunks.
 
@@ -261,7 +261,7 @@ def extract_text_chunked(
 
 def extract_tables(
     pdf_path: PathLike,
-    pages: Optional[list[int]] = None,
+    pages: list[int] | None = None,
 ) -> list[ExtractedTable]:
     """Extract tables from a PDF.
 

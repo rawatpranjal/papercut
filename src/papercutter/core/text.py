@@ -4,7 +4,7 @@ import bisect
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 from papercutter.extractors.base import Extractor
 
@@ -14,8 +14,8 @@ class ChunkMetadata:
     """Metadata about a text chunk for LLM context."""
 
     page: int  # Primary page (1-indexed)
-    page_end: Optional[int] = None  # End page if chunk spans multiple (1-indexed)
-    section: Optional[str] = None  # Section title if detected
+    page_end: int | None = None  # End page if chunk spans multiple (1-indexed)
+    section: str | None = None  # Section title if detected
     char_start: int = 0  # Start position in full document
     char_end: int = 0  # End position in full document
     figures_referenced: list[str] = field(default_factory=list)
@@ -67,7 +67,7 @@ class TextExtractor:
         """
         self.backend = backend
 
-    def extract(self, path: Path, pages: Optional[list[int]] = None) -> str:
+    def extract(self, path: Path, pages: list[int] | None = None) -> str:
         """Extract full text from PDF.
 
         Args:
@@ -84,7 +84,7 @@ class TextExtractor:
         path: Path,
         chunk_size: int = 4000,
         overlap: int = 200,
-        pages: Optional[list[int]] = None,
+        pages: list[int] | None = None,
     ) -> list[str]:
         """Extract text as overlapping chunks for LLM processing.
 
@@ -140,7 +140,19 @@ class TextExtractor:
         chunks = []
         start = 0
 
+        # Safety: calculate max iterations to prevent infinite loops
+        # Even with overlap, we should never need more iterations than text_len / (chunk_size - overlap) + padding
+        max_iterations = (len(text) // max(1, chunk_size - overlap)) + 100
+        iteration = 0
+
         while start < len(text):
+            iteration += 1
+            if iteration > max_iterations:
+                raise RuntimeError(
+                    f"Text chunking exceeded {max_iterations} iterations - possible infinite loop. "
+                    f"text_len={len(text)}, chunk_size={chunk_size}, overlap={overlap}"
+                )
+
             # Get the chunk end position
             end = start + chunk_size
 
@@ -238,8 +250,8 @@ class TextExtractor:
         path: Path,
         chunk_size: int = 4000,
         overlap: int = 200,
-        pages: Optional[list[int]] = None,
-        sections: Optional[list] = None,
+        pages: list[int] | None = None,
+        sections: list | None = None,
         detect_references: bool = True,
     ) -> list[TextChunk]:
         """Extract text as chunks with rich metadata for LLM processing.
@@ -314,7 +326,18 @@ class TextExtractor:
         chunk_id = 0
         start = 0
 
+        # Safety: calculate max iterations to prevent infinite loops
+        max_iterations = (len(full_text) // max(1, chunk_size - overlap)) + 100
+        iteration = 0
+
         while start < len(full_text):
+            iteration += 1
+            if iteration > max_iterations:
+                raise RuntimeError(
+                    f"Text chunking exceeded {max_iterations} iterations - possible infinite loop. "
+                    f"text_len={len(full_text)}, chunk_size={chunk_size}, overlap={overlap}"
+                )
+
             end = start + chunk_size
 
             if end >= len(full_text):
@@ -415,7 +438,7 @@ class TextExtractor:
 
     def _get_section_for_position(
         self, char_pos: int, section_map: list[tuple[int, str]]
-    ) -> Optional[str]:
+    ) -> str | None:
         """Get section title for a character position using binary search."""
         if not section_map:
             return None

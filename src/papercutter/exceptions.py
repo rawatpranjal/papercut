@@ -1,19 +1,18 @@
 """Custom exceptions for Papercutter."""
 
-from typing import Optional
 
 
 class PapercutterError(Exception):
     """Base exception for all Papercutter errors."""
 
     exit_code: int = 1
-    default_hint: Optional[str] = None
+    default_hint: str | None = None
 
     def __init__(
         self,
         message: str,
-        details: Optional[str] = None,
-        hint: Optional[str] = None,
+        details: str | None = None,
+        hint: str | None = None,
     ):
         self.message = message
         self.details = details

@@ -1,12 +1,11 @@
 """Follow references command - download cited papers."""
 
 from pathlib import Path
-from typing import Optional
 
 import typer
 from rich.console import Console
 
-from papercutter.cli.utils import handle_errors, is_quiet
+from papercutter.cli.utils import is_quiet
 from papercutter.output import get_formatter
 
 console = Console()
@@ -72,7 +71,7 @@ def follow(
 
         papercutter follow paper.pdf --parallel 3 --rate-limit 2.0
     """
-    from papercutter.core.follower import FollowProgress, FollowResult, ReferenceFollower
+    from papercutter.core.follower import FollowProgress, ReferenceFollower
     from papercutter.core.references import ReferenceExtractor
     from papercutter.core.resolver import ReferenceResolver
     from papercutter.extractors.pdfplumber import PdfPlumberExtractor
@@ -203,7 +202,7 @@ def follow(
 
     # Report results
     if not quiet_mode and not formatter.use_json:
-        console.print(f"\n[bold]Done:[/bold]")
+        console.print("\n[bold]Done:[/bold]")
         console.print(f"  [green]{len(follow_result.downloaded)} downloaded[/green]")
         if follow_result.failed:
             console.print(f"  [red]{len(follow_result.failed)} failed[/red]")

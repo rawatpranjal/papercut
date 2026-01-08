@@ -1,13 +1,11 @@
 """Search commands for finding papers."""
 
 from pathlib import Path
-from typing import Optional
 
 import typer
 from rich.console import Console
-from rich.table import Table
 
-from papercutter.cli.utils import handle_errors, is_quiet
+from papercutter.cli.utils import is_quiet
 from papercutter.output import get_formatter
 
 console = Console()
@@ -21,7 +19,7 @@ def search(
         "-s",
         help="Search source (arxiv).",
     ),
-    author: Optional[str] = typer.Option(
+    author: str | None = typer.Option(
         None,
         "--author",
         "-a",
@@ -33,7 +31,7 @@ def search(
         "-n",
         help="Maximum number of results.",
     ),
-    year: Optional[int] = typer.Option(
+    year: int | None = typer.Option(
         None,
         "--year",
         "-y",
@@ -136,8 +134,8 @@ def search(
 
 def _search_arxiv(
     query: str,
-    author: Optional[str] = None,
-    year: Optional[int] = None,
+    author: str | None = None,
+    year: int | None = None,
     limit: int = 10,
 ) -> list[dict]:
     """Search arXiv for papers.

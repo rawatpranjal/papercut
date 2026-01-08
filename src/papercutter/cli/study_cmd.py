@@ -1,7 +1,6 @@
 """Study command for LLM-powered study aids."""
 
 from pathlib import Path
-from typing import Optional
 
 import typer
 from rich.console import Console
@@ -14,7 +13,7 @@ console = Console()
 
 def study(
     pdf_path: Path = typer.Argument(..., help="Path to book PDF file"),
-    chapter: Optional[int] = typer.Option(
+    chapter: int | None = typer.Option(
         None,
         "--chapter",
         "-c",
@@ -26,13 +25,13 @@ def study(
         "-m",
         help="Study mode: summary, concepts, quiz, flashcards",
     ),
-    pages: Optional[str] = typer.Option(
+    pages: str | None = typer.Option(
         None,
         "--pages",
         "-p",
         help="Page range if not using chapter (e.g., '50-75')",
     ),
-    output: Optional[Path] = typer.Option(
+    output: Path | None = typer.Option(
         None,
         "--output",
         "-o",

@@ -2,7 +2,6 @@
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional
 
 from papercutter.fetchers.base import BaseFetcher, Document
 
@@ -40,7 +39,7 @@ class FetcherRegistry:
         # Keep sorted by priority
         self._fetchers.sort(key=lambda x: x[1])
 
-    def resolve(self, identifier: str) -> Optional[ResolvedIdentifier]:
+    def resolve(self, identifier: str) -> ResolvedIdentifier | None:
         """Find the best fetcher for an identifier.
 
         Args:

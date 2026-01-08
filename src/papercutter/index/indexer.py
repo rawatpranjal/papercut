@@ -1,18 +1,19 @@
 """Document indexer for creating structure maps."""
 
 import re
+from collections.abc import Callable
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Callable, Literal, Optional
+from typing import Any, Literal
 
 from pypdf import PdfReader
 
 # Type alias for page text getter function
 PageTextGetter = Callable[[int], str]
 
-from papercutter.cache import file_hash, get_cache
 from papercutter.books.splitter import ChapterSplitter
+from papercutter.cache import file_hash, get_cache
 
 # Minimum pages to benefit from parallel processing
 _MIN_PAGES_FOR_PARALLEL = 20
@@ -53,7 +54,7 @@ class TableInfo:
 
     id: int
     page: int  # 1-indexed
-    caption: Optional[str] = None
+    caption: str | None = None
 
 
 @dataclass
@@ -62,7 +63,7 @@ class FigureInfo:
 
     id: int
     page: int  # 1-indexed
-    caption: Optional[str] = None
+    caption: str | None = None
 
 
 @dataclass
@@ -75,9 +76,9 @@ class DocumentIndex:
     type: Literal["paper", "book"]
 
     # Metadata
-    title: Optional[str] = None
+    title: str | None = None
     authors: list[str] = field(default_factory=list)
-    abstract: Optional[str] = None
+    abstract: str | None = None
 
     # Structure (paper)
     sections: list[Section] = field(default_factory=list)
@@ -165,17 +166,32 @@ class DocumentIndexer:
         r"^(\d+\.?\s+)(Discussion|Conclusions?|Summary)",
         r"^(\d+\.?\s+)(References?|Bibliography)",
         r"^(\d+\.?\s+)(Appendix|Appendices)",
+        r"^(\d+\.?\s+)(Experimental|Experiments?)",
+        r"^(\d+\.?\s+)(Theory|Theoretical)",
+        r"^(\d+\.?\s+)(Model|Framework)",
+        r"^(\d+\.?\s+)(Implementation|Design)",
+        r"^(\d+\.?\s+)(Evaluation|Validation)",
+        r"^(\d+\.?\s+)(Future Work|Limitations)",
+        # Numbered subsections: "1.1 Background"
+        r"^(\d+\.\d+\.?\s+)([A-Z][a-z]+)",
         # Roman numerals: "I. Introduction"
         r"^([IVXLC]+\.?\s+)(Introduction|Methods?|Results?|Discussion|Conclusions?)",
+        r"^([IVXLC]+\.?\s+)([A-Z][a-z]+)",
         # Unnumbered common sections
         r"^(Abstract)$",
         r"^(Introduction)$",
         r"^(Methods?|Methodology)$",
         r"^(Data and Methods?)$",
+        r"^(Materials?\s+and\s+Methods?)$",
+        r"^(Experimental\s+Section)$",
         r"^(Results?)$",
+        r"^(Results?\s+and\s+Discussion)$",
         r"^(Discussion)$",
-        r"^(Conclusions?)$",
+        r"^(Conclusions?|Concluding\s+Remarks?)$",
+        r"^(Summary)$",
+        r"^(Acknowledgments?|Acknowledgements?)$",
         r"^(References?|Bibliography)$",
+        r"^(Supplementary\s+Materials?)$",
     ]
 
     # Abstract detection patterns
@@ -226,7 +242,7 @@ class DocumentIndexer:
     def index(
         self,
         pdf_path: Path,
-        doc_type: Optional[Literal["paper", "book"]] = None,
+        doc_type: Literal["paper", "book"] | None = None,
         force: bool = False,
     ) -> DocumentIndex:
         """Index a PDF document.
@@ -399,19 +415,36 @@ class DocumentIndexer:
                         section_starts.append((page_num, title))
                         break
 
+        # Sort section_starts by page number and deduplicate same-page entries
+        section_starts.sort(key=lambda x: x[0])
+        # Keep only first section found per page to avoid duplicates
+        seen_pages = set()
+        unique_sections = []
+        for page_num, title in section_starts:
+            if page_num not in seen_pages:
+                seen_pages.add(page_num)
+                unique_sections.append((page_num, title))
+        section_starts = unique_sections
+
         # Convert to sections with page ranges
+        # Pages are stored as (start_1idx, end_1idx) - both 1-indexed, inclusive
         for i, (page_num, title) in enumerate(section_starts):
             section_id += 1
-            end_page = (
-                section_starts[i + 1][0]
-                if i + 1 < len(section_starts)
-                else len(reader.pages)
-            )
+            start_page = page_num + 1  # Convert 0-indexed to 1-indexed
+
+            if i + 1 < len(section_starts):
+                # End page is the page before the next section starts
+                # Next section's 0-indexed page N means current ends on 1-indexed page N
+                next_section_0idx = section_starts[i + 1][0]
+                end_page = max(next_section_0idx, start_page)  # Ensure end >= start
+            else:
+                # Last section extends to end of document
+                end_page = len(reader.pages)
 
             sections.append(Section(
                 id=section_id,
                 title=title,
-                pages=(page_num + 1, end_page),  # 1-indexed
+                pages=(start_page, end_page),
             ))
 
         index.sections = sections

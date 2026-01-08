@@ -30,6 +30,41 @@ Advanced usage (for more control):
 __version__ = "1.1.0"
 
 # Exceptions
+# Convenience API
+from papercutter.api import (
+    extract_figures,
+    extract_refs,
+    extract_tables,
+    extract_text,
+    extract_text_chunked,
+    fetch_arxiv,
+    fetch_doi,
+    fetch_nber,
+    fetch_paper,
+    fetch_ssrn,
+    fetch_url,
+)
+
+# Book chapter detection
+from papercutter.books.splitter import Chapter, ChapterSplitter
+
+# Cache
+from papercutter.cache import CacheStore, file_hash, get_cache
+
+# Configuration
+from papercutter.config.settings import Settings, get_settings
+
+# Core extraction
+from papercutter.core.equations import (
+    EquationExtractor,
+    EquationType,
+    ExtractedEquation,
+    LaTeXConversion,
+)
+from papercutter.core.figures import ExtractedFigure, FigureExtractor
+from papercutter.core.references import Reference, ReferenceExtractor
+from papercutter.core.tables import ExtractedTable, TableExtractor
+from papercutter.core.text import TextExtractor
 from papercutter.exceptions import (
     ConfigError,
     EquationConversionError,
@@ -48,6 +83,10 @@ from papercutter.exceptions import (
     RateLimitError,
 )
 
+# Extractors (backends)
+from papercutter.extractors.base import Extractor
+from papercutter.extractors.pdfplumber import PdfPlumberExtractor
+
 # Fetchers
 from papercutter.fetchers.arxiv import ArxivFetcher
 from papercutter.fetchers.base import BaseFetcher, Document
@@ -55,22 +94,6 @@ from papercutter.fetchers.doi import DOIFetcher
 from papercutter.fetchers.nber import NBERFetcher
 from papercutter.fetchers.ssrn import SSRNFetcher
 from papercutter.fetchers.url import URLFetcher
-
-# Extractors (backends)
-from papercutter.extractors.base import Extractor
-from papercutter.extractors.pdfplumber import PdfPlumberExtractor
-
-# Core extraction
-from papercutter.core.equations import (
-    EquationExtractor,
-    EquationType,
-    ExtractedEquation,
-    LaTeXConversion,
-)
-from papercutter.core.figures import ExtractedFigure, FigureExtractor
-from papercutter.core.references import Reference, ReferenceExtractor
-from papercutter.core.tables import ExtractedTable, TableExtractor
-from papercutter.core.text import TextExtractor
 
 # Document indexing
 from papercutter.index.indexer import (
@@ -81,39 +104,16 @@ from papercutter.index.indexer import (
     TableInfo,
 )
 
-# Book chapter detection
-from papercutter.books.splitter import Chapter, ChapterSplitter
-
-# Cache
-from papercutter.cache import CacheStore, file_hash, get_cache
-
-# Configuration
-from papercutter.config.settings import Settings, get_settings
-
-# Output formatting
-from papercutter.output import OutputFormatter, get_formatter
-
-# LLM integration
-from papercutter.llm import LLMClient, get_client as get_llm_client
-from papercutter.llm.client import LLMResponse
-
 # Intelligence features (LLM-powered)
 from papercutter.intelligence import ReportGenerator, StudyAid, Summarizer
 
-# Convenience API
-from papercutter.api import (
-    extract_figures,
-    extract_refs,
-    extract_tables,
-    extract_text,
-    extract_text_chunked,
-    fetch_arxiv,
-    fetch_doi,
-    fetch_nber,
-    fetch_paper,
-    fetch_ssrn,
-    fetch_url,
-)
+# LLM integration
+from papercutter.llm import LLMClient
+from papercutter.llm import get_client as get_llm_client
+from papercutter.llm.client import LLMResponse
+
+# Output formatting
+from papercutter.output import OutputFormatter, get_formatter
 
 __all__ = [
     # Version

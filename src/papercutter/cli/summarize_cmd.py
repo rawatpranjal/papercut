@@ -1,7 +1,6 @@
 """Summarize command for LLM-powered paper summarization."""
 
 from pathlib import Path
-from typing import Optional
 
 import typer
 from rich.console import Console
@@ -14,7 +13,7 @@ console = Console()
 
 def summarize(
     pdf_path: Path = typer.Argument(..., help="Path to PDF file"),
-    focus: Optional[str] = typer.Option(
+    focus: str | None = typer.Option(
         None,
         "--focus",
         "-f",
@@ -26,7 +25,7 @@ def summarize(
         "-l",
         help="Summary length: short, default, or long",
     ),
-    output: Optional[Path] = typer.Option(
+    output: Path | None = typer.Option(
         None,
         "--output",
         "-o",

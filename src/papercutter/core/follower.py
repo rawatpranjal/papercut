@@ -2,11 +2,12 @@
 
 import json
 import time
+from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Callable, Optional
+from typing import Any
 
 from papercutter.core.references import Reference, ReferenceExtractor
 from papercutter.core.resolver import ReferenceResolver, ResolvedReference
@@ -33,7 +34,7 @@ class FollowProgress:
     resolved: int
     downloaded: int
     failed: int
-    current: Optional[str] = None
+    current: str | None = None
 
 
 class ReferenceFollower:
@@ -41,7 +42,7 @@ class ReferenceFollower:
 
     def __init__(
         self,
-        registry: Optional[FetcherRegistry] = None,
+        registry: FetcherRegistry | None = None,
         max_parallel: int = 3,
         continue_on_error: bool = True,
         rate_limit_delay: float = 1.0,
@@ -65,7 +66,7 @@ class ReferenceFollower:
         pdf_path: Path,
         output_dir: Path,
         dry_run: bool = False,
-        progress_callback: Optional[Callable[[FollowProgress], None]] = None,
+        progress_callback: Callable[[FollowProgress], None] | None = None,
     ) -> FollowResult:
         """Follow references from a PDF.
 
@@ -128,7 +129,7 @@ class ReferenceFollower:
         resolved_refs: list[ResolvedReference],
         output_dir: Path,
         result: FollowResult,
-        progress_callback: Optional[Callable[[FollowProgress], None]] = None,
+        progress_callback: Callable[[FollowProgress], None] | None = None,
     ) -> FollowResult:
         """Download references sequentially."""
         for i, ref in enumerate(resolved_refs):
@@ -163,7 +164,7 @@ class ReferenceFollower:
         resolved_refs: list[ResolvedReference],
         output_dir: Path,
         result: FollowResult,
-        progress_callback: Optional[Callable[[FollowProgress], None]] = None,
+        progress_callback: Callable[[FollowProgress], None] | None = None,
     ) -> FollowResult:
         """Download references in parallel with rate limiting."""
         with ThreadPoolExecutor(max_workers=self.max_parallel) as executor:

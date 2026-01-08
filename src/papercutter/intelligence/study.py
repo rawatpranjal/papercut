@@ -2,13 +2,11 @@
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional
 
 from papercutter.core.text import TextExtractor
 from papercutter.extractors.pdfplumber import PdfPlumberExtractor
 from papercutter.llm import get_client
 from papercutter.llm.prompts import get_study_prompt
-
 
 STUDY_MODES = ["summary", "concepts", "quiz", "flashcards"]
 
@@ -19,7 +17,7 @@ class StudyMaterial:
 
     content: str
     mode: str
-    chapter: Optional[int]
+    chapter: int | None
     model: str
     input_tokens: int
     output_tokens: int
@@ -43,9 +41,9 @@ class StudyAid:
 
     def __init__(
         self,
-        api_key: Optional[str] = None,
-        model: Optional[str] = None,
-        extractor: Optional[TextExtractor] = None,
+        api_key: str | None = None,
+        model: str | None = None,
+        extractor: TextExtractor | None = None,
     ):
         """Initialize the study aid.
 
@@ -62,8 +60,8 @@ class StudyAid:
         self,
         pdf_path: Path,
         mode: str = "summary",
-        chapter: Optional[int] = None,
-        pages: Optional[list[int]] = None,
+        chapter: int | None = None,
+        pages: list[int] | None = None,
     ) -> StudyMaterial:
         """Generate study material.
 

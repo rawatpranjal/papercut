@@ -5,7 +5,7 @@ import io
 import json
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 from papercutter.extractors.base import Extractor
 
@@ -16,7 +16,7 @@ class ExtractedTable:
 
     page: int
     data: list[list[str]]
-    bbox: Optional[tuple[float, float, float, float]] = None
+    bbox: tuple[float, float, float, float] | None = None
 
     @property
     def rows(self) -> int:
@@ -118,7 +118,7 @@ class TableExtractor:
         self.backend = backend
 
     def extract(
-        self, path: Path, pages: Optional[list[int]] = None
+        self, path: Path, pages: list[int] | None = None
     ) -> list[ExtractedTable]:
         """Extract all tables from PDF.
 
@@ -190,7 +190,7 @@ class TableExtractor:
         return True
 
     def extract_as_csv(
-        self, path: Path, pages: Optional[list[int]] = None
+        self, path: Path, pages: list[int] | None = None
     ) -> list[tuple[int, str]]:
         """Extract all tables as CSV strings.
 

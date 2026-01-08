@@ -1,7 +1,6 @@
 """Report command for LLM-powered structured reports."""
 
 from pathlib import Path
-from typing import Optional
 
 import typer
 from rich.console import Console
@@ -20,7 +19,7 @@ def report(
         "-t",
         help="Report template: reading-group, referee, meta, executive, or path to custom template",
     ),
-    output: Optional[Path] = typer.Option(
+    output: Path | None = typer.Option(
         None,
         "--output",
         "-o",

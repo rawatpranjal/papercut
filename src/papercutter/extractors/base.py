@@ -1,13 +1,13 @@
 """Base protocol for PDF extraction backends."""
 
 from pathlib import Path
-from typing import Any, Optional, Protocol
+from typing import Any, Protocol
 
 
 class Extractor(Protocol):
     """Protocol defining the interface for PDF extraction backends."""
 
-    def extract_text(self, path: Path, pages: Optional[list[int]] = None) -> str:
+    def extract_text(self, path: Path, pages: list[int] | None = None) -> str:
         """Extract text from PDF.
 
         Args:
@@ -21,7 +21,7 @@ class Extractor(Protocol):
         ...
 
     def extract_tables(
-        self, path: Path, pages: Optional[list[int]] = None
+        self, path: Path, pages: list[int] | None = None
     ) -> list[dict[str, Any]]:
         """Extract tables from PDF.
 
@@ -47,7 +47,7 @@ class Extractor(Protocol):
         ...
 
     def extract_text_by_page(
-        self, path: Path, pages: Optional[list[int]] = None
+        self, path: Path, pages: list[int] | None = None
     ) -> list[tuple[int, str]]:
         """Extract text from PDF, returning per-page results.
 

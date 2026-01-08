@@ -3,12 +3,15 @@
 import io
 import json
 import sys
-from dataclasses import dataclass
-from typing import Any, Optional
+from collections.abc import Callable
+from dataclasses import dataclass, field
+from typing import Any
 
 from rich.console import Console
 from rich.table import Table
-from rich.tree import Tree
+
+# Type alias for pretty formatter functions
+PrettyFn = Callable[["dict[str, Any]", Console], None]
 
 
 @dataclass
@@ -25,15 +28,21 @@ class OutputFormatter:
     force_json: bool = False
     force_pretty: bool = False
     quiet: bool = False
-    console: Optional[Console] = None
+    _console: Console | None = field(default=None, repr=False)
 
-    def __post_init__(self):
-        if self.console is None:
+    def __post_init__(self) -> None:
+        if self._console is None:
             if self.quiet:
                 # Null console - discards output
-                self.console = Console(file=io.StringIO())
+                self._console = Console(file=io.StringIO())
             else:
-                self.console = Console()
+                self._console = Console()
+
+    @property
+    def console(self) -> Console:
+        """Get the console instance (guaranteed non-None after init)."""
+        assert self._console is not None
+        return self._console
 
     @property
     def use_json(self) -> bool:
@@ -45,7 +54,7 @@ class OutputFormatter:
         # Auto-detect: JSON if stdout is not a TTY
         return not sys.stdout.isatty()
 
-    def output(self, data: dict[str, Any], pretty_fn: Optional[callable] = None) -> None:
+    def output(self, data: dict[str, Any], pretty_fn: PrettyFn | None = None) -> None:
         """Output data in appropriate format.
 
         Args:
@@ -142,7 +151,7 @@ class OutputFormatter:
         # Sections table (for papers with word counts)
         sections = data.get("sections", [])
         if sections and any("word_count" in s for s in sections):
-            self.console.print(f"\n[bold]Sections:[/bold]")
+            self.console.print("\n[bold]Sections:[/bold]")
             table = Table(show_header=True, header_style="bold")
             table.add_column("ID", style="cyan", width=4)
             table.add_column("Title")
@@ -239,7 +248,7 @@ class OutputFormatter:
 
         # Abstract
         if data.get("abstract"):
-            self.console.print(f"\n[bold]Abstract:[/bold]")
+            self.console.print("\n[bold]Abstract:[/bold]")
             self.console.print(f"[dim]{data['abstract'][:300]}{'...' if len(data.get('abstract', '')) > 300 else ''}[/dim]")
 
         # Sections
@@ -420,7 +429,7 @@ class OutputFormatter:
         elif query.get("chapter"):
             self.console.print(f"[dim]Chapter: {query['chapter']}[/dim]")
         elif query.get("all"):
-            self.console.print(f"[dim]Full document[/dim]")
+            self.console.print("[dim]Full document[/dim]")
 
         self.console.print(f"[dim]Words: {content.get('word_count', 0)} | Chars: {content.get('char_count', 0)}[/dim]\n")
 

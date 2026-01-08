@@ -1,5 +1,5 @@
 """Book processing: chapter detection."""
 
-from papercutter.books.splitter import ChapterSplitter, Chapter
+from papercutter.books.splitter import Chapter, ChapterSplitter
 
-__all__ = ["ChapterSplitter", "Chapter"]
+__all__ = ["Chapter", "ChapterSplitter"]

@@ -2,7 +2,6 @@
 
 import logging
 import os
-from typing import Optional
 
 import certifi
 import typer
@@ -57,7 +56,7 @@ def version_callback(value: bool):
 @app.callback()
 def main(
     ctx: typer.Context,
-    version: Optional[bool] = typer.Option(
+    version: bool | None = typer.Option(
         None,
         "--version",
         "-V",

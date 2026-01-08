@@ -58,6 +58,7 @@ class Pix2TexConverter(BaseConverter):
             Exception: If conversion fails.
         """
         self._ensure_model()
+        assert self._model is not None  # Type narrowing for mypy
 
         from io import BytesIO
 

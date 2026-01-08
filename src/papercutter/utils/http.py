@@ -1,13 +1,55 @@
 """HTTP utilities for fetching papers."""
 
+import os
+import re
+from collections.abc import Callable
 from pathlib import Path
-from typing import Callable, Optional
-from urllib.parse import urlparse
+from urllib.parse import unquote, urlparse
 
 import certifi
 import httpx
 
 from papercutter.exceptions import NetworkError, RateLimitError
+
+
+def _sanitize_filename(filename: str) -> str:
+    """Sanitize a filename to prevent path traversal attacks.
+
+    Args:
+        filename: The filename to sanitize.
+
+    Returns:
+        A safe filename with path traversal attempts removed.
+    """
+    # URL-decode to catch encoded traversal attempts like %2e%2e%2f
+    filename = unquote(filename)
+
+    # Get just the filename component, stripping any path
+    filename = os.path.basename(filename)
+
+    # Remove leading dots to prevent hidden files and traversal
+    filename = filename.lstrip(".")
+
+    # Remove or replace dangerous characters
+    # Windows forbidden: < > : " / \ | ? *
+    # Also remove null bytes and control characters
+    filename = re.sub(r'[<>:"/\\|?*\x00-\x1f]', "_", filename)
+
+    # Ensure the filename isn't empty after sanitization
+    if not filename or filename == ".":
+        filename = "download"
+
+    # Limit length to 255 (common filesystem limit)
+    if len(filename) > 255:
+        # Preserve extension if present
+        name, ext = os.path.splitext(filename)
+        if ext:
+            max_name_len = 255 - len(ext)
+            filename = name[:max_name_len] + ext
+        else:
+            filename = filename[:255]
+
+    return filename
 
 # Default timeout for HTTP requests (in seconds)
 DEFAULT_TIMEOUT = 30.0
@@ -59,6 +101,7 @@ def get_client(**kwargs) -> httpx.Client:
         timeout=kwargs.pop("timeout", DEFAULT_TIMEOUT),
         headers={**DEFAULT_HEADERS, **kwargs.pop("headers", {})},
         follow_redirects=True,
+        max_redirects=10,
         verify=certifi.where(),
         **kwargs,
     )
@@ -67,8 +110,8 @@ def get_client(**kwargs) -> httpx.Client:
 def download_file(
     url: str,
     output_path: Path,
-    filename: Optional[str] = None,
-    client: Optional[httpx.Client] = None,
+    filename: str | None = None,
+    client: httpx.Client | None = None,
 ) -> Path:
     """Download a file from URL.
 
@@ -102,17 +145,26 @@ def download_file(
         # Determine output file path
         if output_path.is_dir():
             if filename:
-                file_path = output_path / filename
+                safe_filename = _sanitize_filename(filename)
+                file_path = output_path / safe_filename
             else:
                 # Try to get filename from URL
                 parsed = urlparse(url)
                 url_filename = Path(parsed.path).name
                 if url_filename and "." in url_filename:
-                    file_path = output_path / url_filename
+                    safe_filename = _sanitize_filename(url_filename)
+                    file_path = output_path / safe_filename
                 else:
                     file_path = output_path / "download.pdf"
         else:
             file_path = output_path
+
+        # Validate the resolved path stays within output directory
+        if output_path.is_dir():
+            resolved = file_path.resolve()
+            output_resolved = output_path.resolve()
+            if not str(resolved).startswith(str(output_resolved)):
+                file_path = output_path / "download.pdf"
 
         # Ensure parent directory exists
         file_path.parent.mkdir(parents=True, exist_ok=True)
@@ -139,9 +191,9 @@ def download_file(
 def download_file_with_progress(
     url: str,
     output_path: Path,
-    filename: Optional[str] = None,
-    client: Optional[httpx.Client] = None,
-    progress_callback: Optional[Callable[[int, int], None]] = None,
+    filename: str | None = None,
+    client: httpx.Client | None = None,
+    progress_callback: Callable[[int, int], None] | None = None,
 ) -> Path:
     """Download a file from URL with progress tracking.
 
@@ -183,17 +235,26 @@ def download_file_with_progress(
             # Determine output file path
             if output_path.is_dir():
                 if filename:
-                    file_path = output_path / filename
+                    safe_filename = _sanitize_filename(filename)
+                    file_path = output_path / safe_filename
                 else:
                     # Try to get filename from URL
                     parsed = urlparse(url)
                     url_filename = Path(parsed.path).name
                     if url_filename and "." in url_filename:
-                        file_path = output_path / url_filename
+                        safe_filename = _sanitize_filename(url_filename)
+                        file_path = output_path / safe_filename
                     else:
                         file_path = output_path / "download.pdf"
             else:
                 file_path = output_path
+
+            # Validate the resolved path stays within output directory
+            if output_path.is_dir():
+                resolved = file_path.resolve()
+                output_resolved = output_path.resolve()
+                if not str(resolved).startswith(str(output_resolved)):
+                    file_path = output_path / "download.pdf"
 
             # Ensure parent directory exists
             file_path.parent.mkdir(parents=True, exist_ok=True)
@@ -242,6 +303,7 @@ def get_async_client(**kwargs) -> httpx.AsyncClient:
         timeout=kwargs.pop("timeout", ASYNC_TIMEOUT),
         headers={**DEFAULT_HEADERS, **kwargs.pop("headers", {})},
         follow_redirects=True,
+        max_redirects=10,
         verify=certifi.where(),
         **kwargs,
     )
@@ -250,8 +312,8 @@ def get_async_client(**kwargs) -> httpx.AsyncClient:
 async def download_file_async(
     url: str,
     output_path: Path,
-    filename: Optional[str] = None,
-    client: Optional[httpx.AsyncClient] = None,
+    filename: str | None = None,
+    client: httpx.AsyncClient | None = None,
 ) -> Path:
     """Download a file from URL asynchronously.
 
@@ -284,17 +346,26 @@ async def download_file_async(
             # Determine output file path
             if output_path.is_dir():
                 if filename:
-                    file_path = output_path / filename
+                    safe_filename = _sanitize_filename(filename)
+                    file_path = output_path / safe_filename
                 else:
                     # Try to get filename from URL
                     parsed = urlparse(url)
                     url_filename = Path(parsed.path).name
                     if url_filename and "." in url_filename:
-                        file_path = output_path / url_filename
+                        safe_filename = _sanitize_filename(url_filename)
+                        file_path = output_path / safe_filename
                     else:
                         file_path = output_path / "download.pdf"
             else:
                 file_path = output_path
+
+            # Validate the resolved path stays within output directory
+            if output_path.is_dir():
+                resolved = file_path.resolve()
+                output_resolved = output_path.resolve()
+                if not str(resolved).startswith(str(output_resolved)):
+                    file_path = output_path / "download.pdf"
 
             # Ensure parent directory exists
             file_path.parent.mkdir(parents=True, exist_ok=True)

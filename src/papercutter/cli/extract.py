@@ -1,8 +1,8 @@
 """Extract commands for extracting content from PDFs."""
 
 import json
+from collections.abc import Callable
 from pathlib import Path
-from typing import Callable, Optional
 
 import typer
 from rich.console import Console
@@ -21,7 +21,7 @@ def _get_console() -> Console:
     return Console()
 
 
-def parse_pages(pages_str: Optional[str]) -> Optional[list[int]]:
+def parse_pages(pages_str: str | None) -> list[int] | None:
     """Parse page range string like '1-5,8,10-12' into list of page numbers.
 
     Args:
@@ -72,7 +72,7 @@ def _read_pdf_batch_file(batch_file: Path) -> list[tuple[int, Path]]:
         raise typer.Exit(1)
 
     entries: list[tuple[int, Path]] = []
-    with open(batch_file) as f:
+    with open(batch_file, encoding="utf-8") as f:
         for line_no, line in enumerate(f, 1):
             value = line.strip()
             if not value or value.startswith("#"):
@@ -127,19 +127,19 @@ def _run_text_batch(
 @app.command()
 @handle_errors
 def text(
-    pdf_path: Optional[Path] = typer.Argument(None, help="Path to PDF file"),
-    output: Optional[Path] = typer.Option(
+    pdf_path: Path | None = typer.Argument(None, help="Path to PDF file"),
+    output: Path | None = typer.Option(
         None,
         "--output",
         "-o",
         help="Output file (default: stdout)",
     ),
-    batch: Optional[Path] = typer.Option(
+    batch: Path | None = typer.Option(
         None,
         "--batch",
         help="File with PDF paths (one per line) for batch extraction.",
     ),
-    chunk_size: Optional[int] = typer.Option(
+    chunk_size: int | None = typer.Option(
         None,
         "--chunk-size",
         help="Split text into chunks of this character size",
@@ -149,7 +149,7 @@ def text(
         "--overlap",
         help="Overlap between chunks (in characters)",
     ),
-    pages: Optional[str] = typer.Option(
+    pages: str | None = typer.Option(
         None,
         "--pages",
         "-p",
@@ -183,9 +183,21 @@ def text(
 
     console = _get_console()
     formatter = get_formatter(json_flag=use_json, pretty_flag=pretty, quiet=is_quiet())
-    extractor = TextExtractor(PdfPlumberExtractor())
+    backend = PdfPlumberExtractor()
+    extractor = TextExtractor(backend)
     page_list = parse_pages(pages)
     metadata_warning_shown = False
+
+    def validate_pages(target_pdf: Path, page_indices: list[int] | None) -> None:
+        """Validate that requested pages exist in the document."""
+        if page_indices is None:
+            return
+        page_count = backend.get_page_count(target_pdf)
+        invalid = [p + 1 for p in page_indices if p >= page_count]  # Convert to 1-indexed
+        if invalid:
+            raise typer.BadParameter(
+                f"Pages {invalid} out of range (document has {page_count} pages)"
+            )
 
     # Validate chunk parameters
     if chunk_size is not None:
@@ -200,6 +212,9 @@ def text(
 
     def build_result(target_pdf: Path) -> dict:
         nonlocal metadata_warning_shown
+
+        # Validate page range before extraction
+        validate_pages(target_pdf, page_list)
 
         if chunk_size:
             if include_metadata:
@@ -365,13 +380,13 @@ def table(
 @handle_errors
 def tables(
     pdf_path: Path = typer.Argument(..., help="Path to PDF file"),
-    output: Optional[Path] = typer.Option(
+    output: Path | None = typer.Option(
         None,
         "--output",
         "-o",
         help="Output directory for tables",
     ),
-    pages: Optional[str] = typer.Option(
+    pages: str | None = typer.Option(
         None,
         "--pages",
         "-p",
@@ -397,8 +412,18 @@ def tables(
 
     console = _get_console()
     formatter = get_formatter(json_flag=use_json, pretty_flag=pretty, quiet=is_quiet())
-    extractor = TableExtractor(PdfPlumberExtractor())
+    backend = PdfPlumberExtractor()
+    extractor = TableExtractor(backend)
     page_list = parse_pages(pages)
+
+    # Validate page range before extraction
+    if page_list is not None:
+        page_count = backend.get_page_count(pdf_path)
+        invalid = [p + 1 for p in page_list if p >= page_count]  # Convert to 1-indexed
+        if invalid:
+            raise typer.BadParameter(
+                f"Pages {invalid} out of range (document has {page_count} pages)"
+            )
 
     extracted_tables = extractor.extract(pdf_path, pages=page_list)
 
@@ -442,7 +467,7 @@ def figure(
         "-i",
         help="Figure ID to extract",
     ),
-    output: Optional[Path] = typer.Option(
+    output: Path | None = typer.Option(
         None,
         "--output",
         "-o",
@@ -521,13 +546,13 @@ def figure(
 @handle_errors
 def figures(
     pdf_path: Path = typer.Argument(..., help="Path to PDF file"),
-    output: Optional[Path] = typer.Option(
+    output: Path | None = typer.Option(
         None,
         "--output",
         "-o",
         help="Output directory for figures",
     ),
-    pages: Optional[str] = typer.Option(
+    pages: str | None = typer.Option(
         None,
         "--pages",
         "-p",
@@ -557,6 +582,17 @@ def figures(
         extractor = FigureExtractor()
         page_list = parse_pages(pages)
 
+        # Validate page range before extraction
+        if page_list is not None:
+            from papercutter.extractors.pdfplumber import PdfPlumberExtractor
+            backend = PdfPlumberExtractor()
+            page_count = backend.get_page_count(pdf_path)
+            invalid = [p + 1 for p in page_list if p >= page_count]  # Convert to 1-indexed
+            if invalid:
+                raise typer.BadParameter(
+                    f"Pages {invalid} out of range (document has {page_count} pages)"
+                )
+
         extracted_figures = extractor.extract(pdf_path, pages=page_list)
 
         figures_data = [fig.to_dict() for fig in extracted_figures]
@@ -585,7 +621,7 @@ def figures(
         raise typer.Exit(1)
 
 
-def _infer_refs_format(output_path: Optional[Path], explicit_format: str) -> str:
+def _infer_refs_format(output_path: Path | None, explicit_format: str) -> str:
     """Infer output format from file extension or explicit flag.
 
     Args:
@@ -614,7 +650,7 @@ def _infer_refs_format(output_path: Optional[Path], explicit_format: str) -> str
 @handle_errors
 def refs(
     pdf_path: Path = typer.Argument(..., help="Path to PDF file"),
-    output: Optional[Path] = typer.Option(
+    output: Path | None = typer.Option(
         None,
         "--output",
         "-o",
@@ -626,7 +662,7 @@ def refs(
         "-f",
         help="Output format: bibtex or json. Overrides extension auto-detection.",
     ),
-    search: Optional[str] = typer.Option(
+    search: str | None = typer.Option(
         None,
         "--search",
         "-s",
@@ -733,7 +769,7 @@ def _find_section(sections: list, query: str):
 @handle_errors
 def section(
     pdf_path: Path = typer.Argument(..., help="Path to PDF file"),
-    section_name: Optional[str] = typer.Option(
+    section_name: str | None = typer.Option(
         None,
         "--section",
         "-s",
@@ -745,7 +781,7 @@ def section(
         "-l",
         help="List all detected sections",
     ),
-    output: Optional[Path] = typer.Option(
+    output: Path | None = typer.Option(
         None,
         "--output",
         "-o",

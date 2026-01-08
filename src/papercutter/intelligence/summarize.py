@@ -2,7 +2,6 @@
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional
 
 from papercutter.core.text import TextExtractor
 from papercutter.extractors.pdfplumber import PdfPlumberExtractor
@@ -15,7 +14,7 @@ class Summary:
     """Generated summary of a paper."""
 
     content: str
-    focus: Optional[str]
+    focus: str | None
     length: str
     model: str
     input_tokens: int
@@ -40,9 +39,9 @@ class Summarizer:
 
     def __init__(
         self,
-        api_key: Optional[str] = None,
-        model: Optional[str] = None,
-        extractor: Optional[TextExtractor] = None,
+        api_key: str | None = None,
+        model: str | None = None,
+        extractor: TextExtractor | None = None,
     ):
         """Initialize the summarizer.
 
@@ -58,9 +57,9 @@ class Summarizer:
     def summarize(
         self,
         pdf_path: Path,
-        focus: Optional[str] = None,
+        focus: str | None = None,
         length: str = "default",
-        pages: Optional[list[int]] = None,
+        pages: list[int] | None = None,
     ) -> Summary:
         """Generate a summary of a paper.
 

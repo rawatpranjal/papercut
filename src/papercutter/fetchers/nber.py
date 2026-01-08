@@ -9,8 +9,8 @@ from papercutter.fetchers.base import BaseFetcher, Document
 from papercutter.utils.http import (
     download_file,
     download_file_async,
-    get_client,
     get_async_client,
+    get_client,
 )
 
 

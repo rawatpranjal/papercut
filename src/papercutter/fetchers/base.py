@@ -5,7 +5,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 
 @dataclass
@@ -13,12 +13,12 @@ class Document:
     """Represents a fetched academic document."""
 
     path: Path
-    title: Optional[str] = None
+    title: str | None = None
     authors: list[str] = field(default_factory=list)
-    abstract: Optional[str] = None
-    doi: Optional[str] = None
-    arxiv_id: Optional[str] = None
-    source_url: Optional[str] = None
+    abstract: str | None = None
+    doi: str | None = None
+    arxiv_id: str | None = None
+    source_url: str | None = None
     fetched_at: datetime = field(default_factory=datetime.now)
     # Additional metadata from source (e.g., categories, published date)
     extra_metadata: dict[str, Any] = field(default_factory=dict)
@@ -54,7 +54,7 @@ class Document:
             data.update(self.extra_metadata)
         return data
 
-    def save_metadata(self, output_path: Optional[Path] = None) -> Path:
+    def save_metadata(self, output_path: Path | None = None) -> Path:
         """Save metadata as a JSON sidecar file.
 
         Args:

@@ -2,15 +2,15 @@
 
 import re
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 from papercutter.exceptions import FetchError, PaperNotFoundError
 from papercutter.fetchers.base import BaseFetcher, Document
 from papercutter.utils.http import (
     download_file,
     download_file_async,
-    get_client,
     get_async_client,
+    get_client,
 )
 
 
@@ -168,7 +168,7 @@ class DOIFetcher(BaseFetcher):
 
         return self._extract_metadata_from_crossref(data)
 
-    def _find_pdf_url(self, doi: str, metadata: dict) -> Optional[str]:
+    def _find_pdf_url(self, doi: str, metadata: dict) -> str | None:
         """Try to find a PDF URL for the DOI.
 
         Args:
@@ -243,7 +243,7 @@ class DOIFetcher(BaseFetcher):
         metadata["links"] = work.get("link", [])
         return metadata
 
-    async def _find_pdf_url_async(self, doi: str, metadata: dict) -> Optional[str]:
+    async def _find_pdf_url_async(self, doi: str, metadata: dict) -> str | None:
         """Async version of PDF URL discovery."""
         for link in metadata.get("links", []):
             if link.get("content-type") == "application/pdf":
@@ -267,7 +267,7 @@ class DOIFetcher(BaseFetcher):
 
         return None
 
-    async def _check_unpaywall_async(self, doi: str) -> Optional[str]:
+    async def _check_unpaywall_async(self, doi: str) -> str | None:
         """Async version of Unpaywall lookup."""
         url = f"https://api.unpaywall.org/v2/{doi}"
         params = {"email": "papercutter@example.com"}
@@ -287,7 +287,7 @@ class DOIFetcher(BaseFetcher):
 
         return None
 
-    def _check_unpaywall(self, doi: str) -> Optional[str]:
+    def _check_unpaywall(self, doi: str) -> str | None:
         """Check Unpaywall API for free PDF.
 
         Args:

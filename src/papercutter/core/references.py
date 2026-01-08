@@ -3,7 +3,7 @@
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 from papercutter.extractors.base import Extractor
 
@@ -13,14 +13,14 @@ class Reference:
     """Represents a parsed reference/citation."""
 
     raw_text: str
-    title: Optional[str] = None
+    title: str | None = None
     authors: list[str] = field(default_factory=list)
-    year: Optional[int] = None
-    journal: Optional[str] = None
-    volume: Optional[str] = None
-    pages: Optional[str] = None
-    doi: Optional[str] = None
-    url: Optional[str] = None
+    year: int | None = None
+    journal: str | None = None
+    volume: str | None = None
+    pages: str | None = None
+    doi: str | None = None
+    url: str | None = None
 
     def to_bibtex(self) -> str:
         """Convert reference to BibTeX format.
@@ -35,17 +35,21 @@ class Reference:
         lines = [f"@{entry_type}{{{key},"]
 
         if self.authors:
-            author_str = " and ".join(self.authors)
+            # Sanitize authors and join with " and "
+            sanitized_authors = [self._sanitize_bibtex_value(a) for a in self.authors]
+            author_str = " and ".join(sanitized_authors)
             lines.append(f"  author = {{{author_str}}},")
 
         if self.title:
-            lines.append(f"  title = {{{self.title}}},")
+            sanitized_title = self._sanitize_bibtex_value(self.title)
+            lines.append(f"  title = {{{sanitized_title}}},")
 
         if self.year:
             lines.append(f"  year = {{{self.year}}},")
 
         if self.journal:
-            lines.append(f"  journal = {{{self.journal}}},")
+            sanitized_journal = self._sanitize_bibtex_value(self.journal)
+            lines.append(f"  journal = {{{sanitized_journal}}},")
 
         if self.volume:
             lines.append(f"  volume = {{{self.volume}}},")
@@ -61,6 +65,26 @@ class Reference:
 
         lines.append("}")
         return "\n".join(lines)
+
+    def _sanitize_bibtex_value(self, value: str) -> str:
+        """Sanitize a value for BibTeX output.
+
+        Removes newlines, normalizes whitespace, and escapes special characters.
+
+        Args:
+            value: The value to sanitize.
+
+        Returns:
+            Sanitized value safe for BibTeX.
+        """
+        if not value:
+            return value
+        # Replace newlines and multiple spaces with single space
+        sanitized = re.sub(r'\s+', ' ', value)
+        # Escape special BibTeX characters (# $ % & _ { } ~ ^)
+        for char in ['#', '$', '%', '&', '_', '{', '}']:
+            sanitized = sanitized.replace(char, '\\' + char)
+        return sanitized.strip()
 
     def to_dict(self) -> dict[str, Any]:
         """Convert reference to dictionary.
@@ -264,7 +288,7 @@ class ReferenceExtractor:
         # Parse each reference
         return [self._parse_reference(ref) for ref in raw_refs if ref.strip()]
 
-    def _find_references_section(self, text: str) -> Optional[str]:
+    def _find_references_section(self, text: str) -> str | None:
         """Find the references section in the text.
 
         Args:
@@ -384,7 +408,7 @@ class ReferenceExtractor:
 
         return ref
 
-    def _extract_title(self, text: str) -> Optional[str]:
+    def _extract_title(self, text: str) -> str | None:
         """Extract title from reference text.
 
         Args:
@@ -398,14 +422,16 @@ class ReferenceExtractor:
         if quoted:
             title = quoted.group(1).strip()
             if len(title) > 10:
-                return title
+                # Normalize whitespace (remove newlines and extra spaces)
+                return re.sub(r'\s+', ' ', title).strip()
 
         # 2. Look for single-quoted title
         single_quoted = self._SINGLE_QUOTED_TITLE.search(text)
         if single_quoted:
             title = single_quoted.group(1).strip()
             if len(title) > 15:  # Higher threshold for single quotes (avoid contractions)
-                return title
+                # Normalize whitespace
+                return re.sub(r'\s+', ' ', title).strip()
 
         # 3. Try to find title between year and journal/volume indicators
         year_match = self.YEAR_PATTERN.search(text)
@@ -431,7 +457,8 @@ class ReferenceExtractor:
                 # Clean trailing punctuation
                 title = self._TRAILING_PUNCT.sub("", title)
                 if len(title) > 10:
-                    return title
+                    # Normalize whitespace (remove newlines and extra spaces)
+                    return re.sub(r'\s+', ' ', title).strip()
 
         return None
 
@@ -494,16 +521,22 @@ class ReferenceExtractor:
             authors.append(spaced_name)
             i += 1
 
-        # Clean up authors (remove et al., citation artifacts, etc.)
+        # Clean up authors (remove et al., citation artifacts, duplicates, etc.)
         cleaned_authors = []
+        seen_authors = set()  # For deduplication (case-insensitive)
+
         for a in authors:
             a = a.strip()
-            if a.lower() in ("et al", "et al.", "others"):
+            # Skip common artifacts
+            a_lower = a.lower()
+            if a_lower in ("et al", "et al.", "others", "and", ""):
                 continue
             # Skip if it looks like a citation number
             if self._DIGITS_ONLY.match(a):
                 continue
-            if a:
+            # Deduplicate (case-insensitive)
+            if a_lower not in seen_authors:
+                seen_authors.add(a_lower)
                 cleaned_authors.append(a)
 
         return cleaned_authors[:10]  # Limit to reasonable number

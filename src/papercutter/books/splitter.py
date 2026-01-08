@@ -4,7 +4,6 @@ import logging
 import re
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional
 
 from pypdf import PdfReader
 
@@ -163,6 +162,9 @@ class ChapterSplitter:
                         page_obj = item.page
                         if page_obj is not None:
                             page_num = reader.get_page_number(page_obj)
+                            # Skip if page number couldn't be determined
+                            if page_num is None:
+                                continue
                             chapters.append(
                                 Chapter(
                                     title=title.strip(),
@@ -240,7 +242,7 @@ class ChapterSplitter:
         self,
         pdf_path: Path,
         chapter: Chapter,
-        max_chars: Optional[int] = None,
+        max_chars: int | None = None,
     ) -> str:
         """Extract text for a specific chapter.
 

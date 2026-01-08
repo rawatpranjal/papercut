@@ -2,7 +2,6 @@
 
 import json
 from pathlib import Path
-from typing import Optional
 
 import typer
 from rich.console import Console
@@ -14,7 +13,7 @@ console = Console()
 
 def index(
     pdf_path: Path = typer.Argument(..., help="Path to PDF file"),
-    doc_type: Optional[str] = typer.Option(
+    doc_type: str | None = typer.Option(
         None,
         "--type",
         "-t",
@@ -26,7 +25,7 @@ def index(
         "-f",
         help="Force re-indexing even if cached",
     ),
-    output: Optional[Path] = typer.Option(
+    output: Path | None = typer.Option(
         None,
         "--output",
         "-o",

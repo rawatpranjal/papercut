@@ -6,7 +6,7 @@ from typing import Any
 
 from papercutter.exceptions import FetchError, PaperNotFoundError
 from papercutter.fetchers.base import BaseFetcher, Document
-from papercutter.utils.http import get_client, get_async_client
+from papercutter.utils.http import get_async_client, get_client
 
 
 class SSRNFetcher(BaseFetcher):

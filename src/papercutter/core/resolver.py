@@ -2,10 +2,9 @@
 
 import re
 from dataclasses import dataclass
-from typing import Optional
 
 from papercutter.core.references import Reference
-from papercutter.fetchers.registry import FetcherRegistry, ResolvedIdentifier
+from papercutter.fetchers.registry import FetcherRegistry
 
 
 @dataclass
@@ -13,8 +12,8 @@ class ResolvedReference:
     """A reference with resolution status."""
 
     reference: Reference  # Original reference
-    resolved_id: Optional[str] = None  # Resolved identifier (DOI, arXiv ID, URL)
-    source_type: Optional[str] = None  # "arxiv", "doi", "url", None
+    resolved_id: str | None = None  # Resolved identifier (DOI, arXiv ID, URL)
+    source_type: str | None = None  # "arxiv", "doi", "url", None
     status: str = "unresolved"  # "resolved", "unresolved", "ambiguous"
 
     @property
@@ -58,7 +57,7 @@ class ReferenceResolver:
         re.IGNORECASE,
     )
 
-    def __init__(self, registry: Optional[FetcherRegistry] = None):
+    def __init__(self, registry: FetcherRegistry | None = None):
         """Initialize resolver.
 
         Args:
@@ -177,7 +176,7 @@ class ReferenceResolver:
 
         return results
 
-    def _extract_arxiv_id(self, text: str) -> Optional[str]:
+    def _extract_arxiv_id(self, text: str) -> str | None:
         """Extract arXiv ID from text."""
         for pattern in self.ARXIV_PATTERNS:
             match = pattern.search(text)
@@ -185,7 +184,7 @@ class ReferenceResolver:
                 return match.group(1)
         return None
 
-    def _extract_doi(self, text: str) -> Optional[str]:
+    def _extract_doi(self, text: str) -> str | None:
         """Extract DOI from text."""
         match = self.DOI_PATTERN.search(text)
         if match:
@@ -195,7 +194,7 @@ class ReferenceResolver:
             return doi
         return None
 
-    def _extract_url(self, text: str) -> Optional[str]:
+    def _extract_url(self, text: str) -> str | None:
         """Extract PDF URL from text."""
         # Try PDF URL first
         match = self.URL_PATTERN.search(text)

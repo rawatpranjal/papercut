@@ -4,7 +4,7 @@ import json
 import shutil
 from functools import lru_cache
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 from papercutter.cache.hash import file_hash
 
@@ -25,7 +25,7 @@ class CacheStore:
         │       └── fig_1.png
     """
 
-    def __init__(self, cache_dir: Optional[Path] = None):
+    def __init__(self, cache_dir: Path | None = None):
         """Initialize the cache store.
 
         Args:
@@ -86,7 +86,7 @@ class CacheStore:
         index_path = self.get_cache_path(pdf_path) / "index.json"
         return index_path.exists()
 
-    def get_index(self, pdf_path: Path) -> Optional[dict[str, Any]]:
+    def get_index(self, pdf_path: Path) -> dict[str, Any] | None:
         """Get cached index for a PDF.
 
         Args:
@@ -131,7 +131,7 @@ class CacheStore:
         pages_path = self._pages_path(pdf_path, start, end)
         return pages_path.exists()
 
-    def get_pages(self, pdf_path: Path, start: int, end: int) -> Optional[str]:
+    def get_pages(self, pdf_path: Path, start: int, end: int) -> str | None:
         """Get cached text for a page range.
 
         Args:
@@ -180,7 +180,7 @@ class CacheStore:
         table_path = self._table_path(pdf_path, table_id)
         return table_path.exists()
 
-    def get_table(self, pdf_path: Path, table_id: int) -> Optional[dict[str, Any]]:
+    def get_table(self, pdf_path: Path, table_id: int) -> dict[str, Any] | None:
         """Get cached table.
 
         Args:
@@ -230,7 +230,7 @@ class CacheStore:
         figure_path = self._figure_path(pdf_path, figure_id)
         return figure_path.exists()
 
-    def get_figure_path(self, pdf_path: Path, figure_id: int) -> Optional[Path]:
+    def get_figure_path(self, pdf_path: Path, figure_id: int) -> Path | None:
         """Get path to cached figure.
 
         Args:
@@ -280,7 +280,7 @@ class CacheStore:
         equation_path = self._equation_path(pdf_path, equation_id)
         return equation_path.exists()
 
-    def get_equation_path(self, pdf_path: Path, equation_id: int) -> Optional[Path]:
+    def get_equation_path(self, pdf_path: Path, equation_id: int) -> Path | None:
         """Get path to cached equation image.
 
         Args:
@@ -313,7 +313,7 @@ class CacheStore:
         equation_path.write_bytes(image_data)
         return equation_path
 
-    def get_equation_latex(self, pdf_path: Path, equation_id: int) -> Optional[dict[str, Any]]:
+    def get_equation_latex(self, pdf_path: Path, equation_id: int) -> dict[str, Any] | None:
         """Get cached LaTeX conversion for equation.
 
         Args:
@@ -356,7 +356,7 @@ class CacheStore:
         """Get path for cached equation LaTeX file."""
         return self.get_cache_path(pdf_path) / "equations" / f"eq_{equation_id}.json"
 
-    def clear(self, pdf_path: Optional[Path] = None) -> None:
+    def clear(self, pdf_path: Path | None = None) -> None:
         """Clear cache.
 
         Args:
@@ -415,7 +415,7 @@ class CacheStore:
 
 
 @lru_cache(maxsize=1)
-def get_cache(cache_dir: Optional[str] = None) -> CacheStore:
+def get_cache(cache_dir: str | None = None) -> CacheStore:
     """Get the global cache store instance.
 
     Args:

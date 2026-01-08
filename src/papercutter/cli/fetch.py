@@ -1,7 +1,7 @@
 """Fetch commands for downloading papers from various sources."""
 
+from collections.abc import Callable
 from pathlib import Path
-from typing import Callable, Optional
 
 import typer
 from rich.console import Console
@@ -28,7 +28,7 @@ def _read_batch_file(batch_file: Path) -> list[tuple[int, str]]:
         raise typer.Exit(1)
 
     identifiers: list[tuple[int, str]] = []
-    with open(batch_file) as f:
+    with open(batch_file, encoding="utf-8") as f:
         for line_no, line in enumerate(f, 1):
             value = line.strip()
             if not value or value.startswith("#"):
@@ -87,8 +87,8 @@ def _run_fetch_batch(
 @app.command()
 @handle_errors
 def arxiv(
-    paper_id: Optional[str] = typer.Argument(None, help="arXiv paper ID (e.g., 2301.00001)"),
-    batch: Optional[Path] = typer.Option(
+    paper_id: str | None = typer.Argument(None, help="arXiv paper ID (e.g., 2301.00001)"),
+    batch: Path | None = typer.Option(
         None,
         "--batch",
         help="File with arXiv IDs (one per line). Ignores single argument when provided.",
@@ -142,10 +142,10 @@ def arxiv(
 @app.command()
 @handle_errors
 def doi(
-    identifier: Optional[str] = typer.Argument(
+    identifier: str | None = typer.Argument(
         None, help="DOI identifier (e.g., 10.1257/aer.20180779)"
     ),
-    batch: Optional[Path] = typer.Option(
+    batch: Path | None = typer.Option(
         None,
         "--batch",
         help="File with DOIs (one per line). Ignores single identifier when provided.",
@@ -199,8 +199,8 @@ def doi(
 @app.command()
 @handle_errors
 def ssrn(
-    paper_id: Optional[str] = typer.Argument(None, help="SSRN paper ID"),
-    batch: Optional[Path] = typer.Option(
+    paper_id: str | None = typer.Argument(None, help="SSRN paper ID"),
+    batch: Path | None = typer.Option(
         None,
         "--batch",
         help="File with SSRN IDs (one per line). Ignores single argument when provided.",
@@ -252,8 +252,8 @@ def ssrn(
 @app.command()
 @handle_errors
 def nber(
-    paper_id: Optional[str] = typer.Argument(None, help="NBER working paper ID (e.g., w29000)"),
-    batch: Optional[Path] = typer.Option(
+    paper_id: str | None = typer.Argument(None, help="NBER working paper ID (e.g., w29000)"),
+    batch: Path | None = typer.Option(
         None,
         "--batch",
         help="File with NBER IDs (one per line). Ignores single argument when provided.",
@@ -305,20 +305,20 @@ def nber(
 @app.command()
 @handle_errors
 def url(
-    paper_url: Optional[str] = typer.Argument(None, help="Direct URL to PDF"),
+    paper_url: str | None = typer.Argument(None, help="Direct URL to PDF"),
     output: Path = typer.Option(
         Path("."),
         "--output",
         "-o",
         help="Output directory for downloaded PDF.",
     ),
-    name: Optional[str] = typer.Option(
+    name: str | None = typer.Option(
         None,
         "--name",
         "-n",
         help="Custom filename (without extension).",
     ),
-    batch: Optional[Path] = typer.Option(
+    batch: Path | None = typer.Option(
         None,
         "--batch",
         help="File with direct PDF URLs (one per line). Ignores single argument when provided.",
@@ -351,7 +351,7 @@ def url(
     if is_quiet():
         doc = fetcher.fetch(paper_url, output, name=name)
     else:
-        with console.status(f"Downloading from URL..."):
+        with console.status("Downloading from URL..."):
             doc = fetcher.fetch(paper_url, output, name=name)
         console.print(f"[green]Downloaded:[/green] {doc.path}")
 
@@ -541,7 +541,7 @@ def batch(
 
     # Summary
     if not quiet_mode:
-        console.print(f"\n[bold]Done:[/bold]")
+        console.print("\n[bold]Done:[/bold]")
         console.print(f"  [green]{len(downloaded)} downloaded[/green]")
         if failed:
             console.print(f"  [red]{len(failed)} failed[/red]")

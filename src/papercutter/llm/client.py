@@ -2,7 +2,6 @@
 
 import os
 from dataclasses import dataclass
-from typing import Optional
 
 from papercutter.exceptions import PapercutterError
 
@@ -17,7 +16,7 @@ class LLMNotAvailableError(PapercutterError):
 class LLMError(PapercutterError):
     """Raised when LLM call fails."""
 
-    def __init__(self, message: str, details: Optional[str] = None):
+    def __init__(self, message: str, details: str | None = None):
         super().__init__(message, details)
 
 
@@ -44,8 +43,8 @@ class LLMClient:
 
     def __init__(
         self,
-        api_key: Optional[str] = None,
-        model: Optional[str] = None,
+        api_key: str | None = None,
+        model: str | None = None,
     ):
         """Initialize the LLM client.
 
@@ -57,7 +56,7 @@ class LLMClient:
         self.model = model or os.environ.get("PAPERCUTTER_MODEL", self.DEFAULT_MODEL)
         self._litellm = None
 
-    def _get_api_key(self) -> Optional[str]:
+    def _get_api_key(self) -> str | None:
         """Get API key from environment."""
         # Check in order of preference
         for var in ["PAPERCUTTER_API_KEY", "ANTHROPIC_API_KEY", "OPENAI_API_KEY"]:
@@ -82,11 +81,8 @@ class LLMClient:
         if not self.api_key:
             raise LLMNotAvailableError()
 
-        # Set the API key based on model provider
-        if "claude" in self.model.lower() or "anthropic" in self.model.lower():
-            os.environ["ANTHROPIC_API_KEY"] = self.api_key
-        elif "gpt" in self.model.lower() or "openai" in self.model.lower():
-            os.environ["OPENAI_API_KEY"] = self.api_key
+        # Note: API key is passed directly to completion() calls
+        # to avoid exposing it in environment variables
 
     def is_available(self) -> bool:
         """Check if LLM features are available."""
@@ -99,7 +95,7 @@ class LLMClient:
     def complete(
         self,
         prompt: str,
-        system: Optional[str] = None,
+        system: str | None = None,
         max_tokens: int = 4096,
         temperature: float = 0.3,
     ) -> LLMResponse:
@@ -119,8 +115,9 @@ class LLMClient:
             LLMError: If the LLM call fails.
         """
         self._ensure_litellm()
+        assert self._litellm is not None  # Type narrowing for mypy
 
-        messages = []
+        messages: list[dict[str, str]] = []
         if system:
             messages.append({"role": "system", "content": system})
         messages.append({"role": "user", "content": prompt})
@@ -131,6 +128,7 @@ class LLMClient:
                 messages=messages,
                 max_tokens=max_tokens,
                 temperature=temperature,
+                api_key=self.api_key,  # Pass directly, don't use environ
             )
 
             return LLMResponse(
@@ -146,7 +144,7 @@ class LLMClient:
     def stream(
         self,
         prompt: str,
-        system: Optional[str] = None,
+        system: str | None = None,
         max_tokens: int = 4096,
         temperature: float = 0.3,
     ):
@@ -166,8 +164,9 @@ class LLMClient:
             LLMError: If the LLM call fails.
         """
         self._ensure_litellm()
+        assert self._litellm is not None  # Type narrowing for mypy
 
-        messages = []
+        messages: list[dict[str, str]] = []
         if system:
             messages.append({"role": "system", "content": system})
         messages.append({"role": "user", "content": prompt})
@@ -179,6 +178,7 @@ class LLMClient:
                 max_tokens=max_tokens,
                 temperature=temperature,
                 stream=True,
+                api_key=self.api_key,  # Pass directly, don't use environ
             )
 
             for chunk in response:
@@ -190,12 +190,12 @@ class LLMClient:
 
 
 # Singleton client instance
-_client: Optional[LLMClient] = None
+_client: LLMClient | None = None
 
 
 def get_client(
-    api_key: Optional[str] = None,
-    model: Optional[str] = None,
+    api_key: str | None = None,
+    model: str | None = None,
 ) -> LLMClient:
     """Get or create the LLM client.
 

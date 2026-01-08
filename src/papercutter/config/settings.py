@@ -2,7 +2,6 @@
 
 from functools import lru_cache
 from pathlib import Path
-from typing import Optional
 
 from pydantic import BaseModel, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -23,7 +22,7 @@ def get_config_path() -> Path:
 class TextExtractionSettings(BaseModel):
     """Settings for text extraction."""
 
-    chunk_size: Optional[int] = None
+    chunk_size: int | None = None
     chunk_overlap: int = 200
 
 
@@ -82,10 +81,10 @@ class Settings(BaseSettings):
     llm: LLMSettings = Field(default_factory=LLMSettings)
 
     # API keys (can be set via environment variables)
-    anthropic_api_key: Optional[str] = None
-    openai_api_key: Optional[str] = None
-    mathpix_app_id: Optional[str] = None
-    mathpix_app_key: Optional[str] = None
+    anthropic_api_key: str | None = None
+    openai_api_key: str | None = None
+    mathpix_app_id: str | None = None
+    mathpix_app_key: str | None = None
 
 
 @lru_cache

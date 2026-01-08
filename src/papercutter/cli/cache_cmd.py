@@ -2,7 +2,6 @@
 
 import json
 from pathlib import Path
-from typing import Optional
 
 import typer
 from rich.console import Console
@@ -11,7 +10,7 @@ console = Console()
 
 
 def clear_cache(
-    pdf_path: Optional[Path] = typer.Argument(
+    pdf_path: Path | None = typer.Argument(
         None,
         help="PDF file to clear cache for (omit to clear all)",
     ),

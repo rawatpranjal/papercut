@@ -2,13 +2,11 @@
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional
 
 from papercutter.core.text import TextExtractor
 from papercutter.extractors.pdfplumber import PdfPlumberExtractor
 from papercutter.llm import get_client
 from papercutter.llm.prompts import get_report_prompt
-
 
 BUILTIN_TEMPLATES = ["reading-group", "referee", "meta", "executive"]
 
@@ -41,9 +39,9 @@ class ReportGenerator:
 
     def __init__(
         self,
-        api_key: Optional[str] = None,
-        model: Optional[str] = None,
-        extractor: Optional[TextExtractor] = None,
+        api_key: str | None = None,
+        model: str | None = None,
+        extractor: TextExtractor | None = None,
     ):
         """Initialize the report generator.
 
@@ -60,8 +58,8 @@ class ReportGenerator:
         self,
         pdf_path: Path,
         template: str = "reading-group",
-        custom_template: Optional[Path] = None,
-        pages: Optional[list[int]] = None,
+        custom_template: Path | None = None,
+        pages: list[int] | None = None,
     ) -> Report:
         """Generate a report for a paper.
 

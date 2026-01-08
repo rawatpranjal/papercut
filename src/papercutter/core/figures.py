@@ -2,7 +2,6 @@
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional
 
 
 @dataclass
@@ -15,7 +14,7 @@ class ExtractedFigure:
     height: int
     image_data: bytes
     format: str = "png"
-    caption: Optional[str] = None
+    caption: str | None = None
 
     def save(self, output_path: Path) -> Path:
         """Save figure to file.
@@ -77,7 +76,7 @@ class FigureExtractor:
     def extract(
         self,
         pdf_path: Path,
-        pages: Optional[list[int]] = None,
+        pages: list[int] | None = None,
     ) -> list[ExtractedFigure]:
         """Extract figures from a PDF.
 
@@ -154,7 +153,7 @@ class FigureExtractor:
         self,
         pdf_path: Path,
         figure_id: int,
-    ) -> Optional[ExtractedFigure]:
+    ) -> ExtractedFigure | None:
         """Extract a single figure by ID.
 
         Args:
@@ -181,7 +180,6 @@ class FigureExtractor:
             PNG image data.
         """
         try:
-            from io import BytesIO
             import fitz
 
             # Use PyMuPDF's pixmap for conversion

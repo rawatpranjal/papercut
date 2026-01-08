@@ -1,13 +1,45 @@
 """PDF extraction backend using pdfplumber."""
 
 import os
+import warnings
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 import pdfplumber
 
 from papercutter.exceptions import ExtractionError, InvalidPDFError
+
+
+def _validate_page_indices(
+    pages: list[int], total_pages: int
+) -> list[int]:
+    """Validate and filter page indices, warning about invalid ones.
+
+    Args:
+        pages: List of requested 0-indexed page numbers.
+        total_pages: Total number of pages in the document.
+
+    Returns:
+        List of valid page indices.
+    """
+    valid = []
+    invalid = []
+    for i in pages:
+        if 0 <= i < total_pages:
+            valid.append(i)
+        else:
+            invalid.append(i)
+
+    if invalid:
+        warnings.warn(
+            f"Ignoring invalid page indices {invalid} "
+            f"(document has {total_pages} pages, valid range: 0-{total_pages - 1})",
+            UserWarning,
+            stacklevel=3,
+        )
+
+    return valid
 
 # Minimum pages to benefit from parallel processing
 _MIN_PAGES_FOR_PARALLEL = 10
@@ -53,7 +85,7 @@ def _extract_page_tables(args: tuple[str, int]) -> tuple[int, list[list[Any]]]:
 class PdfPlumberExtractor:
     """PDF extraction backend using pdfplumber library."""
 
-    def __init__(self, max_workers: Optional[int] = None):
+    def __init__(self, max_workers: int | None = None):
         """Initialize the extractor.
 
         Args:
@@ -65,7 +97,7 @@ class PdfPlumberExtractor:
     def extract_text(
         self,
         path: Path,
-        pages: Optional[list[int]] = None,
+        pages: list[int] | None = None,
         parallel: bool = False,
     ) -> str:
         """Extract text from PDF.
@@ -90,7 +122,7 @@ class PdfPlumberExtractor:
                 if pages is None:
                     target_indices = list(range(total_pages))
                 else:
-                    target_indices = [i for i in pages if 0 <= i < total_pages]
+                    target_indices = _validate_page_indices(pages, total_pages)
 
                 # Use parallel extraction for large documents
                 use_parallel = parallel or len(target_indices) >= _MIN_PAGES_FOR_PARALLEL
@@ -154,7 +186,7 @@ class PdfPlumberExtractor:
     def extract_tables(
         self,
         path: Path,
-        pages: Optional[list[int]] = None,
+        pages: list[int] | None = None,
         parallel: bool = False,
     ) -> list[dict[str, Any]]:
         """Extract tables from PDF.
@@ -182,7 +214,7 @@ class PdfPlumberExtractor:
                 if pages is None:
                     target_indices = list(range(total_pages))
                 else:
-                    target_indices = [i for i in pages if 0 <= i < total_pages]
+                    target_indices = _validate_page_indices(pages, total_pages)
 
                 # Use parallel extraction for large documents
                 use_parallel = parallel or len(target_indices) >= _MIN_PAGES_FOR_PARALLEL
@@ -281,7 +313,7 @@ class PdfPlumberExtractor:
     def extract_text_by_page(
         self,
         path: Path,
-        pages: Optional[list[int]] = None,
+        pages: list[int] | None = None,
         parallel: bool = False,
     ) -> list[tuple[int, str]]:
         """Extract text from PDF, returning per-page results.
@@ -306,7 +338,7 @@ class PdfPlumberExtractor:
                 if pages is None:
                     target_indices = list(range(total_pages))
                 else:
-                    target_indices = [i for i in pages if 0 <= i < total_pages]
+                    target_indices = _validate_page_indices(pages, total_pages)
 
                 # Use parallel extraction for large documents
                 use_parallel = parallel or len(target_indices) >= _MIN_PAGES_FOR_PARALLEL
