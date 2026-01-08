@@ -528,6 +528,57 @@ papercutter<span class="w"> </span>study<span class="w"> </span>book.pdf<span cl
 <p><a class="reference internal" href="python/workflows.html"><span class="doc">Workflows &amp; LLM Integration</span></a> for Python API examples including batch processing, complete pipelines, and model configuration.</p>
 </div>
 </section>
+<section id="case-study-flash-report-from-a-real-paper">
+<h2>Case Study: Flash Report from a Real Paper<a class="headerlink" href="#case-study-flash-report-from-a-real-paper" title="Link to this heading">#</a></h2>
+<p>The following sequence shows actual commands and representative output using <code class="docutils literal notranslate"><span class="pre">Thompson_2022_nftrig.pdf</span></code> (included in the repository’s <code class="docutils literal notranslate"><span class="pre">/</span></code> root, but any PDF works):</p>
+<ol class="arabic">
+<li><p><strong>Summarize with a methodology focus to brief collaborators:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>papercutter<span class="w"> </span>summarize<span class="w"> </span>Thompson_2022_nftrig.pdf<span class="w"> </span>--focus<span class="w"> </span>methodology<span class="w"> </span>--length<span class="w"> </span>short<span class="w"> </span><span class="se">\\</span>
+<span class="w">  </span>-o<span class="w"> </span>sums/methodology.json
+</pre></div>
+</div>
+<p>Sample output (truncated):</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;summary&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The paper studies how NFTs create coordinated triggers for community events...&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;focus&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;methodology&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;model&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;claude-sonnet-4-20250514&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;tokens&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;input&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">9021</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;output&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">622</span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Generate a referee-style report to simulate peer-review comments:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>papercutter<span class="w"> </span>report<span class="w"> </span>Thompson_2022_nftrig.pdf<span class="w"> </span>--template<span class="w"> </span>referee<span class="w"> </span><span class="se">\\</span>
+<span class="w">  </span>-o<span class="w"> </span>reports/nft_referee.md
+</pre></div>
+</div>
+<p>Snippet of the Markdown report:</p>
+<div class="highlight-markdown notranslate"><div class="highlight"><pre><span></span><span class="gu">## Main Contributions</span>
+<span class="k">-</span><span class="w"> </span>Demonstrates how NFT drops act as external shocks to online communities.
+<span class="k">-</span><span class="w"> </span>Provides a natural experiment for studying retention mechanics.
+
+<span class="gu">## Weaknesses</span>
+<span class="k">-</span><span class="w"> </span>Limited evidence on long-term platform engagement.
+<span class="k">-</span><span class="w"> </span>Needs clarity on how synthetic controls were constructed.
+</pre></div>
+</div>
+</li>
+<li><p><strong>Produce flashcards for teaching/discussion prep:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>papercutter<span class="w"> </span>study<span class="w"> </span>Thompson_2022_nftrig.pdf<span class="w"> </span>--mode<span class="w"> </span>flashcards<span class="w"> </span><span class="se">\\</span>
+<span class="w">  </span>-o<span class="w"> </span>study/nft_flashcards.md
+</pre></div>
+</div>
+<p>Example card:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>---
+**Front**: What is the main research question?
+**Back**: Whether blockchain-triggered scarcity campaigns can activate dormant audiences.
+---
+</pre></div>
+</div>
+</li>
+</ol>
+<p>Together these commands deliver an end-to-end “real world” flow: ingest a PDF, capture a shareable summary, mock a reviewer’s perspective, and create teaching aids in under five minutes.</p>
+</section>
 </section>
 
 
@@ -582,6 +633,7 @@ papercutter<span class="w"> </span>study<span class="w"> </span>book.pdf<span cl
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reports">Reports</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#study-aids">Study Aids</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tips">Tips</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#case-study-flash-report-from-a-real-paper">Case Study: Flash Report from a Real Paper</a></li>
 </ul>
   </nav></div>
 

@@ -625,6 +625,64 @@
 </pre></div>
 </div>
 </section>
+<section id="real-world-example-fetching-from-arxiv">
+<h2>Real-World Example: Fetching from arXiv<a class="headerlink" href="#real-world-example-fetching-from-arxiv" title="Link to this heading">#</a></h2>
+<p>This example fetches the famous “Attention Is All You Need” paper (Vaswani et al., 2017):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">papercutter.fetchers.arxiv</span> <span class="kn">import</span> <span class="n">ArxivFetcher</span>
+
+<span class="n">fetcher</span> <span class="o">=</span> <span class="n">ArxivFetcher</span><span class="p">()</span>
+<span class="n">doc</span> <span class="o">=</span> <span class="n">fetcher</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="s2">&quot;1706.03762&quot;</span><span class="p">,</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;./papers&quot;</span><span class="p">))</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Title: </span><span class="si">{</span><span class="n">doc</span><span class="o">.</span><span class="n">title</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Authors: </span><span class="si">{</span><span class="n">doc</span><span class="o">.</span><span class="n">authors</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;arXiv ID: </span><span class="si">{</span><span class="n">doc</span><span class="o">.</span><span class="n">arxiv_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The arXiv API returns metadata including title, authors, and abstract. The <code class="docutils literal notranslate"><span class="pre">Document</span></code> object provides:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Document attributes</span>
+<span class="n">doc</span><span class="o">.</span><span class="n">title</span>       <span class="c1"># Paper title from arXiv metadata</span>
+<span class="n">doc</span><span class="o">.</span><span class="n">authors</span>     <span class="c1"># List of author names</span>
+<span class="n">doc</span><span class="o">.</span><span class="n">abstract</span>    <span class="c1"># Full abstract text</span>
+<span class="n">doc</span><span class="o">.</span><span class="n">arxiv_id</span>    <span class="c1"># arXiv identifier (e.g., &quot;1706.03762&quot;)</span>
+<span class="n">doc</span><span class="o">.</span><span class="n">source_url</span>  <span class="c1"># Download URL</span>
+<span class="n">doc</span><span class="o">.</span><span class="n">path</span>        <span class="c1"># Local file path after download</span>
+<span class="n">doc</span><span class="o">.</span><span class="n">exists</span>      <span class="c1"># Whether file exists locally</span>
+</pre></div>
+</div>
+<section id="multi-source-batch-fetch">
+<h3>Multi-Source Batch Fetch<a class="headerlink" href="#multi-source-batch-fetch" title="Link to this heading">#</a></h3>
+<p>Fetch papers from different sources in a single script:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">papercutter.fetchers.arxiv</span> <span class="kn">import</span> <span class="n">ArxivFetcher</span>
+<span class="kn">from</span> <span class="nn">papercutter.fetchers.doi</span> <span class="kn">import</span> <span class="n">DoiFetcher</span>
+
+<span class="c1"># Famous ML papers</span>
+<span class="n">papers</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="s2">&quot;arxiv&quot;</span><span class="p">,</span> <span class="s2">&quot;1706.03762&quot;</span><span class="p">),</span>   <span class="c1"># Attention Is All You Need</span>
+    <span class="p">(</span><span class="s2">&quot;arxiv&quot;</span><span class="p">,</span> <span class="s2">&quot;1810.04805&quot;</span><span class="p">),</span>   <span class="c1"># BERT</span>
+    <span class="p">(</span><span class="s2">&quot;arxiv&quot;</span><span class="p">,</span> <span class="s2">&quot;2005.14165&quot;</span><span class="p">),</span>   <span class="c1"># GPT-3</span>
+    <span class="p">(</span><span class="s2">&quot;doi&quot;</span><span class="p">,</span> <span class="s2">&quot;10.1038/s41586-021-03819-2&quot;</span><span class="p">),</span>  <span class="c1"># AlphaFold2</span>
+<span class="p">]</span>
+
+<span class="n">fetchers</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;arxiv&quot;</span><span class="p">:</span> <span class="n">ArxivFetcher</span><span class="p">(),</span>
+    <span class="s2">&quot;doi&quot;</span><span class="p">:</span> <span class="n">DoiFetcher</span><span class="p">(),</span>
+<span class="p">}</span>
+
+<span class="n">output_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;./ml_papers&quot;</span><span class="p">)</span>
+<span class="n">output_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">source</span><span class="p">,</span> <span class="n">identifier</span> <span class="ow">in</span> <span class="n">papers</span><span class="p">:</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">doc</span> <span class="o">=</span> <span class="n">fetchers</span><span class="p">[</span><span class="n">source</span><span class="p">]</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="n">identifier</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[OK] </span><span class="si">{</span><span class="n">doc</span><span class="o">.</span><span class="n">title</span><span class="p">[:</span><span class="mi">50</span><span class="p">]</span><span class="si">}</span><span class="s2">...&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[FAIL] </span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">identifier</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
 </section>
 
 
@@ -679,6 +737,10 @@
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#batch-fetching">Batch Fetching</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#error-handling">Error Handling</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#auto-detecting-fetcher">Auto-Detecting Fetcher</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#real-world-example-fetching-from-arxiv">Real-World Example: Fetching from arXiv</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#multi-source-batch-fetch">Multi-Source Batch Fetch</a></li>
+</ul>
+</li>
 </ul>
   </nav></div>
 

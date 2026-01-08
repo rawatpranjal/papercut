@@ -13,6 +13,34 @@ Papercutter
    :ref:`papercut-migration` for instructions on updating configs, caches, and
    environment variables.
 
+.. grid:: 1 1 2 2
+   :gutter: 2
+   :class-container: hero-card-grid
+
+   .. grid-item-card:: 🚀 Fetch & Cache
+      :class-card: sd-bg-primary sd-text-white sd-shadow-sm sd-rounded-3
+
+      Pull PDFs from arXiv, DOI, SSRN, NBER, or any URL with smart identifier detection,
+      caching, and batch/parallel downloads for large reading lists.
+
+   .. grid-item-card:: 📑 Extract Everything
+      :class-card: sd-bg-dark sd-text-white sd-shadow-sm sd-rounded-3
+
+      Clean text chunks, tables, figures, references, and structured document indexes
+      are only a single CLI command away and ready for downstream tooling.
+
+   .. grid-item-card:: 🧠 LLM-Ready Intelligence
+      :class-card: sd-bg-secondary sd-text-white sd-shadow-sm sd-rounded-3
+
+      Generate focused summaries, referee reports, study guides, flashcards, and more
+      with pluggable extractors and dependency-injected LLM clients.
+
+   .. grid-item-card:: 🧩 Python-first API
+      :class-card: sd-bg-light sd-shadow-sm sd-rounded-3
+
+      Compose fetchers, extractors, and cache utilities directly in Python to build
+      custom pipelines, automations, or notebook workflows around papers.
+
 Features
 --------
 

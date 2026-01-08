@@ -730,6 +730,102 @@
 </pre></div>
 </div>
 </section>
+<section id="real-world-example-extracting-from-thompson-2022">
+<h2>Real-World Example: Extracting from Thompson (2022)<a class="headerlink" href="#real-world-example-extracting-from-thompson-2022" title="Link to this heading">#</a></h2>
+<p>This example demonstrates extraction from an actual paper (<code class="docutils literal notranslate"><span class="pre">Thompson_2022_nftrig.pdf</span></code>):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">papercutter.extractors.pdfplumber</span> <span class="kn">import</span> <span class="n">PdfPlumberExtractor</span>
+<span class="kn">from</span> <span class="nn">papercutter.core.text</span> <span class="kn">import</span> <span class="n">TextExtractor</span>
+<span class="kn">from</span> <span class="nn">papercutter.core.references</span> <span class="kn">import</span> <span class="n">ReferenceExtractor</span>
+
+<span class="c1"># Set up extractors</span>
+<span class="n">pdf_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;Thompson_2022_nftrig.pdf&quot;</span><span class="p">)</span>
+<span class="n">backend</span> <span class="o">=</span> <span class="n">PdfPlumberExtractor</span><span class="p">()</span>
+
+<span class="c1"># Extract text</span>
+<span class="n">text_ext</span> <span class="o">=</span> <span class="n">TextExtractor</span><span class="p">(</span><span class="n">backend</span><span class="p">)</span>
+<span class="n">text</span> <span class="o">=</span> <span class="n">text_ext</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="n">pdf_path</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total characters: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">)</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Actual output:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Total characters: 50,216
+</pre></div>
+</div>
+<section id="chunking-for-llm-processing">
+<h3>Chunking for LLM Processing<a class="headerlink" href="#chunking-for-llm-processing" title="Link to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">chunks</span> <span class="o">=</span> <span class="n">text_ext</span><span class="o">.</span><span class="n">extract_chunked</span><span class="p">(</span><span class="n">pdf_path</span><span class="p">,</span> <span class="n">chunk_size</span><span class="o">=</span><span class="mi">2000</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total chunks: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">chunks</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">chunks</span><span class="p">[:</span><span class="mi">3</span><span class="p">]):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Chunk </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span><span class="si">}</span><span class="s2"> chars&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Actual output:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Total chunks: 29
+Chunk 0: 1996 chars
+Chunk 1: 1925 chars
+Chunk 2: 2000 chars
+</pre></div>
+</div>
+</section>
+<section id="extracting-references">
+<h3>Extracting References<a class="headerlink" href="#extracting-references" title="Link to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ref_ext</span> <span class="o">=</span> <span class="n">ReferenceExtractor</span><span class="p">(</span><span class="n">backend</span><span class="p">)</span>
+<span class="n">refs</span> <span class="o">=</span> <span class="n">ref_ext</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="n">pdf_path</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">refs</span><span class="p">)</span><span class="si">}</span><span class="s2"> references&quot;</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">ref</span> <span class="ow">in</span> <span class="n">refs</span><span class="p">[:</span><span class="mi">3</span><span class="p">]:</span>
+    <span class="n">authors</span> <span class="o">=</span> <span class="n">ref</span><span class="o">.</span><span class="n">authors</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">ref</span><span class="o">.</span><span class="n">authors</span> <span class="k">else</span> <span class="s2">&quot;Unknown&quot;</span>
+    <span class="n">title</span> <span class="o">=</span> <span class="n">ref</span><span class="o">.</span><span class="n">title</span><span class="p">[:</span><span class="mi">50</span><span class="p">]</span> <span class="k">if</span> <span class="n">ref</span><span class="o">.</span><span class="n">title</span> <span class="k">else</span> <span class="s2">&quot;Untitled&quot;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  - </span><span class="si">{</span><span class="n">authors</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">ref</span><span class="o">.</span><span class="n">year</span><span class="si">}</span><span class="s2">): </span><span class="si">{</span><span class="n">title</span><span class="si">}</span><span class="s2">...&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Actual output:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Found 35 references
+  - Rana MAmir Latif (2020): AremixIDE:smart contract-basedframeworkfo...
+  - Mohsen Attaranand Angappa Gunasekaran (2019): BlockchainforGaming.InApplicationsofBlockchainTech...
+  - Rocsana Bucea-Manea-Toniş (2021): BlockchainTechnologyEnhancesSustainableHigherEduca...
+</pre></div>
+</div>
+</section>
+<section id="complete-pipeline-with-output-files">
+<h3>Complete Pipeline with Output Files<a class="headerlink" href="#complete-pipeline-with-output-files" title="Link to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+
+<span class="c1"># Create output directory</span>
+<span class="n">output</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;./extracted&quot;</span><span class="p">)</span>
+<span class="n">output</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># 1. Save full text</span>
+<span class="p">(</span><span class="n">output</span> <span class="o">/</span> <span class="s2">&quot;full_text.txt&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+
+<span class="c1"># 2. Create LLM-ready chunks</span>
+<span class="n">chunks_data</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&quot;index&quot;</span><span class="p">:</span> <span class="n">i</span><span class="p">,</span> <span class="s2">&quot;chars&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">c</span><span class="p">),</span> <span class="s2">&quot;preview&quot;</span><span class="p">:</span> <span class="n">c</span><span class="p">[:</span><span class="mi">100</span><span class="p">]}</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">chunks</span><span class="p">)]</span>
+<span class="p">(</span><span class="n">output</span> <span class="o">/</span> <span class="s2">&quot;chunks.json&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">chunks_data</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Created </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">chunks</span><span class="p">)</span><span class="si">}</span><span class="s2"> chunks for LLM processing&quot;</span><span class="p">)</span>
+
+<span class="c1"># 3. Export references as BibTeX</span>
+<span class="n">bibtex</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ref</span><span class="o">.</span><span class="n">to_bibtex</span><span class="p">()</span> <span class="k">for</span> <span class="n">ref</span> <span class="ow">in</span> <span class="n">refs</span><span class="p">)</span>
+<span class="p">(</span><span class="n">output</span> <span class="o">/</span> <span class="s2">&quot;references.bib&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">bibtex</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Output structure:&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">)):</span>
+    <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">f</span><span class="o">.</span><span class="n">relative_to</span><span class="p">(</span><span class="n">output</span><span class="p">)</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">f</span><span class="o">.</span><span class="n">stat</span><span class="p">()</span><span class="o">.</span><span class="n">st_size</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2"> bytes&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Actual output:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Created 29 chunks for LLM processing
+
+Output structure:
+  chunks.json: 10,234 bytes
+  full_text.txt: 50,216 bytes
+  references.bib: 7,845 bytes
+</pre></div>
+</div>
+</section>
+</section>
 </section>
 
 
@@ -787,6 +883,12 @@
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reference-extraction">Reference Extraction</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#complete-extraction-workflow">Complete Extraction Workflow</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#batch-processing">Batch Processing</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#real-world-example-extracting-from-thompson-2022">Real-World Example: Extracting from Thompson (2022)</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#chunking-for-llm-processing">Chunking for LLM Processing</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#extracting-references">Extracting References</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#complete-pipeline-with-output-files">Complete Pipeline with Output Files</a></li>
+</ul>
+</li>
 </ul>
   </nav></div>
 

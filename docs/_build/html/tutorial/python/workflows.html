@@ -829,6 +829,109 @@
 <li><p><strong>Custom templates</strong>: Create your own report templates for specialized use cases.</p></li>
 </ol>
 </section>
+<section id="real-world-example-book-chapter-detection">
+<h2>Real-World Example: Book Chapter Detection<a class="headerlink" href="#real-world-example-book-chapter-detection" title="Link to this heading">#</a></h2>
+<p>This example shows chapter detection on a real textbook (Kohavi et al., “Trustworthy Online Controlled Experiments”):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">papercutter.books.splitter</span> <span class="kn">import</span> <span class="n">ChapterSplitter</span>
+
+<span class="c1"># Use existing textbook PDF</span>
+<span class="n">book_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;Kohavi_2020_AB_Testing.pdf&quot;</span><span class="p">)</span>
+
+<span class="n">splitter</span> <span class="o">=</span> <span class="n">ChapterSplitter</span><span class="p">()</span>
+<span class="n">chapters</span> <span class="o">=</span> <span class="n">splitter</span><span class="o">.</span><span class="n">detect_chapters</span><span class="p">(</span><span class="n">book_path</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Detected </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">chapters</span><span class="p">)</span><span class="si">}</span><span class="s2"> chapters&quot;</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">ch</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">chapters</span><span class="p">[:</span><span class="mi">5</span><span class="p">]):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Chapter </span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">: pages </span><span class="si">{</span><span class="n">ch</span><span class="o">.</span><span class="n">start_page</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">ch</span><span class="o">.</span><span class="n">end_page</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Actual output (from running on Kohavi textbook):</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Detected 8 chapters
+  Chapter 1: pages 30-52
+  Chapter 2: pages 53-56
+  Chapter 3: pages 57-104
+  Chapter 4: pages 105-124
+  Chapter 5: pages 125-127
+</pre></div>
+</div>
+</section>
+<section id="real-world-example-paper-extraction-pipeline">
+<h2>Real-World Example: Paper Extraction Pipeline<a class="headerlink" href="#real-world-example-paper-extraction-pipeline" title="Link to this heading">#</a></h2>
+<p>Complete extraction workflow using <code class="docutils literal notranslate"><span class="pre">Thompson_2022_nftrig.pdf</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">papercutter.extractors.pdfplumber</span> <span class="kn">import</span> <span class="n">PdfPlumberExtractor</span>
+<span class="kn">from</span> <span class="nn">papercutter.core.text</span> <span class="kn">import</span> <span class="n">TextExtractor</span>
+<span class="kn">from</span> <span class="nn">papercutter.core.references</span> <span class="kn">import</span> <span class="n">ReferenceExtractor</span>
+
+<span class="k">def</span> <span class="nf">analyze_paper</span><span class="p">(</span><span class="n">pdf_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Complete extraction workflow.&quot;&quot;&quot;</span>
+    <span class="n">output_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">backend</span> <span class="o">=</span> <span class="n">PdfPlumberExtractor</span><span class="p">()</span>
+
+    <span class="c1"># 1. Extract text</span>
+    <span class="n">text_ext</span> <span class="o">=</span> <span class="n">TextExtractor</span><span class="p">(</span><span class="n">backend</span><span class="p">)</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="n">text_ext</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="n">pdf_path</span><span class="p">)</span>
+    <span class="p">(</span><span class="n">output_dir</span> <span class="o">/</span> <span class="s2">&quot;full_text.txt&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Extracted: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">)</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2"> characters&quot;</span><span class="p">)</span>
+
+    <span class="c1"># 2. Create chunks for LLM</span>
+    <span class="n">chunks</span> <span class="o">=</span> <span class="n">text_ext</span><span class="o">.</span><span class="n">extract_chunked</span><span class="p">(</span><span class="n">pdf_path</span><span class="p">,</span> <span class="n">chunk_size</span><span class="o">=</span><span class="mi">2000</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+    <span class="n">chunks_data</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&quot;i&quot;</span><span class="p">:</span> <span class="n">i</span><span class="p">,</span> <span class="s2">&quot;chars&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">c</span><span class="p">)}</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">chunks</span><span class="p">)]</span>
+    <span class="p">(</span><span class="n">output_dir</span> <span class="o">/</span> <span class="s2">&quot;chunks.json&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">chunks_data</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Created: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">chunks</span><span class="p">)</span><span class="si">}</span><span class="s2"> chunks&quot;</span><span class="p">)</span>
+
+    <span class="c1"># 3. Extract references</span>
+    <span class="n">ref_ext</span> <span class="o">=</span> <span class="n">ReferenceExtractor</span><span class="p">(</span><span class="n">backend</span><span class="p">)</span>
+    <span class="n">refs</span> <span class="o">=</span> <span class="n">ref_ext</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="n">pdf_path</span><span class="p">)</span>
+    <span class="n">bibtex</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">to_bibtex</span><span class="p">()</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">refs</span><span class="p">)</span>
+    <span class="p">(</span><span class="n">output_dir</span> <span class="o">/</span> <span class="s2">&quot;references.bib&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">bibtex</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">refs</span><span class="p">)</span><span class="si">}</span><span class="s2"> references&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">output_dir</span>
+
+<span class="c1"># Run on actual paper</span>
+<span class="n">output</span> <span class="o">=</span> <span class="n">analyze_paper</span><span class="p">(</span>
+    <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;Thompson_2022_nftrig.pdf&quot;</span><span class="p">),</span>
+    <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;./research/nftrig&quot;</span><span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Actual output:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Extracted: 50,216 characters
+Created: 29 chunks
+Found: 35 references
+</pre></div>
+</div>
+<section id="llm-analysis-requires-api-key">
+<h3>LLM Analysis (requires API key)<a class="headerlink" href="#llm-analysis-requires-api-key" title="Link to this heading">#</a></h3>
+<p>If you have an LLM API key configured:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">papercutter.intelligence</span> <span class="kn">import</span> <span class="n">Summarizer</span><span class="p">,</span> <span class="n">ReportGenerator</span>
+
+<span class="n">summarizer</span> <span class="o">=</span> <span class="n">Summarizer</span><span class="p">()</span>
+<span class="k">if</span> <span class="n">summarizer</span><span class="o">.</span><span class="n">is_available</span><span class="p">():</span>
+    <span class="n">summary</span> <span class="o">=</span> <span class="n">summarizer</span><span class="o">.</span><span class="n">summarize</span><span class="p">(</span>
+        <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;Thompson_2022_nftrig.pdf&quot;</span><span class="p">),</span>
+        <span class="n">focus</span><span class="o">=</span><span class="s2">&quot;contributions&quot;</span><span class="p">,</span>
+        <span class="n">length</span><span class="o">=</span><span class="s2">&quot;short&quot;</span>
+    <span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Summary (</span><span class="si">{</span><span class="n">summary</span><span class="o">.</span><span class="n">output_tokens</span><span class="si">}</span><span class="s2"> tokens):&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">summary</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
+
+    <span class="c1"># Track token usage for cost estimation</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Tokens: </span><span class="si">{</span><span class="n">summary</span><span class="o">.</span><span class="n">input_tokens</span><span class="si">}</span><span class="s2"> in / </span><span class="si">{</span><span class="n">summary</span><span class="o">.</span><span class="n">output_tokens</span><span class="si">}</span><span class="s2"> out&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Directory structure created:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>research/nftrig/
+├── full_text.txt       # 50,216 bytes
+├── chunks.json         # 29 chunks for LLM
+└── references.bib      # 35 BibTeX entries
+</pre></div>
+</div>
+</section>
+</section>
 </section>
 
 
@@ -900,6 +1003,11 @@
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tips">Tips</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#real-world-example-book-chapter-detection">Real-World Example: Book Chapter Detection</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#real-world-example-paper-extraction-pipeline">Real-World Example: Paper Extraction Pipeline</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#llm-analysis-requires-api-key">LLM Analysis (requires API key)</a></li>
+</ul>
+</li>
 </ul>
   </nav></div>
 

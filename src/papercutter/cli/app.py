@@ -1,5 +1,6 @@
 """Main Typer application for Papercutter CLI."""
 
+import logging
 import os
 from typing import Optional
 
@@ -14,6 +15,26 @@ from papercutter.cli.utils import handle_errors, set_context
 # This is needed for third-party libraries (like arxiv) that use requests/urllib
 if "SSL_CERT_FILE" not in os.environ:
     os.environ["SSL_CERT_FILE"] = certifi.where()
+
+
+# Deduplicate pypdf warnings (e.g., "Rotated text discovered" shown per-page)
+class _OnceFilter(logging.Filter):
+    """Logging filter that only shows each unique message once."""
+
+    def __init__(self):
+        super().__init__()
+        self.seen: set[str] = set()
+
+    def filter(self, record: logging.LogRecord) -> bool:
+        msg = record.getMessage()
+        if msg in self.seen:
+            return False
+        self.seen.add(msg)
+        return True
+
+
+# Apply the filter to pypdf logger to avoid warning spam
+logging.getLogger("pypdf").addFilter(_OnceFilter())
 
 # Default console for output
 console = Console(stderr=True)

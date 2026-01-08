@@ -137,6 +137,25 @@ class DocumentIndex:
 class DocumentIndexer:
     """Index documents by detecting structure and content."""
 
+    # Patterns to skip when extracting title (copyright, legal, publishing info)
+    SKIP_TITLE_PATTERNS = [
+        r"^Copyright",
+        r"^©",
+        r"^\d{4}\s+.*(?:Press|Publishing|Inc\.|Ltd\.|LLC)",
+        r"^All rights reserved",
+        r"^ISBN",
+        r"^Published by",
+        r"^Printed in",
+        r"^First published",
+        r"^Reprinted",
+        r"^This edition",
+        r"^Library of Congress",
+        r"^British Library",
+        r"^CIP data",
+        r"^Cataloguing",
+        r"^On-screen viewing",
+    ]
+
     # Section patterns for academic papers
     SECTION_PATTERNS = [
         # Numbered sections: "1. Introduction", "2. Methods"
@@ -325,10 +344,16 @@ class DocumentIndexer:
             lines = [l.strip() for l in first_page_text.split("\n") if l.strip()]
 
             # Title is usually the first non-empty line that's substantial
-            for line in lines[:5]:
-                if len(line) > 10 and not line.startswith("http"):
-                    index.title = line[:200]  # Truncate long titles
-                    break
+            # but we need to skip copyright notices and legal text
+            for line in lines[:15]:  # Check more lines for books
+                # Skip if too short or URL
+                if len(line) < 10 or line.startswith("http"):
+                    continue
+                # Skip copyright/legal/publishing lines
+                if any(re.match(p, line, re.IGNORECASE) for p in self.SKIP_TITLE_PATTERNS):
+                    continue
+                index.title = line[:200]  # Truncate long titles
+                break
 
         # Extract abstract
         if reader.pages:

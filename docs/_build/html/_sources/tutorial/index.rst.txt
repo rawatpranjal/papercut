@@ -39,6 +39,8 @@ Overview
 - :doc:`caching` - Manage extraction cache
 - :doc:`llm` - AI-powered summarization and reports
 
+Each CLI guide now closes with a **Real-World Example** that demonstrates the commands against actual papers and shows representative output so you can copy the workflow directly into your research routine.
+
 **Python API:**
 
 - :doc:`python/index` - Getting started with the Python API

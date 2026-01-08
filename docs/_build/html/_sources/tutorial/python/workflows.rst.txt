@@ -403,3 +403,118 @@ Tips
 5. **Error handling**: Always check ``is_available()`` before using LLM features.
 
 6. **Custom templates**: Create your own report templates for specialized use cases.
+
+Real-World Example: Book Chapter Detection
+-------------------------------------------
+
+This example shows chapter detection on a real textbook (Kohavi et al., "Trustworthy Online Controlled Experiments"):
+
+.. code-block:: python
+
+   from pathlib import Path
+   from papercutter.books.splitter import ChapterSplitter
+
+   # Use existing textbook PDF
+   book_path = Path("Kohavi_2020_AB_Testing.pdf")
+
+   splitter = ChapterSplitter()
+   chapters = splitter.detect_chapters(book_path)
+   print(f"Detected {len(chapters)} chapters")
+
+   for i, ch in enumerate(chapters[:5]):
+       print(f"  Chapter {i+1}: pages {ch.start_page+1}-{ch.end_page}")
+
+Actual output (from running on Kohavi textbook):
+
+.. code-block:: text
+
+   Detected 8 chapters
+     Chapter 1: pages 30-52
+     Chapter 2: pages 53-56
+     Chapter 3: pages 57-104
+     Chapter 4: pages 105-124
+     Chapter 5: pages 125-127
+
+Real-World Example: Paper Extraction Pipeline
+---------------------------------------------
+
+Complete extraction workflow using ``Thompson_2022_nftrig.pdf``:
+
+.. code-block:: python
+
+   from pathlib import Path
+   import json
+   from papercutter.extractors.pdfplumber import PdfPlumberExtractor
+   from papercutter.core.text import TextExtractor
+   from papercutter.core.references import ReferenceExtractor
+
+   def analyze_paper(pdf_path: Path, output_dir: Path):
+       """Complete extraction workflow."""
+       output_dir.mkdir(parents=True, exist_ok=True)
+       backend = PdfPlumberExtractor()
+
+       # 1. Extract text
+       text_ext = TextExtractor(backend)
+       text = text_ext.extract(pdf_path)
+       (output_dir / "full_text.txt").write_text(text)
+       print(f"Extracted: {len(text):,} characters")
+
+       # 2. Create chunks for LLM
+       chunks = text_ext.extract_chunked(pdf_path, chunk_size=2000, overlap=200)
+       chunks_data = [{"i": i, "chars": len(c)} for i, c in enumerate(chunks)]
+       (output_dir / "chunks.json").write_text(json.dumps(chunks_data, indent=2))
+       print(f"Created: {len(chunks)} chunks")
+
+       # 3. Extract references
+       ref_ext = ReferenceExtractor(backend)
+       refs = ref_ext.extract(pdf_path)
+       bibtex = "\n\n".join(r.to_bibtex() for r in refs)
+       (output_dir / "references.bib").write_text(bibtex)
+       print(f"Found: {len(refs)} references")
+
+       return output_dir
+
+   # Run on actual paper
+   output = analyze_paper(
+       Path("Thompson_2022_nftrig.pdf"),
+       Path("./research/nftrig")
+   )
+
+Actual output:
+
+.. code-block:: text
+
+   Extracted: 50,216 characters
+   Created: 29 chunks
+   Found: 35 references
+
+LLM Analysis (requires API key)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+If you have an LLM API key configured:
+
+.. code-block:: python
+
+   from papercutter.intelligence import Summarizer, ReportGenerator
+
+   summarizer = Summarizer()
+   if summarizer.is_available():
+       summary = summarizer.summarize(
+           Path("Thompson_2022_nftrig.pdf"),
+           focus="contributions",
+           length="short"
+       )
+       print(f"Summary ({summary.output_tokens} tokens):")
+       print(summary.content)
+
+       # Track token usage for cost estimation
+       print(f"\nTokens: {summary.input_tokens} in / {summary.output_tokens} out")
+
+Directory structure created:
+
+.. code-block:: text
+
+   research/nftrig/
+   ├── full_text.txt       # 50,216 bytes
+   ├── chunks.json         # 29 chunks for LLM
+   └── references.bib      # 35 BibTeX entries

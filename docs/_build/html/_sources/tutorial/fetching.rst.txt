@@ -131,3 +131,45 @@ Example error handling in scripts:
 .. seealso::
 
    :doc:`python/fetching` for Python API examples including batch fetching and error handling.
+
+Real-World Example: Building a Reading Stack
+--------------------------------------------
+
+This example shows how to pull an actual literature queue of mixed identifiers into a local ``./literature`` folder with metadata sidecars:
+
+1. Create a plain-text list with one identifier per line. Mix and match DOI, arXiv, SSRN, NBER, or URLs:
+
+   .. code-block:: bash
+
+      cat <<'EOF' > reading_list.txt
+      # Monetary policy and macro
+      arxiv:2206.10140
+      doi:10.1257/aer.20190870
+      ssrn:4554607
+      nber:w30873
+      https://www.ecb.europa.eu/pub/pdf/scpwps/ecb.wp2727~e8bbba7d7d.en.pdf
+      EOF
+
+2. Run the batch fetcher with async downloads, metadata export, and an explicit output directory:
+
+   .. code-block:: bash
+
+      papercutter fetch batch reading_list.txt --parallel --max-concurrent 4 \\
+        --metadata -o ./literature
+
+3. Inspect the results. Papercutter prints a concise summary and drops ``.meta.json`` files next to each PDF:
+
+   .. code-block:: console
+
+      Found 5 paper(s) to fetch
+      Downloading 5 papers in parallel...
+        Downloaded: Gertler_2022_US_monetary_policy.pdf
+        Downloaded: AER_20190870_Kaplan.pdf
+        Downloaded: ssrn_4554607.pdf
+        Downloaded: nber_w30873.pdf
+        Downloaded: ecb_wp2727.pdf
+
+      Done:
+        5 downloaded
+
+   Each ``*.meta.json`` contains ready-to-ingest metadata (title, authors, DOI, etc.) so you can load the stack into Zotero, Obsidian, or downstream scripts without extra parsing.

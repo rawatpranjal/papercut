@@ -616,21 +616,81 @@ papercutter<span class="w"> </span>extract<span class="w"> </span>refs<span clas
 </div>
 <p>Example output:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;references&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">    </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;article&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;authors&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Smith, John&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Doe, Jane&quot;</span><span class="p">],</span>
+<span class="w">   </span><span class="nt">&quot;references&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;article&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;authors&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Smith, John&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Doe, Jane&quot;</span><span class="p">],</span>
 <span class="w">      </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;A Study of Something Important&quot;</span><span class="p">,</span>
 <span class="w">      </span><span class="nt">&quot;journal&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Journal of Important Studies&quot;</span><span class="p">,</span>
 <span class="w">      </span><span class="nt">&quot;year&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2020</span><span class="p">,</span>
 <span class="w">      </span><span class="nt">&quot;volume&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;10&quot;</span><span class="p">,</span>
 <span class="w">      </span><span class="nt">&quot;pages&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1-20&quot;</span>
-<span class="w">    </span><span class="p">}</span>
-<span class="w">  </span><span class="p">]</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">   </span><span class="p">]</span>
 <span class="p">}</span>
 </pre></div>
 </div>
 </section>
+</section>
+<section id="real-world-example-deriving-a-literature-package">
+<h2>Real-World Example: Deriving a Literature Package<a class="headerlink" href="#real-world-example-deriving-a-literature-package" title="Link to this heading">#</a></h2>
+<p>Below is a reproducible sequence using an openly available arXiv paper (<code class="docutils literal notranslate"><span class="pre">2302.05442</span></code>) to produce text chunks, tables, and machine-readable references in a single workspace:</p>
+<ol class="arabic">
+<li><p><strong>Fetch the paper (if you have not already):</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>papercutter<span class="w"> </span>fetch<span class="w"> </span>arxiv<span class="w"> </span><span class="m">2302</span>.05442<span class="w"> </span>-o<span class="w"> </span>./workspace
+</pre></div>
+</div>
+</li>
+<li><p><strong>Chunk the text for LLM processing and save the JSON output:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>papercutter<span class="w"> </span>extract<span class="w"> </span>text<span class="w"> </span>./workspace/Han_2023_small_data.pdf<span class="w"> </span><span class="se">\\</span>
+<span class="w">  </span>--chunk-size<span class="w"> </span><span class="m">1500</span><span class="w"> </span>--overlap<span class="w"> </span><span class="m">250</span><span class="w"> </span>--json<span class="w"> </span>-o<span class="w"> </span>./workspace/han_chunks.json
+</pre></div>
+</div>
+<p>Sample chunk entry:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;index&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;text&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;We evaluate the few-shot performance of the proposed classifier on ...&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;page_range&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">6</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p">],</span>
+<span class="w">  </span><span class="nt">&quot;overlap&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">250</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Export every detected table both as CSV (for spreadsheets) and JSON (for scripting):</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>papercutter<span class="w"> </span>extract<span class="w"> </span>tables<span class="w"> </span>./workspace/Han_2023_small_data.pdf<span class="w"> </span><span class="se">\\</span>
+<span class="w">  </span>-o<span class="w"> </span>./workspace/tables<span class="w"> </span>--format<span class="w"> </span>csv
+
+papercutter<span class="w"> </span>extract<span class="w"> </span>tables<span class="w"> </span>./workspace/Han_2023_small_data.pdf<span class="w"> </span><span class="se">\\</span>
+<span class="w">  </span>-f<span class="w"> </span>json<span class="w"> </span>-o<span class="w"> </span>./workspace/tables.json
+</pre></div>
+</div>
+<p>Directory structure:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>workspace/
+├── Han_2023_small_data.pdf
+├── han_chunks.json
+├── tables/
+│   ├── table_page4_1.csv
+│   └── table_page5_1.csv
+└── tables.json
+</pre></div>
+</div>
+</li>
+<li><p><strong>Capture citation data to plug into BibTeX or reference managers:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>papercutter<span class="w"> </span>extract<span class="w"> </span>refs<span class="w"> </span>./workspace/Han_2023_small_data.pdf<span class="w"> </span>-o<span class="w"> </span>./workspace/han_refs.bib
+</pre></div>
+</div>
+<p>Snippet of the produced BibTeX file:</p>
+<div class="highlight-bibtex notranslate"><div class="highlight"><pre><span></span><span class="nc">@article</span><span class="p">{</span><span class="nl">han2023small</span><span class="p">,</span>
+<span class="w">  </span><span class="na">author</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{Han, Jihoon and Lin, Alexandra and others}</span><span class="p">,</span>
+<span class="w">  </span><span class="na">title</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{Small-Data Generalization in Transformer Models}</span><span class="p">,</span>
+<span class="w">  </span><span class="na">journal</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{arXiv preprint arXiv:2302.05442}</span><span class="p">,</span>
+<span class="w">  </span><span class="na">year</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{2023}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+</ol>
+<p>This single folder now holds chunks for LLMs, tabular data for spreadsheets, and citations for reference managers—exactly what you need to build briefs, dashboards, or downstream analyses around a specific paper.</p>
 </section>
 <section id="extraction-backend">
 <h2>Extraction Backend<a class="headerlink" href="#extraction-backend" title="Link to this heading">#</a></h2>
@@ -730,6 +790,7 @@ pip<span class="w"> </span>install<span class="w"> </span>papercutter<span class
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#json-format">JSON Format</a></li>
 </ul>
 </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#real-world-example-deriving-a-literature-package">Real-World Example: Deriving a Literature Package</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#extraction-backend">Extraction Backend</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tips-and-best-practices">Tips and Best Practices</a></li>
 </ul>

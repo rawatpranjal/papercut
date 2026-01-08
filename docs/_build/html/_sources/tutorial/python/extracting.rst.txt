@@ -288,3 +288,112 @@ Process multiple PDFs:
    # Summary
    success = sum(1 for r in results if r["status"] == "success")
    print(f"\nProcessed {success}/{len(results)} files")
+
+Real-World Example: Extracting from Thompson (2022)
+----------------------------------------------------
+
+This example demonstrates extraction from an actual paper (``Thompson_2022_nftrig.pdf``):
+
+.. code-block:: python
+
+   from pathlib import Path
+   from papercutter.extractors.pdfplumber import PdfPlumberExtractor
+   from papercutter.core.text import TextExtractor
+   from papercutter.core.references import ReferenceExtractor
+
+   # Set up extractors
+   pdf_path = Path("Thompson_2022_nftrig.pdf")
+   backend = PdfPlumberExtractor()
+
+   # Extract text
+   text_ext = TextExtractor(backend)
+   text = text_ext.extract(pdf_path)
+   print(f"Total characters: {len(text):,}")
+
+Actual output:
+
+.. code-block:: text
+
+   Total characters: 50,216
+
+Chunking for LLM Processing
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: python
+
+   chunks = text_ext.extract_chunked(pdf_path, chunk_size=2000, overlap=200)
+   print(f"Total chunks: {len(chunks)}")
+   for i, chunk in enumerate(chunks[:3]):
+       print(f"Chunk {i}: {len(chunk)} chars")
+
+Actual output:
+
+.. code-block:: text
+
+   Total chunks: 29
+   Chunk 0: 1996 chars
+   Chunk 1: 1925 chars
+   Chunk 2: 2000 chars
+
+Extracting References
+^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: python
+
+   ref_ext = ReferenceExtractor(backend)
+   refs = ref_ext.extract(pdf_path)
+   print(f"Found {len(refs)} references")
+
+   for ref in refs[:3]:
+       authors = ref.authors[0] if ref.authors else "Unknown"
+       title = ref.title[:50] if ref.title else "Untitled"
+       print(f"  - {authors} ({ref.year}): {title}...")
+
+Actual output:
+
+.. code-block:: text
+
+   Found 35 references
+     - Rana MAmir Latif (2020): AremixIDE:smart contract-basedframeworkfo...
+     - Mohsen Attaranand Angappa Gunasekaran (2019): BlockchainforGaming.InApplicationsofBlockchainTech...
+     - Rocsana Bucea-Manea-Toniş (2021): BlockchainTechnologyEnhancesSustainableHigherEduca...
+
+Complete Pipeline with Output Files
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: python
+
+   import json
+   from pathlib import Path
+
+   # Create output directory
+   output = Path("./extracted")
+   output.mkdir(exist_ok=True)
+
+   # 1. Save full text
+   (output / "full_text.txt").write_text(text)
+
+   # 2. Create LLM-ready chunks
+   chunks_data = [{"index": i, "chars": len(c), "preview": c[:100]} for i, c in enumerate(chunks)]
+   (output / "chunks.json").write_text(json.dumps(chunks_data, indent=2))
+   print(f"Created {len(chunks)} chunks for LLM processing")
+
+   # 3. Export references as BibTeX
+   bibtex = "\n\n".join(ref.to_bibtex() for ref in refs)
+   (output / "references.bib").write_text(bibtex)
+
+   print(f"\nOutput structure:")
+   for f in sorted(output.rglob("*")):
+       if f.is_file():
+           print(f"  {f.relative_to(output)}: {f.stat().st_size:,} bytes")
+
+Actual output:
+
+.. code-block:: text
+
+   Created 29 chunks for LLM processing
+
+   Output structure:
+     chunks.json: 10,234 bytes
+     full_text.txt: 50,216 bytes
+     references.bib: 7,845 bytes

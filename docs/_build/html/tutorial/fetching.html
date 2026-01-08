@@ -559,6 +559,45 @@ papercutter<span class="w"> </span>fetch<span class="w"> </span>arxiv<span class
 <p><a class="reference internal" href="python/fetching.html"><span class="doc">Fetching Papers</span></a> for Python API examples including batch fetching and error handling.</p>
 </div>
 </section>
+<section id="real-world-example-building-a-reading-stack">
+<h2>Real-World Example: Building a Reading Stack<a class="headerlink" href="#real-world-example-building-a-reading-stack" title="Link to this heading">#</a></h2>
+<p>This example shows how to pull an actual literature queue of mixed identifiers into a local <code class="docutils literal notranslate"><span class="pre">./literature</span></code> folder with metadata sidecars:</p>
+<ol class="arabic">
+<li><p>Create a plain-text list with one identifier per line. Mix and match DOI, arXiv, SSRN, NBER, or URLs:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cat<span class="w"> </span><span class="s">&lt;&lt;&#39;EOF&#39; &gt; reading_list.txt</span>
+<span class="s"># Monetary policy and macro</span>
+<span class="s">arxiv:2206.10140</span>
+<span class="s">doi:10.1257/aer.20190870</span>
+<span class="s">ssrn:4554607</span>
+<span class="s">nber:w30873</span>
+<span class="s">https://www.ecb.europa.eu/pub/pdf/scpwps/ecb.wp2727~e8bbba7d7d.en.pdf</span>
+<span class="s">EOF</span>
+</pre></div>
+</div>
+</li>
+<li><p>Run the batch fetcher with async downloads, metadata export, and an explicit output directory:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>papercutter<span class="w"> </span>fetch<span class="w"> </span>batch<span class="w"> </span>reading_list.txt<span class="w"> </span>--parallel<span class="w"> </span>--max-concurrent<span class="w"> </span><span class="m">4</span><span class="w"> </span><span class="se">\\</span>
+<span class="w">  </span>--metadata<span class="w"> </span>-o<span class="w"> </span>./literature
+</pre></div>
+</div>
+</li>
+<li><p>Inspect the results. Papercutter prints a concise summary and drops <code class="docutils literal notranslate"><span class="pre">.meta.json</span></code> files next to each PDF:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">Found 5 paper(s) to fetch</span>
+<span class="go">Downloading 5 papers in parallel...</span>
+<span class="go">  Downloaded: Gertler_2022_US_monetary_policy.pdf</span>
+<span class="go">  Downloaded: AER_20190870_Kaplan.pdf</span>
+<span class="go">  Downloaded: ssrn_4554607.pdf</span>
+<span class="go">  Downloaded: nber_w30873.pdf</span>
+<span class="go">  Downloaded: ecb_wp2727.pdf</span>
+
+<span class="go">Done:</span>
+<span class="go">  5 downloaded</span>
+</pre></div>
+</div>
+<p>Each <code class="docutils literal notranslate"><span class="pre">*.meta.json</span></code> contains ready-to-ingest metadata (title, authors, DOI, etc.) so you can load the stack into Zotero, Obsidian, or downstream scripts without extra parsing.</p>
+</li>
+</ol>
+</section>
 </section>
 
 
@@ -616,6 +655,7 @@ papercutter<span class="w"> </span>fetch<span class="w"> </span>arxiv<span class
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#output-options">Output Options</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#document-metadata">Document Metadata</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#error-handling">Error Handling</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#real-world-example-building-a-reading-stack">Real-World Example: Building a Reading Stack</a></li>
 </ul>
   </nav></div>
 

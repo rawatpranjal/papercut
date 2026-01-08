@@ -1,11 +1,14 @@
 """Chapter detection and splitting for book PDFs."""
 
+import logging
 import re
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
 
 from pypdf import PdfReader
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -37,6 +40,17 @@ class ChapterSplitter:
         r"^PART\s+(\d+|[IVXLC]+)[:\.\s]",  # PART 1:
         r"^(\d+)\.\s+[A-Z]",  # 1. Title
         r"^Section\s+(\d+)",  # Section 1
+        r"^Ch\.?\s*(\d+)",  # Ch 1, Ch. 1
+        r"^Unit\s+(\d+)",  # Unit 1
+        r"^UNIT\s+(\d+)",  # UNIT 1
+        r"^Module\s+(\d+)",  # Module 1
+        r"^MODULE\s+(\d+)",  # MODULE 1
+        r"^Lecture\s+(\d+)",  # Lecture 1
+        r"^LECTURE\s+(\d+)",  # LECTURE 1
+        r"^Appendix\s+[A-Z]",  # Appendix A
+        r"^APPENDIX\s+[A-Z]",  # APPENDIX A
+        r"^Lesson\s+(\d+)",  # Lesson 1
+        r"^LESSON\s+(\d+)",  # LESSON 1
     ]
 
     # Pre-compiled patterns for performance
@@ -157,8 +171,9 @@ class ChapterSplitter:
                                     level=level,
                                 )
                             )
-                except Exception:
-                    # Skip malformed outline entries
+                except Exception as e:
+                    # Log and skip malformed outline entries
+                    logger.debug(f"Skipping malformed bookmark entry: {e}")
                     continue
 
     def _from_text_patterns(
@@ -180,8 +195,8 @@ class ChapterSplitter:
             page = reader.pages[page_num]
             text = page.extract_text(extraction_mode="layout") or ""
 
-            # Check first few lines for chapter headers
-            first_lines = "\n".join(text.split("\n")[:5])
+            # Check first 15 lines for chapter headers (headers may appear after whitespace)
+            first_lines = "\n".join(text.split("\n")[:15])
 
             for pattern in compiled_patterns:
                 match = pattern.search(first_lines)
