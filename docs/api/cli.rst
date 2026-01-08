@@ -1,323 +1,141 @@
-CLI Reference
-=============
-
-Papercut provides a command-line interface built with `Typer <https://typer.tiangolo.com/>`_.
-
-Main Command
-------------
+CLI
+===
 
 .. code-block:: bash
 
-   papercut [OPTIONS] COMMAND [ARGS]...
-
-**Options:**
-
-.. option:: --version, -V
-
-   Show version and exit.
-
-.. option:: --help
-
-   Show help message and exit.
+   papercut [COMMAND] [OPTIONS]
 
 Fetch Commands
 --------------
 
-Commands for downloading academic papers from various sources.
+Download papers from various sources.
 
 .. code-block:: bash
 
-   papercut fetch [SOURCE] [ARGS]...
-
-papercut fetch arxiv
-~~~~~~~~~~~~~~~~~~~~
-
-Download a paper from arXiv.
-
-.. code-block:: bash
-
-   papercut fetch arxiv PAPER_ID [OPTIONS]
-
-**Arguments:**
-
-.. option:: PAPER_ID
-
-   The arXiv paper ID (e.g., ``2301.00001``).
-
-**Options:**
-
-.. option:: -o, --output DIRECTORY
-
-   Output directory for the downloaded paper.
-
-**Example:**
-
-.. code-block:: bash
-
-   papercut fetch arxiv 2301.00001 -o ./papers
-
-papercut fetch doi
-~~~~~~~~~~~~~~~~~~
-
-Download a paper by resolving its DOI.
-
-.. code-block:: bash
-
-   papercut fetch doi IDENTIFIER [OPTIONS]
-
-**Arguments:**
-
-.. option:: IDENTIFIER
-
-   The DOI identifier (e.g., ``10.1257/aer.20180779``).
-
-**Options:**
-
-.. option:: -o, --output DIRECTORY
-
-   Output directory for the downloaded paper.
-
-**Example:**
-
-.. code-block:: bash
-
-   papercut fetch doi 10.1257/aer.20180779 -o ./papers
-
-papercut fetch ssrn
-~~~~~~~~~~~~~~~~~~~
-
-Download a paper from SSRN.
-
-.. code-block:: bash
-
-   papercut fetch ssrn PAPER_ID [OPTIONS]
-
-**Arguments:**
-
-.. option:: PAPER_ID
-
-   The SSRN paper ID.
-
-**Options:**
-
-.. option:: -o, --output DIRECTORY
-
-   Output directory for the downloaded paper.
-
-papercut fetch nber
-~~~~~~~~~~~~~~~~~~~
-
-Download a paper from NBER.
-
-.. code-block:: bash
-
-   papercut fetch nber PAPER_ID [OPTIONS]
-
-**Arguments:**
-
-.. option:: PAPER_ID
-
-   The NBER working paper ID (e.g., ``w29000`` or ``29000``).
-
-**Options:**
-
-.. option:: -o, --output DIRECTORY
-
-   Output directory for the downloaded paper.
-
-papercut fetch url
-~~~~~~~~~~~~~~~~~~
-
-Download a paper from a direct URL.
-
-.. code-block:: bash
-
-   papercut fetch url PAPER_URL [OPTIONS]
-
-**Arguments:**
-
-.. option:: PAPER_URL
-
-   Direct URL to the PDF file.
-
-**Options:**
-
-.. option:: -o, --output DIRECTORY
-
-   Output directory for the downloaded paper.
-
-.. option:: -n, --name FILENAME
-
-   Custom filename for the downloaded paper.
-
-**Example:**
-
-.. code-block:: bash
-
-   papercut fetch url https://example.com/paper.pdf -o ./papers -n my_paper.pdf
+   papercut fetch arxiv 2301.00001
+   papercut fetch doi 10.1257/aer.20180779
+   papercut fetch ssrn 3550274
+   papercut fetch nber w29000
+   papercut fetch url https://example.com/paper.pdf
 
 Extract Commands
 ----------------
 
-Commands for extracting content from PDF files.
+Extract content from PDFs.
 
 .. code-block:: bash
 
-   papercut extract [TYPE] [ARGS]...
+   papercut extract text paper.pdf [-p PAGES] [--chunk-size N]
+   papercut extract tables paper.pdf [-f csv|json]
+   papercut extract refs paper.pdf [-f bibtex|json]
 
-papercut extract text
-~~~~~~~~~~~~~~~~~~~~~
+Index Commands
+--------------
 
-Extract text content from a PDF.
-
-.. code-block:: bash
-
-   papercut extract text PDF_PATH [OPTIONS]
-
-**Arguments:**
-
-.. option:: PDF_PATH
-
-   Path to the PDF file.
-
-**Options:**
-
-.. option:: -o, --output FILE
-
-   Output file path. If not specified, outputs to stdout.
-
-.. option:: -p, --pages RANGE
-
-   Page range to extract (e.g., ``1-5,8,10-12``).
-
-.. option:: --chunk-size SIZE
-
-   Split text into chunks of this token size.
-
-.. option:: --overlap CHARS
-
-   Overlap between chunks in characters (default: 200).
-
-**Examples:**
+Build and inspect document structure.
 
 .. code-block:: bash
 
-   # Extract all text to stdout
-   papercut extract text paper.pdf
+   papercut index paper.pdf [--type paper|book] [--force]
+   papercut chapters book.pdf
+   papercut info paper.pdf
 
-   # Extract to file
-   papercut extract text paper.pdf -o output.txt
+Read Command
+------------
 
-   # Extract specific pages
-   papercut extract text paper.pdf -p 1-5,10
-
-   # Extract with chunking for LLM
-   papercut extract text paper.pdf --chunk-size 1000 --overlap 200
-
-papercut extract tables
-~~~~~~~~~~~~~~~~~~~~~~~
-
-Extract tables from a PDF.
+Extract text by section or chapter.
 
 .. code-block:: bash
 
-   papercut extract tables PDF_PATH [OPTIONS]
+   papercut read paper.pdf --pages 10-14
+   papercut read paper.pdf --section "Methods"
+   papercut read book.pdf --chapter 5
+   papercut read paper.pdf --all
 
-**Arguments:**
+Cache Commands
+--------------
 
-.. option:: PDF_PATH
-
-   Path to the PDF file.
-
-**Options:**
-
-.. option:: -o, --output DIRECTORY
-
-   Output directory for extracted tables. If not specified, outputs JSON to stdout.
-
-.. option:: -f, --format FORMAT
-
-   Output format: ``csv`` (default) or ``json``.
-
-.. option:: -p, --pages RANGE
-
-   Page range to extract tables from.
-
-**Examples:**
+Manage extraction cache.
 
 .. code-block:: bash
 
-   # Extract tables as CSV
-   papercut extract tables paper.pdf -o ./tables/
+   papercut cache-info paper.pdf
+   papercut clear-cache [paper.pdf]
 
-   # Extract as JSON
-   papercut extract tables paper.pdf -f json
+LLM Commands
+------------
 
-papercut extract refs
-~~~~~~~~~~~~~~~~~~~~~
+AI-powered analysis (requires ``pip install papercut[llm]``).
 
-Extract bibliographic references from a PDF.
+summarize
+^^^^^^^^^
 
-.. code-block:: bash
-
-   papercut extract refs PDF_PATH [OPTIONS]
-
-**Arguments:**
-
-.. option:: PDF_PATH
-
-   Path to the PDF file.
-
-**Options:**
-
-.. option:: -o, --output FILE
-
-   Output file path. If not specified, outputs to stdout.
-
-.. option:: -f, --format FORMAT
-
-   Output format: ``bibtex`` (default) or ``json``.
-
-**Examples:**
+Generate AI summaries of papers.
 
 .. code-block:: bash
 
-   # Extract as BibTeX
-   papercut extract refs paper.pdf -o references.bib
+   papercut summarize paper.pdf [OPTIONS]
 
-   # Extract as JSON
-   papercut extract refs paper.pdf -f json -o references.json
+Options:
 
-Exit Codes
-----------
+- ``--focus``: Focus area for the summary
 
-Papercut uses specific exit codes to indicate different error conditions:
+  - ``methods``: Focus on methodology and approach
+  - ``results``: Focus on findings and outcomes
+  - ``contributions``: Focus on novel contributions
 
-.. list-table::
-   :header-rows: 1
-   :widths: 15 85
+- ``--length``: Summary length
 
-   * - Code
-     - Meaning
-   * - 0
-     - Success
-   * - 1
-     - General error
-   * - 10
-     - Fetch error (general)
-   * - 11
-     - Paper not found
-   * - 12
-     - Rate limited
-   * - 13
-     - Network error
-   * - 20
-     - Extraction error (general)
-   * - 21
-     - Invalid PDF
-   * - 22
-     - No content found
-   * - 30
-     - Configuration error
-   * - 31
-     - Missing API key
+  - ``short``: Brief overview
+  - ``default``: Standard length
+  - ``long``: Detailed summary
+
+- ``--pages``: Page range to summarize (e.g., ``1-10,15``)
+- ``--model``: LLM model to use (e.g., ``claude-sonnet-4-20250514``)
+- ``--json``: Output as JSON
+
+report
+^^^^^^
+
+Generate structured reports for different audiences.
+
+.. code-block:: bash
+
+   papercut report paper.pdf [OPTIONS]
+
+Options:
+
+- ``--template``: Built-in template name
+
+  - ``reading-group``: Discussion-focused summary for reading groups
+  - ``referee``: Critical peer review style report
+  - ``meta``: Notes for meta-analysis synthesis
+  - ``executive``: Business/policy executive summary
+
+- ``--custom-template``: Path to custom template file
+- ``--pages``: Page range to analyze
+- ``--model``: LLM model to use
+- ``--json``: Output as JSON
+
+study
+^^^^^
+
+Generate study materials from books.
+
+.. code-block:: bash
+
+   papercut study book.pdf [OPTIONS]
+
+Options:
+
+- ``--mode``: Type of study material to generate
+
+  - ``summary``: Chapter summary (default)
+  - ``concepts``: Key concepts extraction
+  - ``quiz``: Practice quiz questions
+  - ``flashcards``: Spaced repetition flashcards
+
+- ``--chapter``: Chapter number to process
+- ``--pages``: Page range (alternative to chapter)
+- ``--model``: LLM model to use
+- ``--json``: Output as JSON
