@@ -1,48 +1,135 @@
-# PDF Split and Summarize
+# Papercut
 
-This script splits a single PDF file into multiple chapters based on page ranges defined in a `chapters.txt` file and generates LaTeX summaries for each chapter using OpenAI's GPT.
+Extract knowledge from academic papers. A CLI-first Python package for researchers.
 
-## File Structure
+## Installation
 
-```
-project_folder/
-├── input/                  # Folder containing the input PDF
-│   └── example.pdf         # The PDF to split
-├── output/                 # Folder where chapter PDFs will be saved
-├── chapters.txt            # Text file with chapter names and page ranges
-├── key.txt                 # File containing the OpenAI API key
-├── main.py                 # The Python script for splitting
-└── summarize.py            # The Python script for summarizing chapters
+```bash
+pip install -e .
 ```
 
-## How to Use
+For development:
+```bash
+pip install -e ".[dev]"
+```
 
-### Step 1: Install Dependencies
-   ```bash
-   pip install PyPDF2 openai tqdm
-   ```
+For LLM features (v0.2):
+```bash
+pip install -e ".[llm]"
+```
 
-### Step 2: Split PDF into Chapters
-1. Place the PDF to split in the `input/` folder.
-2. Create a `chapters.txt` file in this format:
-   ```
-   chapter_name start_page end_page
-   ```
-3. Run the script to split the PDF:
-   ```bash
-   python3 main.py
-   ```
+## Quick Start
 
-   The chapter PDFs will be saved in the `output/` folder as:
-   ```
-   01_chapter_name.pdf
-   02_chapter_name.pdf
-   ```
+### Fetch Papers
 
-### Step 3: Summarize Chapters and Save to LaTeX
-1. Place your OpenAI API key in `key.txt`.
-2. Run the summarization script:
-   ```bash
-   python3 summarize.py
-   ```
-3. A LaTeX file (`summary.tex`) will be created in the project folder. It will include summaries of all chapters.
+Download papers from various academic sources:
+
+```bash
+# From arXiv
+papercut fetch arxiv 2301.00001
+
+# From DOI
+papercut fetch doi 10.1257/aer.20180779
+
+# From SSRN
+papercut fetch ssrn 4123456
+
+# From NBER
+papercut fetch nber w29000
+
+# From direct URL
+papercut fetch url "https://example.com/paper.pdf" --name smith_2024
+```
+
+### Extract Text
+
+Extract clean text from PDFs:
+
+```bash
+# Full text to stdout
+papercut extract text paper.pdf
+
+# Save to file
+papercut extract text paper.pdf --output paper.txt
+
+# Chunk for LLM processing
+papercut extract text paper.pdf --chunk-size 4000 --overlap 200
+
+# Extract specific pages
+papercut extract text paper.pdf --pages "1-10,15"
+```
+
+### Extract Tables
+
+Extract tables from PDFs as CSV or JSON:
+
+```bash
+# All tables to stdout as JSON
+papercut extract tables paper.pdf
+
+# Save as CSV files
+papercut extract tables paper.pdf --output ./tables/ --format csv
+
+# Extract from specific pages
+papercut extract tables paper.pdf --pages "5-10" --format json
+```
+
+### Extract References
+
+Extract bibliography as BibTeX:
+
+```bash
+# BibTeX to stdout
+papercut extract refs paper.pdf
+
+# Save to file
+papercut extract refs paper.pdf --output refs.bib
+
+# As JSON
+papercut extract refs paper.pdf --format json
+```
+
+## Configuration
+
+Papercut stores configuration in `~/.papercut/config.yaml`:
+
+```yaml
+output:
+  directory: ~/papers
+
+extraction:
+  backend: pdfplumber
+  text:
+    chunk_size: null
+    chunk_overlap: 200
+  tables:
+    format: csv
+
+# LLM settings (v0.2)
+llm:
+  default_provider: anthropic
+  default_model: claude-sonnet-4-20250514
+```
+
+Environment variables override config:
+```bash
+export PAPERCUT_ANTHROPIC_API_KEY=sk-ant-...
+export PAPERCUT_OPENAI_API_KEY=sk-...
+```
+
+## Development
+
+Run tests:
+```bash
+pytest tests/
+```
+
+Run linting:
+```bash
+ruff check src/
+mypy src/
+```
+
+## License
+
+MIT License - see [LICENSE](LICENSE) for details.

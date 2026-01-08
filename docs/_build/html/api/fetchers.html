@@ -1,0 +1,1349 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Fetchers &#8212; Papercut 0.1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=38b66d78"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=fd10adb8"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api/fetchers';</script>
+    <link rel="icon" href="../_static/logo.svg"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Extractors" href="extractors.html" />
+    <link rel="prev" title="Core Modules" href="core.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/logo.svg" class="logo__image only-light" alt=""/>
+    <img src="../_static/logo.svg" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">Papercut</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../installation.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../quickstart.html">
+    Quickstart
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../tutorial/index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/pranjalrawat007/papercut" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/pranjalrawat007/papercut" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/papercut/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-solid fa-box fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">PyPI</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../installation.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../quickstart.html">
+    Quickstart
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../tutorial/index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/pranjalrawat007/papercut" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/pranjalrawat007/papercut" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/papercut/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-solid fa-box fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">PyPI</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="cli.html">CLI Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="core.html">Core Modules</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Fetchers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="extractors.html">Extractors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="config.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="exceptions.html">Exceptions</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">API Reference</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Fetchers</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="fetchers">
+<h1>Fetchers<a class="headerlink" href="#fetchers" title="Link to this heading">#</a></h1>
+<p>The <code class="docutils literal notranslate"><span class="pre">papercut.fetchers</span></code> module provides classes for downloading academic papers from various sources.</p>
+<section id="module-papercut.fetchers.base">
+<span id="base-classes"></span><h2>Base Classes<a class="headerlink" href="#module-papercut.fetchers.base" title="Link to this heading">#</a></h2>
+<section id="document">
+<h3>Document<a class="headerlink" href="#document" title="Link to this heading">#</a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="papercut.fetchers.base.Document">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">papercut.fetchers.base.</span></span><span class="sig-name descname"><span class="pre">Document</span></span><a class="reference internal" href="../_modules/papercut/fetchers/base.html#Document"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#papercut.fetchers.base.Document" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Represents a fetched academic document.</p>
+<p>A dataclass representing a fetched academic document with its metadata.</p>
+<p><strong>Attributes:</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">path</span></code> (Path): Path to the downloaded PDF file</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">title</span></code> (Optional[str]): Paper title</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">authors</span></code> (list[str]): List of author names</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">abstract</span></code> (Optional[str]): Paper abstract</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">doi</span></code> (Optional[str]): Digital Object Identifier</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">arxiv_id</span></code> (Optional[str]): arXiv identifier</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">source_url</span></code> (Optional[str]): Original download URL</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fetched_at</span></code> (datetime): Timestamp when the paper was fetched</p></li>
+</ul>
+<p><strong>Properties:</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">exists</span></code> (bool): Check if the document file exists on disk</p></li>
+</ul>
+<p><strong>Example:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">papercut.fetchers.base</span> <span class="kn">import</span> <span class="n">Document</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+
+<span class="n">doc</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span>
+    <span class="n">path</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;paper.pdf&quot;</span><span class="p">),</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Deep Learning for NLP&quot;</span><span class="p">,</span>
+    <span class="n">authors</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;John Smith&quot;</span><span class="p">,</span> <span class="s2">&quot;Jane Doe&quot;</span><span class="p">],</span>
+    <span class="n">doi</span><span class="o">=</span><span class="s2">&quot;10.1234/example.2024&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">doc</span><span class="o">.</span><span class="n">title</span><span class="p">)</span>  <span class="c1"># &quot;Deep Learning for NLP&quot;</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">doc</span><span class="o">.</span><span class="n">exists</span><span class="p">)</span>  <span class="c1"># True if file exists</span>
+</pre></div>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="papercut.fetchers.base.Document.path">
+<span class="sig-name descname"><span class="pre">path</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></a></em><a class="headerlink" href="#papercut.fetchers.base.Document.path" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="papercut.fetchers.base.Document.title">
+<span class="sig-name descname"><span class="pre">title</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a><span class="pre">]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#papercut.fetchers.base.Document.title" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="papercut.fetchers.base.Document.authors">
+<span class="sig-name descname"><span class="pre">authors</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a><span class="pre">]</span></em><a class="headerlink" href="#papercut.fetchers.base.Document.authors" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="papercut.fetchers.base.Document.abstract">
+<span class="sig-name descname"><span class="pre">abstract</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a><span class="pre">]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#papercut.fetchers.base.Document.abstract" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="papercut.fetchers.base.Document.doi">
+<span class="sig-name descname"><span class="pre">doi</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a><span class="pre">]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#papercut.fetchers.base.Document.doi" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="papercut.fetchers.base.Document.arxiv_id">
+<span class="sig-name descname"><span class="pre">arxiv_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a><span class="pre">]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#papercut.fetchers.base.Document.arxiv_id" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="papercut.fetchers.base.Document.source_url">
+<span class="sig-name descname"><span class="pre">source_url</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a><span class="pre">]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#papercut.fetchers.base.Document.source_url" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="papercut.fetchers.base.Document.fetched_at">
+<span class="sig-name descname"><span class="pre">fetched_at</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code></a></em><a class="headerlink" href="#papercut.fetchers.base.Document.fetched_at" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="papercut.fetchers.base.Document.exists">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">exists</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></em><a class="headerlink" href="#papercut.fetchers.base.Document.exists" title="Link to this definition">#</a></dt>
+<dd><p>Check if the document file exists.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="papercut.fetchers.base.Document.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">authors=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">abstract=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">doi=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arxiv_id=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_url=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fetched_at=&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#papercut.fetchers.base.Document.__init__" title="Link to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.14)"><em>Path</em></a>)</p></li>
+<li><p><strong>title</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>)</p></li>
+<li><p><strong>authors</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>]</em>)</p></li>
+<li><p><strong>abstract</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>)</p></li>
+<li><p><strong>doi</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>)</p></li>
+<li><p><strong>arxiv_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>)</p></li>
+<li><p><strong>source_url</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>)</p></li>
+<li><p><strong>fetched_at</strong> (<a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.14)"><em>datetime</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="basefetcher">
+<h3>BaseFetcher<a class="headerlink" href="#basefetcher" title="Link to this heading">#</a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="papercut.fetchers.base.BaseFetcher">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">papercut.fetchers.base.</span></span><span class="sig-name descname"><span class="pre">BaseFetcher</span></span><a class="reference internal" href="../_modules/papercut/fetchers/base.html#BaseFetcher"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#papercut.fetchers.base.BaseFetcher" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></a></p>
+<p>Abstract base class for paper fetchers.</p>
+<p>Abstract base class for paper fetchers.</p>
+<p>All fetcher implementations must inherit from this class and implement
+the abstract methods.</p>
+<p><strong>Abstract Methods:</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">can_handle(identifier:</span> <span class="pre">str)</span> <span class="pre">-&gt;</span> <span class="pre">bool</span></code>: Check if this fetcher can handle the given identifier</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fetch(identifier:</span> <span class="pre">str,</span> <span class="pre">output_dir:</span> <span class="pre">Path,</span> <span class="pre">**kwargs)</span> <span class="pre">-&gt;</span> <span class="pre">Document</span></code>: Fetch the paper and return a Document</p></li>
+</ul>
+<p><strong>Optional Override:</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">normalize_id(identifier:</span> <span class="pre">str)</span> <span class="pre">-&gt;</span> <span class="pre">str</span></code>: Normalize the identifier format</p></li>
+</ul>
+<p><strong>Example Implementation:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">papercut.fetchers.base</span> <span class="kn">import</span> <span class="n">BaseFetcher</span><span class="p">,</span> <span class="n">Document</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+
+<span class="k">class</span> <span class="nc">CustomFetcher</span><span class="p">(</span><span class="n">BaseFetcher</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">can_handle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">identifier</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">identifier</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;custom:&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">fetch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">identifier</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Document</span><span class="p">:</span>
+        <span class="c1"># Implementation here</span>
+        <span class="k">pass</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="papercut.fetchers.base.BaseFetcher.can_handle">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">can_handle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/papercut/fetchers/base.html#BaseFetcher.can_handle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#papercut.fetchers.base.BaseFetcher.can_handle" title="Link to this definition">#</a></dt>
+<dd><p>Check if this fetcher can handle the given identifier.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>identifier</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Paper identifier (ID, URL, DOI, etc.)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if this fetcher can handle the identifier.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="papercut.fetchers.base.BaseFetcher.fetch">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fetch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/papercut/fetchers/base.html#BaseFetcher.fetch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#papercut.fetchers.base.BaseFetcher.fetch" title="Link to this definition">#</a></dt>
+<dd><p>Fetch the paper and return a Document.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>identifier</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Paper identifier.</p></li>
+<li><p><strong>output_dir</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></a></span>) – Directory to save the downloaded PDF.</p></li>
+<li><p><strong>**kwargs</strong> – Additional fetcher-specific options.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="#papercut.fetchers.base.Document" title="papercut.fetchers.base.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Document object with path and metadata.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="papercut.fetchers.base.BaseFetcher.normalize_id">
+<span class="sig-name descname"><span class="pre">normalize_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/papercut/fetchers/base.html#BaseFetcher.normalize_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#papercut.fetchers.base.BaseFetcher.normalize_id" title="Link to this definition">#</a></dt>
+<dd><p>Normalize the identifier format.</p>
+<p>Override in subclasses if needed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>identifier</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Raw identifier.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Normalized identifier.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+<section id="module-papercut.fetchers.arxiv">
+<span id="fetcher-implementations"></span><h2>Fetcher Implementations<a class="headerlink" href="#module-papercut.fetchers.arxiv" title="Link to this heading">#</a></h2>
+<section id="arxivfetcher">
+<h3>ArxivFetcher<a class="headerlink" href="#arxivfetcher" title="Link to this heading">#</a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="papercut.fetchers.arxiv.ArxivFetcher">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">papercut.fetchers.arxiv.</span></span><span class="sig-name descname"><span class="pre">ArxivFetcher</span></span><a class="reference internal" href="../_modules/papercut/fetchers/arxiv.html#ArxivFetcher"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#papercut.fetchers.arxiv.ArxivFetcher" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#papercut.fetchers.base.BaseFetcher" title="papercut.fetchers.base.BaseFetcher"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseFetcher</span></code></a></p>
+<p>Fetch papers from arXiv.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="papercut.fetchers.arxiv.ArxivFetcher.PATTERN">
+<span class="sig-name descname"><span class="pre">PATTERN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">re.compile('^(?:arxiv:)?(\\d{4}\\.\\d{4,5})(v\\d+)?$',</span> <span class="pre">re.IGNORECASE)</span></em><a class="headerlink" href="#papercut.fetchers.arxiv.ArxivFetcher.PATTERN" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="papercut.fetchers.arxiv.ArxivFetcher.OLD_PATTERN">
+<span class="sig-name descname"><span class="pre">OLD_PATTERN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">re.compile('^(?:arxiv:)?([a-z-]+/\\d{7})$',</span> <span class="pre">re.IGNORECASE)</span></em><a class="headerlink" href="#papercut.fetchers.arxiv.ArxivFetcher.OLD_PATTERN" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="papercut.fetchers.arxiv.ArxivFetcher.can_handle">
+<span class="sig-name descname"><span class="pre">can_handle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/papercut/fetchers/arxiv.html#ArxivFetcher.can_handle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#papercut.fetchers.arxiv.ArxivFetcher.can_handle" title="Link to this definition">#</a></dt>
+<dd><p>Check if this fetcher can handle the given identifier.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>identifier</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="papercut.fetchers.arxiv.ArxivFetcher.normalize_id">
+<span class="sig-name descname"><span class="pre">normalize_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/papercut/fetchers/arxiv.html#ArxivFetcher.normalize_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#papercut.fetchers.arxiv.ArxivFetcher.normalize_id" title="Link to this definition">#</a></dt>
+<dd><p>Normalize arXiv ID to standard format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span></p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>identifier</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="papercut.fetchers.arxiv.ArxivFetcher.fetch">
+<span class="sig-name descname"><span class="pre">fetch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/papercut/fetchers/arxiv.html#ArxivFetcher.fetch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#papercut.fetchers.arxiv.ArxivFetcher.fetch" title="Link to this definition">#</a></dt>
+<dd><p>Fetch paper from arXiv.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>identifier</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – arXiv paper ID.</p></li>
+<li><p><strong>output_dir</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></a></span>) – Directory to save the downloaded PDF.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="#papercut.fetchers.base.Document" title="papercut.fetchers.base.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Document object with path and metadata.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="exceptions.html#papercut.exceptions.PaperNotFoundError" title="papercut.exceptions.PaperNotFoundError"><strong>PaperNotFoundError</strong></a> – If paper not found on arXiv.</p></li>
+<li><p><a class="reference internal" href="exceptions.html#papercut.exceptions.FetchError" title="papercut.exceptions.FetchError"><strong>FetchError</strong></a> – If download fails.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<p>Fetches papers from arXiv using the arXiv API.</p>
+<p><strong>Supported Identifiers:</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">2301.00001</span></code> - New-style arXiv ID</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cs.AI/2301.00001</span></code> - With category prefix</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">hep-th/9901001</span></code> - Old-style arXiv ID</p></li>
+</ul>
+<p><strong>Features:</strong></p>
+<ul class="simple">
+<li><p>Automatic metadata extraction (title, authors, abstract, DOI)</p></li>
+<li><p>Generates descriptive filenames from paper metadata</p></li>
+<li><p>Handles both new and old arXiv ID formats</p></li>
+</ul>
+<p><strong>Example:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">papercut.fetchers.arxiv</span> <span class="kn">import</span> <span class="n">ArxivFetcher</span>
+
+<span class="n">fetcher</span> <span class="o">=</span> <span class="n">ArxivFetcher</span><span class="p">()</span>
+
+<span class="k">if</span> <span class="n">fetcher</span><span class="o">.</span><span class="n">can_handle</span><span class="p">(</span><span class="s2">&quot;2301.00001&quot;</span><span class="p">):</span>
+    <span class="n">doc</span> <span class="o">=</span> <span class="n">fetcher</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="s2">&quot;2301.00001&quot;</span><span class="p">,</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;./papers&quot;</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Title: </span><span class="si">{</span><span class="n">doc</span><span class="o">.</span><span class="n">title</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Authors: </span><span class="si">{</span><span class="n">doc</span><span class="o">.</span><span class="n">authors</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Abstract: </span><span class="si">{</span><span class="n">doc</span><span class="o">.</span><span class="n">abstract</span><span class="p">[:</span><span class="mi">200</span><span class="p">]</span><span class="si">}</span><span class="s2">...&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="doifetcher">
+<span id="module-papercut.fetchers.doi"></span><h3>DOIFetcher<a class="headerlink" href="#doifetcher" title="Link to this heading">#</a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="papercut.fetchers.doi.DOIFetcher">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">papercut.fetchers.doi.</span></span><span class="sig-name descname"><span class="pre">DOIFetcher</span></span><a class="reference internal" href="../_modules/papercut/fetchers/doi.html#DOIFetcher"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#papercut.fetchers.doi.DOIFetcher" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#papercut.fetchers.base.BaseFetcher" title="papercut.fetchers.base.BaseFetcher"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseFetcher</span></code></a></p>
+<p>Resolve DOIs and fetch papers.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="papercut.fetchers.doi.DOIFetcher.PATTERN">
+<span class="sig-name descname"><span class="pre">PATTERN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">re.compile('^(?:doi:|https?://(?:dx\\.)?doi\\.org/)?(10\\.\\d{4,}/[^\\s]+)$',</span> <span class="pre">re.IGNORECASE)</span></em><a class="headerlink" href="#papercut.fetchers.doi.DOIFetcher.PATTERN" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="papercut.fetchers.doi.DOIFetcher.CROSSREF_API">
+<span class="sig-name descname"><span class="pre">CROSSREF_API</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'https://api.crossref.org/works'</span></em><a class="headerlink" href="#papercut.fetchers.doi.DOIFetcher.CROSSREF_API" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="papercut.fetchers.doi.DOIFetcher.DOI_RESOLVER">
+<span class="sig-name descname"><span class="pre">DOI_RESOLVER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'https://doi.org'</span></em><a class="headerlink" href="#papercut.fetchers.doi.DOIFetcher.DOI_RESOLVER" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="papercut.fetchers.doi.DOIFetcher.can_handle">
+<span class="sig-name descname"><span class="pre">can_handle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/papercut/fetchers/doi.html#DOIFetcher.can_handle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#papercut.fetchers.doi.DOIFetcher.can_handle" title="Link to this definition">#</a></dt>
+<dd><p>Check if this fetcher can handle the given identifier.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>identifier</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="papercut.fetchers.doi.DOIFetcher.normalize_id">
+<span class="sig-name descname"><span class="pre">normalize_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/papercut/fetchers/doi.html#DOIFetcher.normalize_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#papercut.fetchers.doi.DOIFetcher.normalize_id" title="Link to this definition">#</a></dt>
+<dd><p>Normalize DOI to standard format (just the DOI, no prefix).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span></p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>identifier</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="papercut.fetchers.doi.DOIFetcher.fetch">
+<span class="sig-name descname"><span class="pre">fetch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/papercut/fetchers/doi.html#DOIFetcher.fetch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#papercut.fetchers.doi.DOIFetcher.fetch" title="Link to this definition">#</a></dt>
+<dd><p>Resolve DOI and attempt to fetch paper.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>identifier</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – DOI identifier.</p></li>
+<li><p><strong>output_dir</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></a></span>) – Directory to save the downloaded PDF.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="#papercut.fetchers.base.Document" title="papercut.fetchers.base.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Document object with path and metadata.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="exceptions.html#papercut.exceptions.PaperNotFoundError" title="papercut.exceptions.PaperNotFoundError"><strong>PaperNotFoundError</strong></a> – If DOI cannot be resolved.</p></li>
+<li><p><a class="reference internal" href="exceptions.html#papercut.exceptions.FetchError" title="papercut.exceptions.FetchError"><strong>FetchError</strong></a> – If download fails.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<p>Resolves DOIs and downloads the associated PDF.</p>
+<p><strong>Supported Identifiers:</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">10.1257/aer.20180779</span></code> - Standard DOI format</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">doi:10.1257/aer.20180779</span></code> - With doi: prefix</p></li>
+</ul>
+<p><strong>Features:</strong></p>
+<ul class="simple">
+<li><p>CrossRef API integration for metadata</p></li>
+<li><p>Unpaywall API for finding open access versions</p></li>
+<li><p>Multiple fallback strategies for PDF location</p></li>
+<li><p>Generates descriptive filenames</p></li>
+</ul>
+<p><strong>Example:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">papercut.fetchers.doi</span> <span class="kn">import</span> <span class="n">DOIFetcher</span>
+
+<span class="n">fetcher</span> <span class="o">=</span> <span class="n">DOIFetcher</span><span class="p">()</span>
+<span class="n">doc</span> <span class="o">=</span> <span class="n">fetcher</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="s2">&quot;10.1257/aer.20180779&quot;</span><span class="p">,</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;./papers&quot;</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Downloaded: </span><span class="si">{</span><span class="n">doc</span><span class="o">.</span><span class="n">title</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="ssrnfetcher">
+<span id="module-papercut.fetchers.ssrn"></span><h3>SSRNFetcher<a class="headerlink" href="#ssrnfetcher" title="Link to this heading">#</a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="papercut.fetchers.ssrn.SSRNFetcher">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">papercut.fetchers.ssrn.</span></span><span class="sig-name descname"><span class="pre">SSRNFetcher</span></span><a class="reference internal" href="../_modules/papercut/fetchers/ssrn.html#SSRNFetcher"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#papercut.fetchers.ssrn.SSRNFetcher" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#papercut.fetchers.base.BaseFetcher" title="papercut.fetchers.base.BaseFetcher"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseFetcher</span></code></a></p>
+<p>Fetch papers from SSRN.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="papercut.fetchers.ssrn.SSRNFetcher.PATTERN">
+<span class="sig-name descname"><span class="pre">PATTERN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">re.compile('^(?:ssrn[:\\-]?(?:id)?)?(\\d{6,8})$',</span> <span class="pre">re.IGNORECASE)</span></em><a class="headerlink" href="#papercut.fetchers.ssrn.SSRNFetcher.PATTERN" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="papercut.fetchers.ssrn.SSRNFetcher.ABSTRACT_URL">
+<span class="sig-name descname"><span class="pre">ABSTRACT_URL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'https://papers.ssrn.com/sol3/papers.cfm'</span></em><a class="headerlink" href="#papercut.fetchers.ssrn.SSRNFetcher.ABSTRACT_URL" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="papercut.fetchers.ssrn.SSRNFetcher.PDF_URL">
+<span class="sig-name descname"><span class="pre">PDF_URL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'https://papers.ssrn.com/sol3/Delivery.cfm'</span></em><a class="headerlink" href="#papercut.fetchers.ssrn.SSRNFetcher.PDF_URL" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="papercut.fetchers.ssrn.SSRNFetcher.can_handle">
+<span class="sig-name descname"><span class="pre">can_handle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/papercut/fetchers/ssrn.html#SSRNFetcher.can_handle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#papercut.fetchers.ssrn.SSRNFetcher.can_handle" title="Link to this definition">#</a></dt>
+<dd><p>Check if this fetcher can handle the given identifier.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>identifier</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="papercut.fetchers.ssrn.SSRNFetcher.normalize_id">
+<span class="sig-name descname"><span class="pre">normalize_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/papercut/fetchers/ssrn.html#SSRNFetcher.normalize_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#papercut.fetchers.ssrn.SSRNFetcher.normalize_id" title="Link to this definition">#</a></dt>
+<dd><p>Normalize SSRN ID to just the number.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span></p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>identifier</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="papercut.fetchers.ssrn.SSRNFetcher.fetch">
+<span class="sig-name descname"><span class="pre">fetch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/papercut/fetchers/ssrn.html#SSRNFetcher.fetch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#papercut.fetchers.ssrn.SSRNFetcher.fetch" title="Link to this definition">#</a></dt>
+<dd><p>Fetch paper from SSRN.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>identifier</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – SSRN paper ID.</p></li>
+<li><p><strong>output_dir</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></a></span>) – Directory to save the downloaded PDF.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="#papercut.fetchers.base.Document" title="papercut.fetchers.base.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Document object with path and metadata.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="exceptions.html#papercut.exceptions.PaperNotFoundError" title="papercut.exceptions.PaperNotFoundError"><strong>PaperNotFoundError</strong></a> – If paper not found on SSRN.</p></li>
+<li><p><a class="reference internal" href="exceptions.html#papercut.exceptions.FetchError" title="papercut.exceptions.FetchError"><strong>FetchError</strong></a> – If download fails.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<p>Fetches papers from the Social Science Research Network.</p>
+<p><strong>Supported Identifiers:</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">3550274</span></code> - SSRN paper ID</p></li>
+</ul>
+<p><strong>Features:</strong></p>
+<ul class="simple">
+<li><p>HTML scraping for metadata extraction</p></li>
+<li><p>Browser-like headers for reliable downloads</p></li>
+<li><p>Automatic filename generation</p></li>
+</ul>
+<p><strong>Example:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">papercut.fetchers.ssrn</span> <span class="kn">import</span> <span class="n">SSRNFetcher</span>
+
+<span class="n">fetcher</span> <span class="o">=</span> <span class="n">SSRNFetcher</span><span class="p">()</span>
+<span class="n">doc</span> <span class="o">=</span> <span class="n">fetcher</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="s2">&quot;3550274&quot;</span><span class="p">,</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;./papers&quot;</span><span class="p">))</span>
+</pre></div>
+</div>
+</section>
+<section id="nberfetcher">
+<span id="module-papercut.fetchers.nber"></span><h3>NBERFetcher<a class="headerlink" href="#nberfetcher" title="Link to this heading">#</a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="papercut.fetchers.nber.NBERFetcher">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">papercut.fetchers.nber.</span></span><span class="sig-name descname"><span class="pre">NBERFetcher</span></span><a class="reference internal" href="../_modules/papercut/fetchers/nber.html#NBERFetcher"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#papercut.fetchers.nber.NBERFetcher" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#papercut.fetchers.base.BaseFetcher" title="papercut.fetchers.base.BaseFetcher"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseFetcher</span></code></a></p>
+<p>Fetch working papers from NBER.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="papercut.fetchers.nber.NBERFetcher.PATTERN">
+<span class="sig-name descname"><span class="pre">PATTERN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">re.compile('^(?:nber:)?[wW]?(\\d{4,6})$',</span> <span class="pre">re.IGNORECASE)</span></em><a class="headerlink" href="#papercut.fetchers.nber.NBERFetcher.PATTERN" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="papercut.fetchers.nber.NBERFetcher.PAPER_URL">
+<span class="sig-name descname"><span class="pre">PAPER_URL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'https://www.nber.org/papers/w{paper_id}'</span></em><a class="headerlink" href="#papercut.fetchers.nber.NBERFetcher.PAPER_URL" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="papercut.fetchers.nber.NBERFetcher.PDF_URL">
+<span class="sig-name descname"><span class="pre">PDF_URL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'https://www.nber.org/system/files/working_papers/w{paper_id}/w{paper_id}.pdf'</span></em><a class="headerlink" href="#papercut.fetchers.nber.NBERFetcher.PDF_URL" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="papercut.fetchers.nber.NBERFetcher.can_handle">
+<span class="sig-name descname"><span class="pre">can_handle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/papercut/fetchers/nber.html#NBERFetcher.can_handle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#papercut.fetchers.nber.NBERFetcher.can_handle" title="Link to this definition">#</a></dt>
+<dd><p>Check if this fetcher can handle the given identifier.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>identifier</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="papercut.fetchers.nber.NBERFetcher.normalize_id">
+<span class="sig-name descname"><span class="pre">normalize_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/papercut/fetchers/nber.html#NBERFetcher.normalize_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#papercut.fetchers.nber.NBERFetcher.normalize_id" title="Link to this definition">#</a></dt>
+<dd><p>Normalize NBER ID to just the number.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span></p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>identifier</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="papercut.fetchers.nber.NBERFetcher.fetch">
+<span class="sig-name descname"><span class="pre">fetch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/papercut/fetchers/nber.html#NBERFetcher.fetch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#papercut.fetchers.nber.NBERFetcher.fetch" title="Link to this definition">#</a></dt>
+<dd><p>Fetch working paper from NBER.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>identifier</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – NBER working paper ID.</p></li>
+<li><p><strong>output_dir</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></a></span>) – Directory to save the downloaded PDF.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="#papercut.fetchers.base.Document" title="papercut.fetchers.base.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Document object with path and metadata.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="exceptions.html#papercut.exceptions.PaperNotFoundError" title="papercut.exceptions.PaperNotFoundError"><strong>PaperNotFoundError</strong></a> – If paper not found on NBER.</p></li>
+<li><p><a class="reference internal" href="exceptions.html#papercut.exceptions.FetchError" title="papercut.exceptions.FetchError"><strong>FetchError</strong></a> – If download fails.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<p>Fetches working papers from the National Bureau of Economic Research.</p>
+<p><strong>Supported Identifiers:</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">w29000</span></code> - With ‘w’ prefix</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">29000</span></code> - Numeric only</p></li>
+</ul>
+<p><strong>Features:</strong></p>
+<ul class="simple">
+<li><p>Metadata extraction from NBER pages</p></li>
+<li><p>Handles multiple ID formats</p></li>
+<li><p>Extracts title, authors, and abstract</p></li>
+</ul>
+<p><strong>Example:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">papercut.fetchers.nber</span> <span class="kn">import</span> <span class="n">NBERFetcher</span>
+
+<span class="n">fetcher</span> <span class="o">=</span> <span class="n">NBERFetcher</span><span class="p">()</span>
+<span class="n">doc</span> <span class="o">=</span> <span class="n">fetcher</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="s2">&quot;w29000&quot;</span><span class="p">,</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;./papers&quot;</span><span class="p">))</span>
+<span class="c1"># Also works: fetcher.fetch(&quot;29000&quot;, Path(&quot;./papers&quot;))</span>
+</pre></div>
+</div>
+</section>
+<section id="urlfetcher">
+<span id="module-papercut.fetchers.url"></span><h3>URLFetcher<a class="headerlink" href="#urlfetcher" title="Link to this heading">#</a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="papercut.fetchers.url.URLFetcher">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">papercut.fetchers.url.</span></span><span class="sig-name descname"><span class="pre">URLFetcher</span></span><a class="reference internal" href="../_modules/papercut/fetchers/url.html#URLFetcher"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#papercut.fetchers.url.URLFetcher" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#papercut.fetchers.base.BaseFetcher" title="papercut.fetchers.base.BaseFetcher"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseFetcher</span></code></a></p>
+<p>Fetch papers from direct URLs.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="papercut.fetchers.url.URLFetcher.URL_PATTERN">
+<span class="sig-name descname"><span class="pre">URL_PATTERN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">re.compile('^https?://',</span> <span class="pre">re.IGNORECASE)</span></em><a class="headerlink" href="#papercut.fetchers.url.URLFetcher.URL_PATTERN" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="papercut.fetchers.url.URLFetcher.can_handle">
+<span class="sig-name descname"><span class="pre">can_handle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/papercut/fetchers/url.html#URLFetcher.can_handle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#papercut.fetchers.url.URLFetcher.can_handle" title="Link to this definition">#</a></dt>
+<dd><p>Check if this fetcher can handle the given identifier.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>identifier</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="papercut.fetchers.url.URLFetcher.fetch">
+<span class="sig-name descname"><span class="pre">fetch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/papercut/fetchers/url.html#URLFetcher.fetch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#papercut.fetchers.url.URLFetcher.fetch" title="Link to this definition">#</a></dt>
+<dd><p>Download paper from URL.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>identifier</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – URL to download from.</p></li>
+<li><p><strong>output_dir</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></a></span>) – Directory to save the downloaded PDF.</p></li>
+<li><p><strong>name</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]</span>) – Optional custom filename (without extension).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="#papercut.fetchers.base.Document" title="papercut.fetchers.base.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Document object with path.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="exceptions.html#papercut.exceptions.FetchError" title="papercut.exceptions.FetchError"><strong>FetchError</strong></a> – If download fails.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<p>Downloads papers directly from URLs.</p>
+<p><strong>Supported Identifiers:</strong></p>
+<ul class="simple">
+<li><p>Any valid HTTP/HTTPS URL</p></li>
+</ul>
+<p><strong>Features:</strong></p>
+<ul class="simple">
+<li><p>Direct URL downloads</p></li>
+<li><p>Optional custom filename</p></li>
+<li><p>Automatic filename extraction from URL</p></li>
+<li><p>Rate limit detection</p></li>
+</ul>
+<p><strong>Example:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">papercut.fetchers.url</span> <span class="kn">import</span> <span class="n">URLFetcher</span>
+
+<span class="n">fetcher</span> <span class="o">=</span> <span class="n">URLFetcher</span><span class="p">()</span>
+<span class="n">doc</span> <span class="o">=</span> <span class="n">fetcher</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span>
+    <span class="s2">&quot;https://example.com/paper.pdf&quot;</span><span class="p">,</span>
+    <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;./papers&quot;</span><span class="p">),</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;custom_name.pdf&quot;</span>  <span class="c1"># Optional custom filename</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="usage-example">
+<h2>Usage Example<a class="headerlink" href="#usage-example" title="Link to this heading">#</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">papercut.fetchers.arxiv</span> <span class="kn">import</span> <span class="n">ArxivFetcher</span>
+
+<span class="n">fetcher</span> <span class="o">=</span> <span class="n">ArxivFetcher</span><span class="p">()</span>
+<span class="n">output_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;./papers&quot;</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">fetcher</span><span class="o">.</span><span class="n">can_handle</span><span class="p">(</span><span class="s2">&quot;2301.00001&quot;</span><span class="p">):</span>
+    <span class="n">doc</span> <span class="o">=</span> <span class="n">fetcher</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="s2">&quot;2301.00001&quot;</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Downloaded: </span><span class="si">{</span><span class="n">doc</span><span class="o">.</span><span class="n">title</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Authors: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">doc</span><span class="o">.</span><span class="n">authors</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Saved to: </span><span class="si">{</span><span class="n">doc</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="core.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Core Modules</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="extractors.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Extractors</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-papercut.fetchers.base">Base Classes</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#document">Document</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#papercut.fetchers.base.Document"><code class="docutils literal notranslate"><span class="pre">Document</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#papercut.fetchers.base.Document.path"><code class="docutils literal notranslate"><span class="pre">Document.path</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#papercut.fetchers.base.Document.title"><code class="docutils literal notranslate"><span class="pre">Document.title</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#papercut.fetchers.base.Document.authors"><code class="docutils literal notranslate"><span class="pre">Document.authors</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#papercut.fetchers.base.Document.abstract"><code class="docutils literal notranslate"><span class="pre">Document.abstract</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#papercut.fetchers.base.Document.doi"><code class="docutils literal notranslate"><span class="pre">Document.doi</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#papercut.fetchers.base.Document.arxiv_id"><code class="docutils literal notranslate"><span class="pre">Document.arxiv_id</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#papercut.fetchers.base.Document.source_url"><code class="docutils literal notranslate"><span class="pre">Document.source_url</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#papercut.fetchers.base.Document.fetched_at"><code class="docutils literal notranslate"><span class="pre">Document.fetched_at</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#papercut.fetchers.base.Document.exists"><code class="docutils literal notranslate"><span class="pre">Document.exists</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#papercut.fetchers.base.Document.__init__"><code class="docutils literal notranslate"><span class="pre">Document.__init__()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#basefetcher">BaseFetcher</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#papercut.fetchers.base.BaseFetcher"><code class="docutils literal notranslate"><span class="pre">BaseFetcher</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#papercut.fetchers.base.BaseFetcher.can_handle"><code class="docutils literal notranslate"><span class="pre">BaseFetcher.can_handle()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#papercut.fetchers.base.BaseFetcher.fetch"><code class="docutils literal notranslate"><span class="pre">BaseFetcher.fetch()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#papercut.fetchers.base.BaseFetcher.normalize_id"><code class="docutils literal notranslate"><span class="pre">BaseFetcher.normalize_id()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-papercut.fetchers.arxiv">Fetcher Implementations</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#arxivfetcher">ArxivFetcher</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#papercut.fetchers.arxiv.ArxivFetcher"><code class="docutils literal notranslate"><span class="pre">ArxivFetcher</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#papercut.fetchers.arxiv.ArxivFetcher.PATTERN"><code class="docutils literal notranslate"><span class="pre">ArxivFetcher.PATTERN</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#papercut.fetchers.arxiv.ArxivFetcher.OLD_PATTERN"><code class="docutils literal notranslate"><span class="pre">ArxivFetcher.OLD_PATTERN</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#papercut.fetchers.arxiv.ArxivFetcher.can_handle"><code class="docutils literal notranslate"><span class="pre">ArxivFetcher.can_handle()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#papercut.fetchers.arxiv.ArxivFetcher.normalize_id"><code class="docutils literal notranslate"><span class="pre">ArxivFetcher.normalize_id()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#papercut.fetchers.arxiv.ArxivFetcher.fetch"><code class="docutils literal notranslate"><span class="pre">ArxivFetcher.fetch()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#doifetcher">DOIFetcher</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#papercut.fetchers.doi.DOIFetcher"><code class="docutils literal notranslate"><span class="pre">DOIFetcher</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#papercut.fetchers.doi.DOIFetcher.PATTERN"><code class="docutils literal notranslate"><span class="pre">DOIFetcher.PATTERN</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#papercut.fetchers.doi.DOIFetcher.CROSSREF_API"><code class="docutils literal notranslate"><span class="pre">DOIFetcher.CROSSREF_API</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#papercut.fetchers.doi.DOIFetcher.DOI_RESOLVER"><code class="docutils literal notranslate"><span class="pre">DOIFetcher.DOI_RESOLVER</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#papercut.fetchers.doi.DOIFetcher.can_handle"><code class="docutils literal notranslate"><span class="pre">DOIFetcher.can_handle()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#papercut.fetchers.doi.DOIFetcher.normalize_id"><code class="docutils literal notranslate"><span class="pre">DOIFetcher.normalize_id()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#papercut.fetchers.doi.DOIFetcher.fetch"><code class="docutils literal notranslate"><span class="pre">DOIFetcher.fetch()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ssrnfetcher">SSRNFetcher</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#papercut.fetchers.ssrn.SSRNFetcher"><code class="docutils literal notranslate"><span class="pre">SSRNFetcher</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#papercut.fetchers.ssrn.SSRNFetcher.PATTERN"><code class="docutils literal notranslate"><span class="pre">SSRNFetcher.PATTERN</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#papercut.fetchers.ssrn.SSRNFetcher.ABSTRACT_URL"><code class="docutils literal notranslate"><span class="pre">SSRNFetcher.ABSTRACT_URL</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#papercut.fetchers.ssrn.SSRNFetcher.PDF_URL"><code class="docutils literal notranslate"><span class="pre">SSRNFetcher.PDF_URL</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#papercut.fetchers.ssrn.SSRNFetcher.can_handle"><code class="docutils literal notranslate"><span class="pre">SSRNFetcher.can_handle()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#papercut.fetchers.ssrn.SSRNFetcher.normalize_id"><code class="docutils literal notranslate"><span class="pre">SSRNFetcher.normalize_id()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#papercut.fetchers.ssrn.SSRNFetcher.fetch"><code class="docutils literal notranslate"><span class="pre">SSRNFetcher.fetch()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nberfetcher">NBERFetcher</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#papercut.fetchers.nber.NBERFetcher"><code class="docutils literal notranslate"><span class="pre">NBERFetcher</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#papercut.fetchers.nber.NBERFetcher.PATTERN"><code class="docutils literal notranslate"><span class="pre">NBERFetcher.PATTERN</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#papercut.fetchers.nber.NBERFetcher.PAPER_URL"><code class="docutils literal notranslate"><span class="pre">NBERFetcher.PAPER_URL</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#papercut.fetchers.nber.NBERFetcher.PDF_URL"><code class="docutils literal notranslate"><span class="pre">NBERFetcher.PDF_URL</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#papercut.fetchers.nber.NBERFetcher.can_handle"><code class="docutils literal notranslate"><span class="pre">NBERFetcher.can_handle()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#papercut.fetchers.nber.NBERFetcher.normalize_id"><code class="docutils literal notranslate"><span class="pre">NBERFetcher.normalize_id()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#papercut.fetchers.nber.NBERFetcher.fetch"><code class="docutils literal notranslate"><span class="pre">NBERFetcher.fetch()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#urlfetcher">URLFetcher</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#papercut.fetchers.url.URLFetcher"><code class="docutils literal notranslate"><span class="pre">URLFetcher</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#papercut.fetchers.url.URLFetcher.URL_PATTERN"><code class="docutils literal notranslate"><span class="pre">URLFetcher.URL_PATTERN</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#papercut.fetchers.url.URLFetcher.can_handle"><code class="docutils literal notranslate"><span class="pre">URLFetcher.can_handle()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#papercut.fetchers.url.URLFetcher.fetch"><code class="docutils literal notranslate"><span class="pre">URLFetcher.fetch()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#usage-example">Usage Example</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/fetchers.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, Pranjal Rawat.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

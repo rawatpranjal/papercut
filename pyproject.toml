@@ -1,0 +1,93 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "papercut"
+version = "0.1.0"
+description = "Extract knowledge from academic papers"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.10"
+authors = [
+    { name = "Pranjal Rawat" }
+]
+keywords = ["pdf", "academic", "papers", "extraction", "arxiv", "research"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Text Processing",
+]
+
+dependencies = [
+    "typer[all]>=0.12.0",
+    "pdfplumber>=0.11.0",
+    "pypdf>=4.0.0",
+    "arxiv>=2.1.0",
+    "httpx>=0.27.0",
+    "pydantic>=2.5.0",
+    "pydantic-settings>=2.1.0",
+    "pyyaml>=6.0",
+    "rich>=13.0.0",
+    "bibtexparser>=1.4.0",
+]
+
+[project.optional-dependencies]
+llm = [
+    "litellm>=1.40.0",
+]
+fast = [
+    "pymupdf>=1.24.0",
+]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-cov>=4.0.0",
+    "ruff>=0.3.0",
+    "mypy>=1.8.0",
+]
+all = ["papercut[llm,fast,dev]"]
+
+[project.scripts]
+papercut = "papercut.cli.app:app"
+
+[project.urls]
+Homepage = "https://github.com/pranjalrawat007/papercut"
+Repository = "https://github.com/pranjalrawat007/papercut"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/papercut"]
+
+[tool.ruff]
+src = ["src"]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "W", "F", "I", "B", "UP", "RUF"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["papercut"]
+
+[tool.mypy]
+python_version = "3.10"
+warn_return_any = true
+warn_unused_ignores = true
+
+[[tool.mypy.overrides]]
+module = ["pdfplumber.*", "arxiv.*", "bibtexparser.*"]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[tool.coverage.run]
+source = ["src/papercut"]
+branch = true

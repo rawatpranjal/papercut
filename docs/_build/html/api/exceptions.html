@@ -1,0 +1,975 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Exceptions &#8212; Papercut 0.1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=38b66d78"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=fd10adb8"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api/exceptions';</script>
+    <link rel="icon" href="../_static/logo.svg"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="Configuration" href="config.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/logo.svg" class="logo__image only-light" alt=""/>
+    <img src="../_static/logo.svg" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">Papercut</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../installation.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../quickstart.html">
+    Quickstart
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../tutorial/index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/pranjalrawat007/papercut" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/pranjalrawat007/papercut" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/papercut/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-solid fa-box fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">PyPI</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../installation.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../quickstart.html">
+    Quickstart
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../tutorial/index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/pranjalrawat007/papercut" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/pranjalrawat007/papercut" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/papercut/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-solid fa-box fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">PyPI</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="cli.html">CLI Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="core.html">Core Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fetchers.html">Fetchers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="extractors.html">Extractors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="config.html">Configuration</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Exceptions</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">API Reference</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Exceptions</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="exceptions">
+<h1>Exceptions<a class="headerlink" href="#exceptions" title="Link to this heading">#</a></h1>
+<p>The <code class="docutils literal notranslate"><span class="pre">papercut.exceptions</span></code> module defines a hierarchy of custom exceptions used throughout Papercut.</p>
+<section id="exception-hierarchy">
+<span id="module-papercut.exceptions"></span><h2>Exception Hierarchy<a class="headerlink" href="#exception-hierarchy" title="Link to this heading">#</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>PapercutError (exit_code=1)
+├── FetchError (exit_code=10)
+│   ├── PaperNotFoundError (exit_code=11)
+│   ├── RateLimitError (exit_code=12)
+│   └── NetworkError (exit_code=13)
+├── ExtractionError (exit_code=20)
+│   ├── InvalidPDFError (exit_code=21)
+│   └── NoContentError (exit_code=22)
+├── ConfigError (exit_code=30)
+│   └── MissingAPIKeyError (exit_code=31)
+└── LLMError (exit_code=40)
+</pre></div>
+</div>
+</section>
+<section id="base-exception">
+<h2>Base Exception<a class="headerlink" href="#base-exception" title="Link to this heading">#</a></h2>
+<section id="papercuterror">
+<h3>PapercutError<a class="headerlink" href="#papercuterror" title="Link to this heading">#</a></h3>
+<dl class="py exception">
+<dt class="sig sig-object py" id="papercut.exceptions.PapercutError">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">papercut.exceptions.</span></span><span class="sig-name descname"><span class="pre">PapercutError</span></span><a class="reference internal" href="../_modules/papercut/exceptions.html#PapercutError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#papercut.exceptions.PapercutError" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
+<p>Base exception for all Papercut errors.</p>
+<p>Base exception for all Papercut errors.</p>
+<p><strong>Attributes:</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">message</span></code> (str): Error message</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">exit_code</span></code> (int): CLI exit code. Default: 1</p></li>
+</ul>
+<p><strong>Example:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">papercut.exceptions</span> <span class="kn">import</span> <span class="n">PapercutError</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="c1"># some operation</span>
+    <span class="k">pass</span>
+<span class="k">except</span> <span class="n">PapercutError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">exit_code</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="papercut.exceptions.PapercutError.exit_code">
+<span class="sig-name descname"><span class="pre">exit_code</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#papercut.exceptions.PapercutError.exit_code" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="papercut.exceptions.PapercutError.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">details</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/papercut/exceptions.html#PapercutError.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#papercut.exceptions.PapercutError.__init__" title="Link to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>message</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>)</p></li>
+<li><p><strong>details</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+<section id="fetch-exceptions">
+<h2>Fetch Exceptions<a class="headerlink" href="#fetch-exceptions" title="Link to this heading">#</a></h2>
+<section id="fetcherror">
+<h3>FetchError<a class="headerlink" href="#fetcherror" title="Link to this heading">#</a></h3>
+<dl class="py exception">
+<dt class="sig sig-object py" id="papercut.exceptions.FetchError">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">papercut.exceptions.</span></span><span class="sig-name descname"><span class="pre">FetchError</span></span><a class="reference internal" href="../_modules/papercut/exceptions.html#FetchError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#papercut.exceptions.FetchError" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#papercut.exceptions.PapercutError" title="papercut.exceptions.PapercutError"><code class="xref py py-class docutils literal notranslate"><span class="pre">PapercutError</span></code></a></p>
+<p>Error during paper fetching.</p>
+<p>Base exception for paper fetching errors.</p>
+<p><strong>Exit Code:</strong> 10</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="papercut.exceptions.FetchError.exit_code">
+<span class="sig-name descname"><span class="pre">exit_code</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">10</span></em><a class="headerlink" href="#papercut.exceptions.FetchError.exit_code" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="papernotfounderror">
+<h3>PaperNotFoundError<a class="headerlink" href="#papernotfounderror" title="Link to this heading">#</a></h3>
+<dl class="py exception">
+<dt class="sig sig-object py" id="papercut.exceptions.PaperNotFoundError">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">papercut.exceptions.</span></span><span class="sig-name descname"><span class="pre">PaperNotFoundError</span></span><a class="reference internal" href="../_modules/papercut/exceptions.html#PaperNotFoundError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#papercut.exceptions.PaperNotFoundError" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#papercut.exceptions.FetchError" title="papercut.exceptions.FetchError"><code class="xref py py-class docutils literal notranslate"><span class="pre">FetchError</span></code></a></p>
+<p>Paper not found at source.</p>
+<p>Raised when a paper cannot be found at the specified source.</p>
+<p><strong>Exit Code:</strong> 11</p>
+<p><strong>Example:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">papercut.exceptions</span> <span class="kn">import</span> <span class="n">PaperNotFoundError</span>
+
+<span class="k">raise</span> <span class="n">PaperNotFoundError</span><span class="p">(</span><span class="s2">&quot;arXiv paper 9999.99999 not found&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="papercut.exceptions.PaperNotFoundError.exit_code">
+<span class="sig-name descname"><span class="pre">exit_code</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">11</span></em><a class="headerlink" href="#papercut.exceptions.PaperNotFoundError.exit_code" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="ratelimiterror">
+<h3>RateLimitError<a class="headerlink" href="#ratelimiterror" title="Link to this heading">#</a></h3>
+<dl class="py exception">
+<dt class="sig sig-object py" id="papercut.exceptions.RateLimitError">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">papercut.exceptions.</span></span><span class="sig-name descname"><span class="pre">RateLimitError</span></span><a class="reference internal" href="../_modules/papercut/exceptions.html#RateLimitError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#papercut.exceptions.RateLimitError" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#papercut.exceptions.FetchError" title="papercut.exceptions.FetchError"><code class="xref py py-class docutils literal notranslate"><span class="pre">FetchError</span></code></a></p>
+<p>Rate limited by source.</p>
+<p>Raised when the source API rate limits the request.</p>
+<p><strong>Exit Code:</strong> 12</p>
+<p><strong>Example:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">papercut.exceptions</span> <span class="kn">import</span> <span class="n">RateLimitError</span>
+
+<span class="k">raise</span> <span class="n">RateLimitError</span><span class="p">(</span><span class="s2">&quot;arXiv API rate limit exceeded. Try again in 60 seconds.&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="papercut.exceptions.RateLimitError.exit_code">
+<span class="sig-name descname"><span class="pre">exit_code</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">12</span></em><a class="headerlink" href="#papercut.exceptions.RateLimitError.exit_code" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="networkerror">
+<h3>NetworkError<a class="headerlink" href="#networkerror" title="Link to this heading">#</a></h3>
+<dl class="py exception">
+<dt class="sig sig-object py" id="papercut.exceptions.NetworkError">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">papercut.exceptions.</span></span><span class="sig-name descname"><span class="pre">NetworkError</span></span><a class="reference internal" href="../_modules/papercut/exceptions.html#NetworkError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#papercut.exceptions.NetworkError" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#papercut.exceptions.FetchError" title="papercut.exceptions.FetchError"><code class="xref py py-class docutils literal notranslate"><span class="pre">FetchError</span></code></a></p>
+<p>Network connectivity issue.</p>
+<p>Raised when a network error occurs during fetching.</p>
+<p><strong>Exit Code:</strong> 13</p>
+<p><strong>Example:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">papercut.exceptions</span> <span class="kn">import</span> <span class="n">NetworkError</span>
+
+<span class="k">raise</span> <span class="n">NetworkError</span><span class="p">(</span><span class="s2">&quot;Failed to connect to arxiv.org&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="papercut.exceptions.NetworkError.exit_code">
+<span class="sig-name descname"><span class="pre">exit_code</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">13</span></em><a class="headerlink" href="#papercut.exceptions.NetworkError.exit_code" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+<section id="extraction-exceptions">
+<h2>Extraction Exceptions<a class="headerlink" href="#extraction-exceptions" title="Link to this heading">#</a></h2>
+<section id="extractionerror">
+<h3>ExtractionError<a class="headerlink" href="#extractionerror" title="Link to this heading">#</a></h3>
+<dl class="py exception">
+<dt class="sig sig-object py" id="papercut.exceptions.ExtractionError">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">papercut.exceptions.</span></span><span class="sig-name descname"><span class="pre">ExtractionError</span></span><a class="reference internal" href="../_modules/papercut/exceptions.html#ExtractionError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#papercut.exceptions.ExtractionError" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#papercut.exceptions.PapercutError" title="papercut.exceptions.PapercutError"><code class="xref py py-class docutils literal notranslate"><span class="pre">PapercutError</span></code></a></p>
+<p>Error during content extraction.</p>
+<p>Base exception for content extraction errors.</p>
+<p><strong>Exit Code:</strong> 20</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="papercut.exceptions.ExtractionError.exit_code">
+<span class="sig-name descname"><span class="pre">exit_code</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">20</span></em><a class="headerlink" href="#papercut.exceptions.ExtractionError.exit_code" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="invalidpdferror">
+<h3>InvalidPDFError<a class="headerlink" href="#invalidpdferror" title="Link to this heading">#</a></h3>
+<dl class="py exception">
+<dt class="sig sig-object py" id="papercut.exceptions.InvalidPDFError">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">papercut.exceptions.</span></span><span class="sig-name descname"><span class="pre">InvalidPDFError</span></span><a class="reference internal" href="../_modules/papercut/exceptions.html#InvalidPDFError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#papercut.exceptions.InvalidPDFError" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#papercut.exceptions.ExtractionError" title="papercut.exceptions.ExtractionError"><code class="xref py py-class docutils literal notranslate"><span class="pre">ExtractionError</span></code></a></p>
+<p>PDF is corrupt or unreadable.</p>
+<p>Raised when the PDF file is invalid or corrupted.</p>
+<p><strong>Exit Code:</strong> 21</p>
+<p><strong>Example:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">papercut.exceptions</span> <span class="kn">import</span> <span class="n">InvalidPDFError</span>
+
+<span class="k">raise</span> <span class="n">InvalidPDFError</span><span class="p">(</span><span class="s2">&quot;File is not a valid PDF: paper.pdf&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="papercut.exceptions.InvalidPDFError.exit_code">
+<span class="sig-name descname"><span class="pre">exit_code</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">21</span></em><a class="headerlink" href="#papercut.exceptions.InvalidPDFError.exit_code" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="nocontenterror">
+<h3>NoContentError<a class="headerlink" href="#nocontenterror" title="Link to this heading">#</a></h3>
+<dl class="py exception">
+<dt class="sig sig-object py" id="papercut.exceptions.NoContentError">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">papercut.exceptions.</span></span><span class="sig-name descname"><span class="pre">NoContentError</span></span><a class="reference internal" href="../_modules/papercut/exceptions.html#NoContentError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#papercut.exceptions.NoContentError" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#papercut.exceptions.ExtractionError" title="papercut.exceptions.ExtractionError"><code class="xref py py-class docutils literal notranslate"><span class="pre">ExtractionError</span></code></a></p>
+<p>No extractable content found.</p>
+<p>Raised when no content could be extracted from the PDF.</p>
+<p><strong>Exit Code:</strong> 22</p>
+<p><strong>Example:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">papercut.exceptions</span> <span class="kn">import</span> <span class="n">NoContentError</span>
+
+<span class="k">raise</span> <span class="n">NoContentError</span><span class="p">(</span><span class="s2">&quot;No text content found in paper.pdf&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="papercut.exceptions.NoContentError.exit_code">
+<span class="sig-name descname"><span class="pre">exit_code</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">22</span></em><a class="headerlink" href="#papercut.exceptions.NoContentError.exit_code" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+<section id="configuration-exceptions">
+<h2>Configuration Exceptions<a class="headerlink" href="#configuration-exceptions" title="Link to this heading">#</a></h2>
+<section id="configerror">
+<h3>ConfigError<a class="headerlink" href="#configerror" title="Link to this heading">#</a></h3>
+<dl class="py exception">
+<dt class="sig sig-object py" id="papercut.exceptions.ConfigError">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">papercut.exceptions.</span></span><span class="sig-name descname"><span class="pre">ConfigError</span></span><a class="reference internal" href="../_modules/papercut/exceptions.html#ConfigError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#papercut.exceptions.ConfigError" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#papercut.exceptions.PapercutError" title="papercut.exceptions.PapercutError"><code class="xref py py-class docutils literal notranslate"><span class="pre">PapercutError</span></code></a></p>
+<p>Configuration error.</p>
+<p>Base exception for configuration errors.</p>
+<p><strong>Exit Code:</strong> 30</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="papercut.exceptions.ConfigError.exit_code">
+<span class="sig-name descname"><span class="pre">exit_code</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">30</span></em><a class="headerlink" href="#papercut.exceptions.ConfigError.exit_code" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="missingapikeyerror">
+<h3>MissingAPIKeyError<a class="headerlink" href="#missingapikeyerror" title="Link to this heading">#</a></h3>
+<dl class="py exception">
+<dt class="sig sig-object py" id="papercut.exceptions.MissingAPIKeyError">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">papercut.exceptions.</span></span><span class="sig-name descname"><span class="pre">MissingAPIKeyError</span></span><a class="reference internal" href="../_modules/papercut/exceptions.html#MissingAPIKeyError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#papercut.exceptions.MissingAPIKeyError" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#papercut.exceptions.ConfigError" title="papercut.exceptions.ConfigError"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConfigError</span></code></a></p>
+<p>Required API key not configured.</p>
+<p>Raised when a required API key is not configured.</p>
+<p><strong>Exit Code:</strong> 31</p>
+<p><strong>Example:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">papercut.exceptions</span> <span class="kn">import</span> <span class="n">MissingAPIKeyError</span>
+
+<span class="k">raise</span> <span class="n">MissingAPIKeyError</span><span class="p">(</span><span class="s2">&quot;ANTHROPIC_API_KEY not set&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="papercut.exceptions.MissingAPIKeyError.exit_code">
+<span class="sig-name descname"><span class="pre">exit_code</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">31</span></em><a class="headerlink" href="#papercut.exceptions.MissingAPIKeyError.exit_code" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+<section id="llm-exception">
+<h2>LLM Exception<a class="headerlink" href="#llm-exception" title="Link to this heading">#</a></h2>
+<section id="llmerror">
+<h3>LLMError<a class="headerlink" href="#llmerror" title="Link to this heading">#</a></h3>
+<dl class="py exception">
+<dt class="sig sig-object py" id="papercut.exceptions.LLMError">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">papercut.exceptions.</span></span><span class="sig-name descname"><span class="pre">LLMError</span></span><a class="reference internal" href="../_modules/papercut/exceptions.html#LLMError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#papercut.exceptions.LLMError" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#papercut.exceptions.PapercutError" title="papercut.exceptions.PapercutError"><code class="xref py py-class docutils literal notranslate"><span class="pre">PapercutError</span></code></a></p>
+<p>LLM processing error.</p>
+<p>Exception for LLM-related errors (v0.2 feature).</p>
+<p><strong>Exit Code:</strong> 40</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="papercut.exceptions.LLMError.exit_code">
+<span class="sig-name descname"><span class="pre">exit_code</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">40</span></em><a class="headerlink" href="#papercut.exceptions.LLMError.exit_code" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+<section id="error-handling-example">
+<h2>Error Handling Example<a class="headerlink" href="#error-handling-example" title="Link to this heading">#</a></h2>
+<p>Handling exceptions in scripts:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">papercut.exceptions</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">PapercutError</span><span class="p">,</span>
+    <span class="n">PaperNotFoundError</span><span class="p">,</span>
+    <span class="n">RateLimitError</span><span class="p">,</span>
+    <span class="n">NetworkError</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">fetch_paper</span><span class="p">(</span><span class="n">paper_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># fetch logic here</span>
+        <span class="k">pass</span>
+    <span class="k">except</span> <span class="n">PaperNotFoundError</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Paper </span><span class="si">{</span><span class="n">paper_id</span><span class="si">}</span><span class="s2"> not found&quot;</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">11</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">RateLimitError</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Rate limited. Please wait and try again.&quot;</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">12</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">NetworkError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Network error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">13</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">PapercutError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">exit_code</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="cli-error-handling">
+<h2>CLI Error Handling<a class="headerlink" href="#cli-error-handling" title="Link to this heading">#</a></h2>
+<p>The CLI automatically handles exceptions and returns appropriate exit codes:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Check exit code after command</span>
+papercut<span class="w"> </span>fetch<span class="w"> </span>arxiv<span class="w"> </span>invalid_id
+<span class="nb">echo</span><span class="w"> </span><span class="nv">$?</span><span class="w">  </span><span class="c1"># Returns 11 (PaperNotFoundError)</span>
+
+<span class="c1"># Use in scripts</span>
+<span class="k">if</span><span class="w"> </span>!<span class="w"> </span>papercut<span class="w"> </span>fetch<span class="w"> </span>arxiv<span class="w"> </span><span class="m">2301</span>.00001<span class="w"> </span>-o<span class="w"> </span>./papers<span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Failed to fetch paper&quot;</span>
+<span class="k">fi</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="config.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Configuration</p>
+      </div>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exception-hierarchy">Exception Hierarchy</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#base-exception">Base Exception</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#papercuterror">PapercutError</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#papercut.exceptions.PapercutError"><code class="docutils literal notranslate"><span class="pre">PapercutError</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#papercut.exceptions.PapercutError.exit_code"><code class="docutils literal notranslate"><span class="pre">PapercutError.exit_code</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#papercut.exceptions.PapercutError.__init__"><code class="docutils literal notranslate"><span class="pre">PapercutError.__init__()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fetch-exceptions">Fetch Exceptions</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#fetcherror">FetchError</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#papercut.exceptions.FetchError"><code class="docutils literal notranslate"><span class="pre">FetchError</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#papercut.exceptions.FetchError.exit_code"><code class="docutils literal notranslate"><span class="pre">FetchError.exit_code</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#papernotfounderror">PaperNotFoundError</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#papercut.exceptions.PaperNotFoundError"><code class="docutils literal notranslate"><span class="pre">PaperNotFoundError</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#papercut.exceptions.PaperNotFoundError.exit_code"><code class="docutils literal notranslate"><span class="pre">PaperNotFoundError.exit_code</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ratelimiterror">RateLimitError</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#papercut.exceptions.RateLimitError"><code class="docutils literal notranslate"><span class="pre">RateLimitError</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#papercut.exceptions.RateLimitError.exit_code"><code class="docutils literal notranslate"><span class="pre">RateLimitError.exit_code</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#networkerror">NetworkError</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#papercut.exceptions.NetworkError"><code class="docutils literal notranslate"><span class="pre">NetworkError</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#papercut.exceptions.NetworkError.exit_code"><code class="docutils literal notranslate"><span class="pre">NetworkError.exit_code</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#extraction-exceptions">Extraction Exceptions</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#extractionerror">ExtractionError</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#papercut.exceptions.ExtractionError"><code class="docutils literal notranslate"><span class="pre">ExtractionError</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#papercut.exceptions.ExtractionError.exit_code"><code class="docutils literal notranslate"><span class="pre">ExtractionError.exit_code</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#invalidpdferror">InvalidPDFError</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#papercut.exceptions.InvalidPDFError"><code class="docutils literal notranslate"><span class="pre">InvalidPDFError</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#papercut.exceptions.InvalidPDFError.exit_code"><code class="docutils literal notranslate"><span class="pre">InvalidPDFError.exit_code</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nocontenterror">NoContentError</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#papercut.exceptions.NoContentError"><code class="docutils literal notranslate"><span class="pre">NoContentError</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#papercut.exceptions.NoContentError.exit_code"><code class="docutils literal notranslate"><span class="pre">NoContentError.exit_code</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configuration-exceptions">Configuration Exceptions</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#configerror">ConfigError</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#papercut.exceptions.ConfigError"><code class="docutils literal notranslate"><span class="pre">ConfigError</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#papercut.exceptions.ConfigError.exit_code"><code class="docutils literal notranslate"><span class="pre">ConfigError.exit_code</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#missingapikeyerror">MissingAPIKeyError</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#papercut.exceptions.MissingAPIKeyError"><code class="docutils literal notranslate"><span class="pre">MissingAPIKeyError</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#papercut.exceptions.MissingAPIKeyError.exit_code"><code class="docutils literal notranslate"><span class="pre">MissingAPIKeyError.exit_code</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#llm-exception">LLM Exception</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#llmerror">LLMError</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#papercut.exceptions.LLMError"><code class="docutils literal notranslate"><span class="pre">LLMError</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#papercut.exceptions.LLMError.exit_code"><code class="docutils literal notranslate"><span class="pre">LLMError.exit_code</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#error-handling-example">Error Handling Example</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cli-error-handling">CLI Error Handling</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/exceptions.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, Pranjal Rawat.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
