@@ -84,8 +84,12 @@ class SSRNFetcher(BaseFetcher):
                 content_type = response.headers.get("content-type", "")
                 if "pdf" not in content_type.lower():
                     raise FetchError(
-                        f"SSRN did not return a PDF for {ssrn_id}",
-                        details="The paper may require login or may not be publicly available.",
+                        f"SSRN paper {ssrn_id} requires login",
+                        details=(
+                            "This paper is not publicly downloadable. "
+                            "Register free at https://papers.ssrn.com or try the direct link: "
+                            f"{self.ABSTRACT_URL}?abstract_id={ssrn_id}"
+                        ),
                     )
 
                 response.raise_for_status()
@@ -137,8 +141,12 @@ class SSRNFetcher(BaseFetcher):
                 content_type = response.headers.get("content-type", "")
                 if "pdf" not in content_type.lower():
                     raise FetchError(
-                        f"SSRN did not return a PDF for {ssrn_id}",
-                        details="The paper may require login or may not be publicly available.",
+                        f"SSRN paper {ssrn_id} requires login",
+                        details=(
+                            "This paper is not publicly downloadable. "
+                            "Register free at https://papers.ssrn.com or try the direct link: "
+                            f"{self.ABSTRACT_URL}?abstract_id={ssrn_id}"
+                        ),
                     )
 
                 response.raise_for_status()

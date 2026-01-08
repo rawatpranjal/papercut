@@ -39,8 +39,9 @@ def _get_converter(method: str):
         converter = NougatConverter()
         if not converter.is_available():
             raise ImportError(
-                "Nougat is not installed. Install with: pip install nougat-ocr"
+                "Nougat is not installed. Install with: pip install 'papercutter[equations-nougat]'"
             )
+        # Note: Model download warning is handled in NougatConverter._ensure_model()
         return converter
 
     if method == "pix2tex":
@@ -49,7 +50,7 @@ def _get_converter(method: str):
         converter = Pix2TexConverter()
         if not converter.is_available():
             raise ImportError(
-                "pix2tex is not installed. Install with: pip install pix2tex"
+                "pix2tex is not installed. Install with: pip install 'papercutter[equations-pix2tex]'"
             )
         return converter
 
@@ -218,9 +219,12 @@ def equations(
             eq.image_path = cached_path
 
     # Build result
+    requested_method = method if not no_latex and method != "none" else None
     result = {
         "success": True,
         "file": str(pdf_path.name),
+        "requested_method": requested_method,
+        "method_available": converter is not None if requested_method else None,
         **extraction_result.to_dict(),
     }
 

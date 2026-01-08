@@ -72,11 +72,21 @@ class NBERFetcher(BaseFetcher):
         try:
             pdf_path = download_file(pdf_url, output_dir, filename)
         except Exception as e:
+            error_str = str(e).lower()
             # Check if it's a 404
-            if "404" in str(e):
+            if "404" in error_str:
                 raise PaperNotFoundError(
                     f"NBER working paper not found: w{paper_id}",
                     details="Check that the paper ID is correct.",
+                ) from e
+            # Check if it's a 403 (NBER blocks automated requests)
+            if "403" in error_str:
+                raise FetchError(
+                    f"Access denied for NBER paper w{paper_id}",
+                    details=(
+                        "NBER blocks automated downloads. "
+                        f"Download manually from: {self.PAPER_URL.format(paper_id=paper_id)}"
+                    ),
                 ) from e
             raise FetchError(
                 f"Failed to download NBER paper w{paper_id}",
@@ -104,10 +114,19 @@ class NBERFetcher(BaseFetcher):
         try:
             pdf_path = await download_file_async(pdf_url, output_dir, filename)
         except Exception as e:
-            if "404" in str(e):
+            error_str = str(e).lower()
+            if "404" in error_str:
                 raise PaperNotFoundError(
                     f"NBER working paper not found: w{paper_id}",
                     details="Check that the paper ID is correct.",
+                ) from e
+            if "403" in error_str:
+                raise FetchError(
+                    f"Access denied for NBER paper w{paper_id}",
+                    details=(
+                        "NBER blocks automated downloads. "
+                        f"Download manually from: {self.PAPER_URL.format(paper_id=paper_id)}"
+                    ),
                 ) from e
             raise FetchError(
                 f"Failed to download NBER paper w{paper_id}",

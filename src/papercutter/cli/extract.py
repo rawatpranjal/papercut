@@ -665,7 +665,7 @@ def refs(
         search_lower = search.lower()
         all_refs = [
             r for r in all_refs
-            if search_lower in r.raw.lower()
+            if search_lower in r.raw_text.lower()
             or (r.title and search_lower in r.title.lower())
             or any(search_lower in a.lower() for a in r.authors)
         ]

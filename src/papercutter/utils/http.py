@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Callable, Optional
 from urllib.parse import urlparse
 
+import certifi
 import httpx
 
 from papercutter.exceptions import NetworkError, RateLimitError
@@ -11,11 +12,38 @@ from papercutter.exceptions import NetworkError, RateLimitError
 # Default timeout for HTTP requests (in seconds)
 DEFAULT_TIMEOUT = 30.0
 
-# Default headers to mimic a browser
+# Default headers to mimic a real browser (helps avoid bot detection)
 DEFAULT_HEADERS = {
-    "User-Agent": "Mozilla/5.0 (compatible; Papercutter/0.1; +https://github.com/rawatpranjal/papercutter)"
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+    "Accept-Language": "en-US,en;q=0.9",
 }
 """Default HTTP headers used for outbound requests."""
+
+# User-friendly HTTP error messages
+HTTP_ERROR_MESSAGES = {
+    400: "Bad request - the server couldn't understand the request",
+    401: "Authentication required - login credentials needed",
+    403: "Access denied - the server blocked this request",
+    404: "Resource not found - the page or file doesn't exist",
+    429: "Rate limited - please wait before making more requests",
+    500: "Server error - the server encountered an internal problem",
+    502: "Bad gateway - the server received an invalid response",
+    503: "Service unavailable - the server is temporarily overloaded",
+    504: "Gateway timeout - the server took too long to respond",
+}
+
+
+def get_friendly_error_message(status_code: int) -> str:
+    """Get a user-friendly error message for an HTTP status code.
+
+    Args:
+        status_code: HTTP status code.
+
+    Returns:
+        User-friendly error message.
+    """
+    return HTTP_ERROR_MESSAGES.get(status_code, f"HTTP error {status_code}")
 
 
 def get_client(**kwargs) -> httpx.Client:
@@ -31,6 +59,7 @@ def get_client(**kwargs) -> httpx.Client:
         timeout=kwargs.pop("timeout", DEFAULT_TIMEOUT),
         headers={**DEFAULT_HEADERS, **kwargs.pop("headers", {})},
         follow_redirects=True,
+        verify=certifi.where(),
         **kwargs,
     )
 
@@ -213,6 +242,7 @@ def get_async_client(**kwargs) -> httpx.AsyncClient:
         timeout=kwargs.pop("timeout", ASYNC_TIMEOUT),
         headers={**DEFAULT_HEADERS, **kwargs.pop("headers", {})},
         follow_redirects=True,
+        verify=certifi.where(),
         **kwargs,
     )
 

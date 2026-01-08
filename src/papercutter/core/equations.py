@@ -330,7 +330,7 @@ class EquationExtractor:
 
         return EquationExtractionResult(
             equations=equations,
-            pages_processed=pages_processed,
+            pages_processed=[p + 1 for p in pages_processed],  # Convert to 1-indexed for user display
             method=self.converter.name if self.converter else None,
             errors=errors,
         )

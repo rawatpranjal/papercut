@@ -400,7 +400,7 @@ class OutputFormatter:
         self.console.print(f"[dim]Found {len(refs)} reference(s)[/dim]\n")
 
         for i, ref in enumerate(refs[:20], 1):
-            self.console.print(f"[cyan][{i}][/cyan] {ref.get('raw', '')[:100]}")
+            self.console.print(f"[cyan][{i}][/cyan] {ref.get('raw_text', '')[:100]}")
 
         if len(refs) > 20:
             self.console.print(f"\n[dim]... and {len(refs) - 20} more[/dim]")

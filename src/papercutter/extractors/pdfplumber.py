@@ -26,7 +26,7 @@ def _extract_page_text(args: tuple[str, int]) -> tuple[int, str]:
     try:
         with pdfplumber.open(pdf_path) as pdf:
             page = pdf.pages[page_idx]
-            return (page_idx, page.extract_text() or "")
+            return (page_idx, page.extract_text(layout=True) or "")
     except Exception:
         return (page_idx, "")
 
@@ -96,12 +96,21 @@ class PdfPlumberExtractor:
                 use_parallel = parallel or len(target_indices) >= _MIN_PAGES_FOR_PARALLEL
 
                 if use_parallel and len(target_indices) >= _MIN_PAGES_FOR_PARALLEL:
-                    return self._extract_text_parallel(path, target_indices)
+                    try:
+                        return self._extract_text_parallel(path, target_indices)
+                    except (RuntimeError, OSError) as e:
+                        # Fall back to sequential on macOS multiprocessing issues
+                        # (e.g., spawn errors when running from stdin/Jupyter)
+                        error_str = str(e).lower()
+                        if "spawn" in error_str or "stdin" in error_str or "fork" in error_str:
+                            pass  # Fall through to sequential
+                        else:
+                            raise
 
                 # Sequential extraction
                 text_parts = []
                 for idx in target_indices:
-                    page_text = pdf.pages[idx].extract_text()
+                    page_text = pdf.pages[idx].extract_text(layout=True)
                     if page_text:
                         text_parts.append(page_text)
 
@@ -179,7 +188,15 @@ class PdfPlumberExtractor:
                 use_parallel = parallel or len(target_indices) >= _MIN_PAGES_FOR_PARALLEL
 
                 if use_parallel and len(target_indices) >= _MIN_PAGES_FOR_PARALLEL:
-                    return self._extract_tables_parallel(path, target_indices)
+                    try:
+                        return self._extract_tables_parallel(path, target_indices)
+                    except (RuntimeError, OSError) as e:
+                        # Fall back to sequential on macOS multiprocessing issues
+                        error_str = str(e).lower()
+                        if "spawn" in error_str or "stdin" in error_str or "fork" in error_str:
+                            pass  # Fall through to sequential
+                        else:
+                            raise
 
                 # Sequential extraction
                 tables = []
@@ -295,13 +312,21 @@ class PdfPlumberExtractor:
                 use_parallel = parallel or len(target_indices) >= _MIN_PAGES_FOR_PARALLEL
 
                 if use_parallel and len(target_indices) >= _MIN_PAGES_FOR_PARALLEL:
-                    return self._extract_text_by_page_parallel(path, target_indices)
+                    try:
+                        return self._extract_text_by_page_parallel(path, target_indices)
+                    except (RuntimeError, OSError) as e:
+                        # Fall back to sequential on macOS multiprocessing issues
+                        error_str = str(e).lower()
+                        if "spawn" in error_str or "stdin" in error_str or "fork" in error_str:
+                            pass  # Fall through to sequential
+                        else:
+                            raise
 
                 # Sequential extraction
                 results = []
                 for page_idx in target_indices:
                     page = pdf.pages[page_idx]
-                    page_text = page.extract_text() or ""
+                    page_text = page.extract_text(layout=True) or ""
                     results.append((page_idx, page_text))
 
                 return results

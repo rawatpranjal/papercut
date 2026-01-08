@@ -216,21 +216,21 @@ class TableExtractor:
         if most_common_cols < 2:
             return False
 
-        # Require most rows to have consistent column count (70% threshold)
+        # Require most rows to have consistent column count (50% threshold - relaxed for real-world tables)
         consistent_rows = col_count_freq[most_common_cols]
-        if consistent_rows < len(data) * 0.7:
+        if consistent_rows < len(data) * 0.5:
             return False
 
-        # Require at least 30% non-empty cells
-        if total_cells == 0 or non_empty_cells / total_cells < 0.3:
+        # Require at least 15% non-empty cells (relaxed for sparse tables)
+        if total_cells == 0 or non_empty_cells / total_cells < 0.15:
             return False
 
-        # Reject if too many cells look like figure references
-        if figure_refs / total_cells > 0.2:
+        # Reject if too many cells look like figure references (30% threshold)
+        if figure_refs / total_cells > 0.3:
             return False
 
-        # Reject if it looks like reversed/garbled text (common OCR issue)
-        if garbled_count / total_cells > 0.3:
+        # Reject if it looks like reversed/garbled text (50% threshold - relaxed)
+        if garbled_count / total_cells > 0.5:
             return False
 
         return True

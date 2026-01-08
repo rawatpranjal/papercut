@@ -181,3 +181,67 @@ Automatically select the right fetcher based on the identifier:
 
    # Automatically uses UrlFetcher
    doc = fetch_paper("https://example.com/paper.pdf", output_dir)
+
+Real-World Example: Fetching from arXiv
+---------------------------------------
+
+This example fetches the famous "Attention Is All You Need" paper (Vaswani et al., 2017):
+
+.. code-block:: python
+
+   from pathlib import Path
+   from papercutter.fetchers.arxiv import ArxivFetcher
+
+   fetcher = ArxivFetcher()
+   doc = fetcher.fetch("1706.03762", Path("./papers"))
+
+   print(f"Title: {doc.title}")
+   print(f"Authors: {doc.authors}")
+   print(f"arXiv ID: {doc.arxiv_id}")
+
+The arXiv API returns metadata including title, authors, and abstract. The ``Document`` object provides:
+
+.. code-block:: python
+
+   # Document attributes
+   doc.title       # Paper title from arXiv metadata
+   doc.authors     # List of author names
+   doc.abstract    # Full abstract text
+   doc.arxiv_id    # arXiv identifier (e.g., "1706.03762")
+   doc.source_url  # Download URL
+   doc.path        # Local file path after download
+   doc.exists      # Whether file exists locally
+
+Multi-Source Batch Fetch
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+Fetch papers from different sources in a single script:
+
+.. code-block:: python
+
+   from pathlib import Path
+   from papercutter.fetchers.arxiv import ArxivFetcher
+   from papercutter.fetchers.doi import DoiFetcher
+
+   # Famous ML papers
+   papers = [
+       ("arxiv", "1706.03762"),   # Attention Is All You Need
+       ("arxiv", "1810.04805"),   # BERT
+       ("arxiv", "2005.14165"),   # GPT-3
+       ("doi", "10.1038/s41586-021-03819-2"),  # AlphaFold2
+   ]
+
+   fetchers = {
+       "arxiv": ArxivFetcher(),
+       "doi": DoiFetcher(),
+   }
+
+   output_dir = Path("./ml_papers")
+   output_dir.mkdir(exist_ok=True)
+
+   for source, identifier in papers:
+       try:
+           doc = fetchers[source].fetch(identifier, output_dir)
+           print(f"[OK] {doc.title[:50]}...")
+       except Exception as e:
+           print(f"[FAIL] {source}:{identifier} - {e}")

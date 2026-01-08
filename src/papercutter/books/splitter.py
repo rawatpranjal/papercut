@@ -178,7 +178,7 @@ class ChapterSplitter:
 
         for page_num in range(total_pages):
             page = reader.pages[page_num]
-            text = page.extract_text() or ""
+            text = page.extract_text(extraction_mode="layout") or ""
 
             # Check first few lines for chapter headers
             first_lines = "\n".join(text.split("\n")[:5])

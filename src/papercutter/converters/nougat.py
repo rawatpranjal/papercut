@@ -47,13 +47,28 @@ class NougatConverter(BaseConverter):
         if not self._available:
             raise ImportError(
                 "Nougat requires transformers and torch. "
-                "Install with: pip install transformers torch"
+                "Install with: pip install 'papercutter[equations-nougat]'"
             )
+
+        import sys
 
         from transformers import NougatProcessor, VisionEncoderDecoderModel
 
-        self._processor = NougatProcessor.from_pretrained(self._model_name)
-        self._model = VisionEncoderDecoderModel.from_pretrained(self._model_name)
+        # Warn user about potential model download
+        print(
+            f"Loading Nougat model '{self._model_name}' "
+            "(this may download ~1GB on first run)...",
+            file=sys.stderr,
+        )
+
+        try:
+            self._processor = NougatProcessor.from_pretrained(self._model_name)
+            self._model = VisionEncoderDecoderModel.from_pretrained(self._model_name)
+        except Exception as e:
+            raise RuntimeError(
+                f"Failed to load Nougat model '{self._model_name}': {e}\n"
+                "Ensure you have internet access for first-time model download."
+            ) from e
 
     def convert(self, image_data: bytes) -> LaTeXConversion:
         """Convert equation image to LaTeX using Nougat.

@@ -1,12 +1,19 @@
 """Main Typer application for Papercutter CLI."""
 
+import os
 from typing import Optional
 
+import certifi
 import typer
 from rich.console import Console
 
 from papercutter import __version__
 from papercutter.cli.utils import handle_errors, set_context
+
+# Ensure SSL certificates are properly configured for macOS compatibility
+# This is needed for third-party libraries (like arxiv) that use requests/urllib
+if "SSL_CERT_FILE" not in os.environ:
+    os.environ["SSL_CERT_FILE"] = certifi.where()
 
 # Default console for output
 console = Console(stderr=True)

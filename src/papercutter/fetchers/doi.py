@@ -67,10 +67,24 @@ class DOIFetcher(BaseFetcher):
         pdf_url = self._find_pdf_url(doi, metadata)
 
         if not pdf_url:
-            raise FetchError(
-                f"Could not find PDF for DOI: {doi}",
-                details="The paper may require institutional access or purchase.",
-            )
+            # DOI exists (we have metadata) but no accessible PDF
+            title = metadata.get("title", "")
+            journal = metadata.get("journal", "")
+            if title:
+                raise FetchError(
+                    f"PDF not accessible: {title[:80]}",
+                    details=(
+                        f"DOI {doi} exists but paper appears behind paywall"
+                        + (f" ({journal})" if journal else "")
+                        + "."
+                    ),
+                    hint="Try: arXiv preprint, author's website, or institutional access",
+                )
+            else:
+                raise FetchError(
+                    f"Could not find PDF for DOI: {doi}",
+                    details="The paper may require institutional access or purchase.",
+                )
 
         # Generate filename
         filename = self._generate_filename(doi, metadata)
@@ -96,10 +110,24 @@ class DOIFetcher(BaseFetcher):
         pdf_url = await self._find_pdf_url_async(doi, metadata)
 
         if not pdf_url:
-            raise FetchError(
-                f"Could not find PDF for DOI: {doi}",
-                details="The paper may require institutional access or purchase.",
-            )
+            # DOI exists (we have metadata) but no accessible PDF
+            title = metadata.get("title", "")
+            journal = metadata.get("journal", "")
+            if title:
+                raise FetchError(
+                    f"PDF not accessible: {title[:80]}",
+                    details=(
+                        f"DOI {doi} exists but paper appears behind paywall"
+                        + (f" ({journal})" if journal else "")
+                        + "."
+                    ),
+                    hint="Try: arXiv preprint, author's website, or institutional access",
+                )
+            else:
+                raise FetchError(
+                    f"Could not find PDF for DOI: {doi}",
+                    details="The paper may require institutional access or purchase.",
+                )
 
         filename = self._generate_filename(doi, metadata)
         pdf_path = await download_file_async(pdf_url, output_dir, filename)

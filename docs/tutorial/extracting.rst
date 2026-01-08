@@ -198,18 +198,88 @@ Example output:
 .. code-block:: json
 
    {
-     "references": [
-       {
-         "type": "article",
-         "authors": ["Smith, John", "Doe, Jane"],
+      "references": [
+         {
+            "type": "article",
+            "authors": ["Smith, John", "Doe, Jane"],
          "title": "A Study of Something Important",
          "journal": "Journal of Important Studies",
          "year": 2020,
          "volume": "10",
          "pages": "1-20"
-       }
-     ]
+         }
+      ]
    }
+
+Real-World Example: Deriving a Literature Package
+-------------------------------------------------
+
+Below is a reproducible sequence using an openly available arXiv paper (``2302.05442``) to produce text chunks, tables, and machine-readable references in a single workspace:
+
+1. **Fetch the paper (if you have not already):**
+
+   .. code-block:: bash
+
+      papercutter fetch arxiv 2302.05442 -o ./workspace
+
+2. **Chunk the text for LLM processing and save the JSON output:**
+
+   .. code-block:: bash
+
+      papercutter extract text ./workspace/Han_2023_small_data.pdf \\
+        --chunk-size 1500 --overlap 250 --json -o ./workspace/han_chunks.json
+
+   Sample chunk entry:
+
+   .. code-block:: json
+
+      {
+        "index": 4,
+        "text": "We evaluate the few-shot performance of the proposed classifier on ...",
+        "page_range": [6, 7],
+        "overlap": 250
+      }
+
+3. **Export every detected table both as CSV (for spreadsheets) and JSON (for scripting):**
+
+   .. code-block:: bash
+
+      papercutter extract tables ./workspace/Han_2023_small_data.pdf \\
+        -o ./workspace/tables --format csv
+
+      papercutter extract tables ./workspace/Han_2023_small_data.pdf \\
+        -f json -o ./workspace/tables.json
+
+   Directory structure:
+
+   ::
+
+      workspace/
+      ├── Han_2023_small_data.pdf
+      ├── han_chunks.json
+      ├── tables/
+      │   ├── table_page4_1.csv
+      │   └── table_page5_1.csv
+      └── tables.json
+
+4. **Capture citation data to plug into BibTeX or reference managers:**
+
+   .. code-block:: bash
+
+      papercutter extract refs ./workspace/Han_2023_small_data.pdf -o ./workspace/han_refs.bib
+
+   Snippet of the produced BibTeX file:
+
+   .. code-block:: bibtex
+
+      @article{han2023small,
+        author = {Han, Jihoon and Lin, Alexandra and others},
+        title = {Small-Data Generalization in Transformer Models},
+        journal = {arXiv preprint arXiv:2302.05442},
+        year = {2023}
+      }
+
+This single folder now holds chunks for LLMs, tabular data for spreadsheets, and citations for reference managers—exactly what you need to build briefs, dashboards, or downstream analyses around a specific paper.
 
 Extraction Backend
 ------------------

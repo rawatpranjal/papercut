@@ -240,7 +240,7 @@ class DocumentIndexer:
             """Get page text with caching."""
             if page_num not in page_text_cache:
                 if 0 <= page_num < total_pages:
-                    page_text_cache[page_num] = reader.pages[page_num].extract_text() or ""
+                    page_text_cache[page_num] = reader.pages[page_num].extract_text(extraction_mode="layout") or ""
                 else:
                     page_text_cache[page_num] = ""
             return page_text_cache[page_num]
@@ -365,7 +365,7 @@ class DocumentIndexer:
             text = get_page_text(page_num)
             lines = text.split("\n")
 
-            for line in lines[:20]:  # Check first 20 lines of each page
+            for line in lines:  # Check all lines on each page for section headers
                 line = line.strip()
                 for pattern in compiled_patterns:
                     if pattern.match(line):
@@ -481,11 +481,16 @@ class DocumentIndexer:
         get_page_text: PageTextGetter,
     ) -> None:
         """Count references in the document."""
-        # Look for references section in last few pages
+        # Look for references section
+        # For books, scan more pages since references may be in an earlier chapter
         refs_count = 0
         total_pages = len(reader.pages)
 
-        for page_num in range(max(0, total_pages - 5), total_pages):
+        # Scan last 50 pages for books, last 5 for papers
+        pages_to_scan = 50 if index.type == "book" else 5
+        pages_to_scan = min(pages_to_scan, total_pages)
+
+        for page_num in range(max(0, total_pages - pages_to_scan), total_pages):
             text = get_page_text(page_num)
 
             # Check if this is a references page
