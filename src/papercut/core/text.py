@@ -72,7 +72,18 @@ class TextExtractor:
 
         Returns:
             List of text chunks.
+
+        Raises:
+            ValueError: If chunk_size or overlap are invalid.
         """
+        # Validate parameters to prevent infinite loops
+        if chunk_size <= 0:
+            raise ValueError("chunk_size must be a positive integer")
+        if overlap < 0:
+            raise ValueError("overlap must be non-negative")
+        if overlap >= chunk_size:
+            raise ValueError("overlap must be less than chunk_size")
+
         if len(text) <= chunk_size:
             return [text]
 
