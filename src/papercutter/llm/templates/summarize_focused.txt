@@ -1,0 +1,6 @@
+Summarize the following academic paper with a focus on {focus}:
+
+{content}
+
+Provide a focused summary that emphasizes the {focus} aspects of the paper.
+Keep the summary concise (200-400 words).

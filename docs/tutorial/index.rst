@@ -1,10 +1,13 @@
 Tutorials
 =========
 
-These tutorials provide in-depth guides for using Papercut's features.
+Command-Line Interface
+----------------------
+
+Learn to use Papercutter from the terminal:
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    fetching
    extracting
@@ -12,25 +15,44 @@ These tutorials provide in-depth guides for using Papercut's features.
    caching
    llm
 
+Python API
+----------
+
+Use Papercutter programmatically for custom workflows:
+
+.. toctree::
+   :maxdepth: 1
+
+   python/index
+   python/fetching
+   python/extracting
+   python/workflows
+
 Overview
 --------
 
-Papercut provides three main categories of functionality:
+**CLI Tutorials:**
 
-1. **Fetching Papers** - Download academic papers from various sources
-2. **Extracting Content** - Extract text, tables, and references from PDFs
-3. **LLM Analysis** - AI-powered summaries, reports, and study aids
+- :doc:`fetching` - Download papers from arXiv, DOI, SSRN, NBER, URLs
+- :doc:`extracting` - Extract text, tables, and references
+- :doc:`indexing` - Analyze document structure, detect chapters
+- :doc:`caching` - Manage extraction cache
+- :doc:`llm` - AI-powered summarization and reports
 
-Each tutorial covers the available options, common use cases, and best practices for that functionality.
+**Python API:**
+
+- :doc:`python/index` - Getting started with the Python API
+- :doc:`python/fetching` - Programmatic paper fetching
+- :doc:`python/extracting` - Programmatic content extraction
+- :doc:`python/workflows` - Complete pipelines and LLM integration
 
 Getting Help
 ------------
 
-For any command, you can use the ``--help`` flag to see available options:
+For any command, use the ``--help`` flag:
 
 .. code-block:: bash
 
-   papercut --help
-   papercut fetch --help
-   papercut extract --help
-   papercut fetch arxiv --help
+   papercutter --help
+   papercutter fetch --help
+   papercutter extract --help

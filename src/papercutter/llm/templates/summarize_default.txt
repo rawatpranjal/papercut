@@ -1,0 +1,11 @@
+Summarize the following academic paper:
+
+{content}
+
+Provide a comprehensive summary that includes:
+1. Main research question or objective
+2. Key methodology
+3. Main findings/results
+4. Conclusions and implications
+
+Keep the summary concise (300-500 words).

@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "papercut"
+name = "papercutter"
 version = "1.1.0"
 description = "Extract and map content from academic papers for LLM processing"
 readme = "README.md"
@@ -46,6 +46,19 @@ fast = [
 llm = [
     "litellm>=1.30.0",
 ]
+equations = [
+    "pymupdf>=1.24.0",
+    "pillow>=10.0.0",
+]
+equations-nougat = [
+    "papercutter[equations]",
+    "transformers>=4.30.0",
+    "torch>=2.0.0",
+]
+equations-pix2tex = [
+    "papercutter[equations]",
+    "pix2tex>=0.1.0",
+]
 dev = [
     "pytest>=8.0.0",
     "pytest-cov>=4.0.0",
@@ -53,17 +66,26 @@ dev = [
     "ruff>=0.3.0",
     "mypy>=1.8.0",
 ]
-all = ["papercut[fast,llm,dev]"]
+all = ["papercutter[fast,llm,equations,dev]"]
 
 [project.scripts]
-papercut = "papercut.cli.app:app"
+papercutter = "papercutter.cli.app:app"
 
 [project.urls]
-Homepage = "https://github.com/pranjalrawat007/papercut"
-Repository = "https://github.com/pranjalrawat007/papercut"
+Homepage = "https://github.com/pranjalrawat007/papercutter"
+Repository = "https://github.com/pranjalrawat007/papercutter"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/papercut"]
+packages = ["src/papercutter"]
+
+[tool.hatch.build.targets.sdist]
+exclude = [
+    "archive/",
+    "docs/",
+    "input/",
+    "tests/downloads/",
+    "*.pdf",
+]
 
 [tool.ruff]
 src = ["src"]
@@ -74,7 +96,7 @@ target-version = "py310"
 select = ["E", "W", "F", "I", "B", "UP", "RUF"]
 
 [tool.ruff.lint.isort]
-known-first-party = ["papercut"]
+known-first-party = ["papercutter"]
 
 [tool.mypy]
 python_version = "3.10"
@@ -82,7 +104,7 @@ warn_return_any = true
 warn_unused_ignores = true
 
 [[tool.mypy.overrides]]
-module = ["pdfplumber.*", "arxiv.*", "bibtexparser.*", "fitz.*"]
+module = ["pdfplumber.*", "arxiv.*", "bibtexparser.*", "fitz.*", "transformers.*", "torch.*", "pix2tex.*"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]
@@ -90,5 +112,5 @@ testpaths = ["tests"]
 pythonpath = ["src"]
 
 [tool.coverage.run]
-source = ["src/papercut"]
+source = ["src/papercutter"]
 branch = true

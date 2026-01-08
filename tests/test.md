@@ -1,4 +1,4 @@
-# Papercut: End-to-End Test Suite
+# Papercutter: End-to-End Test Suite
 
 These tests should be run against real papers, not mocks. A test passes only if a human reviewer confirms the output is useful and accurate.
 
@@ -287,7 +287,7 @@ sections:
 
 ### Test 5.1: Simple Theoretical Model
 **Input**: Paper with 2-player Bertrand competition model
-**Command**: `papercut simulate paper.pdf --language python`
+**Command**: `papercutter simulate paper.pdf --language python`
 **Pass Criteria**:
 - [ ] Generates runnable Python code
 - [ ] Model primitives (costs, demand) are parameterized
@@ -299,7 +299,7 @@ sections:
 
 ### Test 5.2: Dynamic Programming Model
 **Input**: Rust (1987) bus engine replacement
-**Command**: `papercut simulate paper.pdf --language python`
+**Command**: `papercutter simulate paper.pdf --language python`
 **Pass Criteria**:
 - [ ] State space defined correctly
 - [ ] Bellman equation implemented
@@ -311,7 +311,7 @@ sections:
 
 ### Test 5.3: Agent-Based Simulation
 **Input**: Paper with reinforcement learning agents in auction
-**Command**: `papercut simulate paper.pdf --language python`
+**Command**: `papercutter simulate paper.pdf --language python`
 **Pass Criteria**:
 - [ ] Agent class structure generated
 - [ ] Environment/market structure captured
@@ -322,7 +322,7 @@ sections:
 
 ### Test 5.4: Statistical Replication Code
 **Input**: DiD paper with clear specification
-**Command**: `papercut replicate paper.pdf --language stata`
+**Command**: `papercutter replicate paper.pdf --language stata`
 **Pass Criteria**:
 - [ ] Correct regression command (`reghdfe`, `xtreg`, etc.)
 - [ ] Dependent and independent variables named
@@ -334,11 +334,11 @@ sections:
 
 ### Test 5.5: Unsimulatable Paper
 **Input**: Purely empirical paper with no model
-**Command**: `papercut simulate paper.pdf`
+**Command**: `papercutter simulate paper.pdf`
 **Pass Criteria**:
 - [ ] Does NOT hallucinate a model
 - [ ] Returns helpful message: "No simulatable model found"
-- [ ] Offers alternative: "Try `papercut replicate` for regression code"
+- [ ] Offers alternative: "Try `papercutter replicate` for regression code"
 
 ---
 
@@ -385,7 +385,7 @@ sections:
 
 ### Test 6.5: Fabrication Detection
 **Test**: Ask for information that is NOT in the paper
-**Query**: `papercut ask paper.pdf "What is the author's Twitter handle?"`
+**Query**: `papercutter ask paper.pdf "What is the author's Twitter handle?"`
 **Pass Criteria**:
 - [ ] Returns "Not found in paper" or similar
 - [ ] Does NOT make up a Twitter handle
@@ -406,7 +406,7 @@ sections:
 
 ### Test 7.1: 50-Paper Batch
 **Input**: Folder with 50 PDFs
-**Command**: `papercut report ./papers/*.pdf --template meta_analysis --output results.jsonl`
+**Command**: `papercutter report ./papers/*.pdf --template meta_analysis --output results.jsonl`
 **Pass Criteria**:
 - [ ] Completes without crashing
 - [ ] All 50 papers produce output (or explicit error)
@@ -507,10 +507,10 @@ sections:
 **Test**: Run various invalid commands
 **Commands**:
 ```bash
-papercut report                          # Missing input
-papercut report nonexistent.pdf          # File not found
-papercut report paper.pdf --template xyz # Invalid template
-papercut report paper.docx               # Wrong format
+papercutter report                          # Missing input
+papercutter report nonexistent.pdf          # File not found
+papercutter report paper.pdf --template xyz # Invalid template
+papercutter report paper.docx               # Wrong format
 ```
 **Pass Criteria**:
 - [ ] All produce helpful, specific error messages
@@ -549,7 +549,7 @@ papercut report paper.docx               # Wrong format
 ### Test 9.5: API Key Missing
 **Test**: Run LLM feature without API key configured
 **Pass Criteria**:
-- [ ] Clear error: "API key not found. Set ANTHROPIC_API_KEY or configure in ~/.papercut/config.yaml"
+- [ ] Clear error: "API key not found. Set ANTHROPIC_API_KEY or configure in ~/.papercutter/config.yaml"
 - [ ] Links to setup documentation
 - [ ] Non-LLM features still work
 
@@ -559,7 +559,7 @@ papercut report paper.docx               # Wrong format
 
 ### Test 10.1: Two-Paper Comparison
 **Input**: Card & Krueger (1994) vs Neumark & Wascher (2000)
-**Command**: `papercut report ck1994.pdf nw2000.pdf --template comparison`
+**Command**: `papercutter report ck1994.pdf nw2000.pdf --template comparison`
 **Pass Criteria**:
 - [ ] Side-by-side methodology comparison
 - [ ] Notes different data sources
@@ -571,7 +571,7 @@ papercut report paper.docx               # Wrong format
 
 ### Test 10.2: Literature Matrix
 **Input**: 10 papers on same topic
-**Command**: `papercut report ./papers/*.pdf --template lit_matrix`
+**Command**: `papercutter report ./papers/*.pdf --template lit_matrix`
 **Pass Criteria**:
 - [ ] Produces table with one row per paper
 - [ ] Columns: Paper, Method, Data, N, Effect, Significance

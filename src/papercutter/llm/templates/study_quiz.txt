@@ -1,0 +1,19 @@
+Create practice questions based on this chapter:
+
+{content}
+
+Generate study questions at different levels:
+
+## Recall Questions
+5 questions testing basic recall of facts and definitions.
+
+## Comprehension Questions
+5 questions testing understanding of concepts.
+
+## Application Questions
+3 questions requiring application of concepts to new situations.
+
+## Analysis Questions
+2 questions requiring deeper analysis or comparison.
+
+For each question, provide the answer after all questions are listed.

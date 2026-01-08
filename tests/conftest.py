@@ -1,4 +1,4 @@
-"""Pytest fixtures for Papercut tests."""
+"""Pytest fixtures for Papercutter tests."""
 
 import shutil
 from pathlib import Path

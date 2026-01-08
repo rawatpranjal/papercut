@@ -1,5 +1,5 @@
-"""Report generation for Papercut."""
+"""Report generation for Papercutter."""
 
-from papercut.report.generator import ReportGenerator, generate_report
+from papercutter.report.generator import ReportGenerator, generate_report
 
 __all__ = ["ReportGenerator", "generate_report"]

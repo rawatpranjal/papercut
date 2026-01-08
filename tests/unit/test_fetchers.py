@@ -2,11 +2,11 @@
 
 import pytest
 
-from papercut.fetchers.arxiv import ArxivFetcher
-from papercut.fetchers.doi import DOIFetcher
-from papercut.fetchers.nber import NBERFetcher
-from papercut.fetchers.ssrn import SSRNFetcher
-from papercut.fetchers.url import URLFetcher
+from papercutter.fetchers.arxiv import ArxivFetcher
+from papercutter.fetchers.doi import DOIFetcher
+from papercutter.fetchers.nber import NBERFetcher
+from papercutter.fetchers.ssrn import SSRNFetcher
+from papercutter.fetchers.url import URLFetcher
 
 
 class TestArxivFetcher:

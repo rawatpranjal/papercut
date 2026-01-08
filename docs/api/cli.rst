@@ -3,7 +3,7 @@ CLI
 
 .. code-block:: bash
 
-   papercut [COMMAND] [OPTIONS]
+   papercutter [COMMAND] [OPTIONS]
 
 Fetch Commands
 --------------
@@ -12,11 +12,11 @@ Download papers from various sources.
 
 .. code-block:: bash
 
-   papercut fetch arxiv 2301.00001
-   papercut fetch doi 10.1257/aer.20180779
-   papercut fetch ssrn 3550274
-   papercut fetch nber w29000
-   papercut fetch url https://example.com/paper.pdf
+   papercutter fetch arxiv 2301.00001
+   papercutter fetch doi 10.1257/aer.20180779
+   papercutter fetch ssrn 3550274
+   papercutter fetch nber w29000
+   papercutter fetch url https://example.com/paper.pdf
 
 Extract Commands
 ----------------
@@ -25,9 +25,9 @@ Extract content from PDFs.
 
 .. code-block:: bash
 
-   papercut extract text paper.pdf [-p PAGES] [--chunk-size N]
-   papercut extract tables paper.pdf [-f csv|json]
-   papercut extract refs paper.pdf [-f bibtex|json]
+   papercutter extract text paper.pdf [-p PAGES] [--chunk-size N]
+   papercutter extract tables paper.pdf [-f csv|json]
+   papercutter extract refs paper.pdf [-f bibtex|json]
 
 Index Commands
 --------------
@@ -36,9 +36,9 @@ Build and inspect document structure.
 
 .. code-block:: bash
 
-   papercut index paper.pdf [--type paper|book] [--force]
-   papercut chapters book.pdf
-   papercut info paper.pdf
+   papercutter index paper.pdf [--type paper|book] [--force]
+   papercutter chapters book.pdf
+   papercutter info paper.pdf
 
 Read Command
 ------------
@@ -47,10 +47,10 @@ Extract text by section or chapter.
 
 .. code-block:: bash
 
-   papercut read paper.pdf --pages 10-14
-   papercut read paper.pdf --section "Methods"
-   papercut read book.pdf --chapter 5
-   papercut read paper.pdf --all
+   papercutter read paper.pdf --pages 10-14
+   papercutter read paper.pdf --section "Methods"
+   papercutter read book.pdf --chapter 5
+   papercutter read paper.pdf --all
 
 Cache Commands
 --------------
@@ -59,13 +59,13 @@ Manage extraction cache.
 
 .. code-block:: bash
 
-   papercut cache-info paper.pdf
-   papercut clear-cache [paper.pdf]
+   papercutter cache-info paper.pdf
+   papercutter clear-cache [paper.pdf]
 
 LLM Commands
 ------------
 
-AI-powered analysis (requires ``pip install papercut[llm]``).
+AI-powered analysis (requires ``pip install papercutter[llm]``).
 
 summarize
 ^^^^^^^^^
@@ -74,7 +74,7 @@ Generate AI summaries of papers.
 
 .. code-block:: bash
 
-   papercut summarize paper.pdf [OPTIONS]
+   papercutter summarize paper.pdf [OPTIONS]
 
 Options:
 
@@ -101,7 +101,7 @@ Generate structured reports for different audiences.
 
 .. code-block:: bash
 
-   papercut report paper.pdf [OPTIONS]
+   papercutter report paper.pdf [OPTIONS]
 
 Options:
 
@@ -124,7 +124,7 @@ Generate study materials from books.
 
 .. code-block:: bash
 
-   papercut study book.pdf [OPTIONS]
+   papercutter study book.pdf [OPTIONS]
 
 Options:
 

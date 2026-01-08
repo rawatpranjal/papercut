@@ -1,6 +1,6 @@
 """Markdown renderer for reports."""
 
-from papercut.report.generator import Report
+from papercutter.report.generator import Report
 
 
 def render_markdown(report: Report) -> str:

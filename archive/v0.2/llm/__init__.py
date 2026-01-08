@@ -1,5 +1,5 @@
-"""LLM integration for Papercut."""
+"""LLM integration for Papercutter."""
 
-from papercut.llm.client import LLMClient, get_client
+from papercutter.llm.client import LLMClient, get_client
 
 __all__ = ["LLMClient", "get_client"]

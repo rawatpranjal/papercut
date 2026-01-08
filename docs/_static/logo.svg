@@ -1,31 +1,12 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <defs>
-    <linearGradient id="blueGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#1d4ed8;stop-opacity:1" />
+    <linearGradient id="blue" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#1d4ed8"/>
     </linearGradient>
   </defs>
-  <!-- Paper/Document -->
-  <rect x="12" y="8" width="40" height="48" rx="3" fill="#f8fafc" stroke="url(#blueGradient)" stroke-width="2"/>
-  <!-- Fold corner -->
-  <path d="M42 8 L52 18 L42 18 Z" fill="#e2e8f0" stroke="url(#blueGradient)" stroke-width="1.5"/>
-  <!-- Cut line (dashed) -->
-  <line x1="8" y1="32" x2="56" y2="32" stroke="url(#blueGradient)" stroke-width="2" stroke-dasharray="4,3"/>
-  <!-- Scissors -->
-  <g transform="translate(4, 26)">
-    <!-- Scissors handle left -->
-    <ellipse cx="6" cy="6" rx="5" ry="4" fill="none" stroke="url(#blueGradient)" stroke-width="2"/>
-    <!-- Scissors handle right -->
-    <ellipse cx="6" cy="14" rx="5" ry="4" fill="none" stroke="url(#blueGradient)" stroke-width="2"/>
-    <!-- Scissors blades -->
-    <path d="M10 7 L22 10" stroke="url(#blueGradient)" stroke-width="2.5" stroke-linecap="round"/>
-    <path d="M10 13 L22 10" stroke="url(#blueGradient)" stroke-width="2.5" stroke-linecap="round"/>
-    <!-- Pivot point -->
-    <circle cx="11" cy="10" r="2" fill="url(#blueGradient)"/>
-  </g>
-  <!-- Text lines on paper -->
-  <line x1="18" y1="20" x2="38" y2="20" stroke="#cbd5e1" stroke-width="2" stroke-linecap="round"/>
-  <line x1="18" y1="26" x2="32" y2="26" stroke="#cbd5e1" stroke-width="2" stroke-linecap="round"/>
-  <line x1="18" y1="40" x2="42" y2="40" stroke="#cbd5e1" stroke-width="2" stroke-linecap="round"/>
-  <line x1="18" y1="46" x2="36" y2="46" stroke="#cbd5e1" stroke-width="2" stroke-linecap="round"/>
+  <!-- Top-left piece (separating up-left) -->
+  <rect x="8" y="8" width="24" height="32" rx="4" fill="url(#blue)" transform="rotate(-8 20 24)"/>
+  <!-- Bottom-right piece (separating down-right) -->
+  <rect x="32" y="24" width="24" height="32" rx="4" fill="url(#blue)" opacity="0.7" transform="rotate(8 44 40)"/>
 </svg>

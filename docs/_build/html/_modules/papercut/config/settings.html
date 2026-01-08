@@ -158,7 +158,7 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../api/index.html">
-    API Reference
+    API
   </a>
 </li>
 
@@ -296,7 +296,7 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../api/index.html">
-    API Reference
+    API
   </a>
 </li>
 
@@ -459,6 +459,17 @@
 
 
 
+<span class="k">class</span> <span class="nc">EquationExtractionSettings</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Settings for equation extraction.&quot;&quot;&quot;</span>
+
+    <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;nougat&quot;</span>  <span class="c1"># nougat, pix2tex, mathpix</span>
+    <span class="n">min_confidence</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">image_dpi</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">300</span>
+    <span class="n">detect_inline</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">min_width</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">50</span>
+    <span class="n">min_height</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">20</span>
+
+
 <div class="viewcode-block" id="ExtractionSettings">
 <a class="viewcode-back" href="../../../api/config.html#papercut.config.settings.ExtractionSettings">[docs]</a>
 <span class="k">class</span> <span class="nc">ExtractionSettings</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
@@ -466,7 +477,8 @@
 
     <span class="n">backend</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;pdfplumber&quot;</span>
     <span class="n">text</span><span class="p">:</span> <span class="n">TextExtractionSettings</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">TextExtractionSettings</span><span class="p">)</span>
-    <span class="n">tables</span><span class="p">:</span> <span class="n">TableExtractionSettings</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">TableExtractionSettings</span><span class="p">)</span></div>
+    <span class="n">tables</span><span class="p">:</span> <span class="n">TableExtractionSettings</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">TableExtractionSettings</span><span class="p">)</span>
+    <span class="n">equations</span><span class="p">:</span> <span class="n">EquationExtractionSettings</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">EquationExtractionSettings</span><span class="p">)</span></div>
 
 
 
@@ -508,7 +520,9 @@
 
     <span class="c1"># API keys (can be set via environment variables)</span>
     <span class="n">anthropic_api_key</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">openai_api_key</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span></div>
+    <span class="n">openai_api_key</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">mathpix_app_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">mathpix_app_key</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span></div>
 
 
 

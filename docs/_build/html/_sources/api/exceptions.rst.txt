@@ -1,16 +1,16 @@
 Exceptions
 ==========
 
-The ``papercut.exceptions`` module defines a hierarchy of custom exceptions used throughout Papercut.
+The ``papercutter.exceptions`` module defines a hierarchy of custom exceptions used throughout Papercutter.
 
-.. module:: papercut.exceptions
+.. module:: papercutter.exceptions
 
 Exception Hierarchy
 -------------------
 
 ::
 
-   PapercutError (exit_code=1)
+   PapercutterError (exit_code=1)
    ├── FetchError (exit_code=10)
    │   ├── PaperNotFoundError (exit_code=11)
    │   ├── RateLimitError (exit_code=12)
@@ -25,14 +25,14 @@ Exception Hierarchy
 Base Exception
 --------------
 
-PapercutError
-~~~~~~~~~~~~~
+PapercutterError
+~~~~~~~~~~~~~~~~
 
-.. autoexception:: PapercutError
+.. autoexception:: PapercutterError
    :members:
    :show-inheritance:
 
-   Base exception for all Papercut errors.
+   Base exception for all Papercutter errors.
 
    **Attributes:**
 
@@ -43,12 +43,12 @@ PapercutError
 
    .. code-block:: python
 
-      from papercut.exceptions import PapercutError
+      from papercutter.exceptions import PapercutterError
 
       try:
           # some operation
           pass
-      except PapercutError as e:
+      except PapercutterError as e:
           print(f"Error: {e}")
           sys.exit(e.exit_code)
 
@@ -81,7 +81,7 @@ PaperNotFoundError
 
    .. code-block:: python
 
-      from papercut.exceptions import PaperNotFoundError
+      from papercutter.exceptions import PaperNotFoundError
 
       raise PaperNotFoundError("arXiv paper 9999.99999 not found")
 
@@ -100,7 +100,7 @@ RateLimitError
 
    .. code-block:: python
 
-      from papercut.exceptions import RateLimitError
+      from papercutter.exceptions import RateLimitError
 
       raise RateLimitError("arXiv API rate limit exceeded. Try again in 60 seconds.")
 
@@ -119,7 +119,7 @@ NetworkError
 
    .. code-block:: python
 
-      from papercut.exceptions import NetworkError
+      from papercutter.exceptions import NetworkError
 
       raise NetworkError("Failed to connect to arxiv.org")
 
@@ -152,7 +152,7 @@ InvalidPDFError
 
    .. code-block:: python
 
-      from papercut.exceptions import InvalidPDFError
+      from papercutter.exceptions import InvalidPDFError
 
       raise InvalidPDFError("File is not a valid PDF: paper.pdf")
 
@@ -171,7 +171,7 @@ NoContentError
 
    .. code-block:: python
 
-      from papercut.exceptions import NoContentError
+      from papercutter.exceptions import NoContentError
 
       raise NoContentError("No text content found in paper.pdf")
 
@@ -204,7 +204,7 @@ MissingAPIKeyError
 
    .. code-block:: python
 
-      from papercut.exceptions import MissingAPIKeyError
+      from papercutter.exceptions import MissingAPIKeyError
 
       raise MissingAPIKeyError("ANTHROPIC_API_KEY not set")
 
@@ -230,8 +230,8 @@ Handling exceptions in scripts:
 .. code-block:: python
 
    import sys
-   from papercut.exceptions import (
-       PapercutError,
+   from papercutter.exceptions import (
+       PapercutterError,
        PaperNotFoundError,
        RateLimitError,
        NetworkError,
@@ -250,7 +250,7 @@ Handling exceptions in scripts:
        except NetworkError as e:
            print(f"Network error: {e}")
            sys.exit(13)
-       except PapercutError as e:
+       except PapercutterError as e:
            print(f"Error: {e}")
            sys.exit(e.exit_code)
 
@@ -262,10 +262,10 @@ The CLI automatically handles exceptions and returns appropriate exit codes:
 .. code-block:: bash
 
    # Check exit code after command
-   papercut fetch arxiv invalid_id
+   papercutter fetch arxiv invalid_id
    echo $?  # Returns 11 (PaperNotFoundError)
 
    # Use in scripts
-   if ! papercut fetch arxiv 2301.00001 -o ./papers; then
+   if ! papercutter fetch arxiv 2301.00001 -o ./papers; then
        echo "Failed to fetch paper"
    fi

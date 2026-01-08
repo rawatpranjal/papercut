@@ -11,7 +11,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 # -- Project information -----------------------------------------------------
 
-project = "Papercut"
+project = "Papercutter"
 copyright = "2024, Pranjal Rawat"
 author = "Pranjal Rawat"
 release = "0.1.0"
@@ -47,9 +47,9 @@ html_theme_options = {
     "logo": {
         "image_light": "_static/logo.svg",
         "image_dark": "_static/logo.svg",
-        "text": "Papercut",
+        "text": "Papercutter",
     },
-    "github_url": "https://github.com/pranjalrawat007/papercut",
+    "github_url": "https://github.com/pranjalrawat007/papercutter",
     "show_toc_level": 2,
     "navigation_with_keys": True,
     "show_nav_level": 2,
@@ -57,12 +57,12 @@ html_theme_options = {
     "icon_links": [
         {
             "name": "GitHub",
-            "url": "https://github.com/pranjalrawat007/papercut",
+            "url": "https://github.com/pranjalrawat007/papercutter",
             "icon": "fa-brands fa-github",
         },
         {
             "name": "PyPI",
-            "url": "https://pypi.org/project/papercut/",
+            "url": "https://pypi.org/project/papercutter/",
             "icon": "fa-solid fa-box",
         },
     ],
@@ -72,7 +72,7 @@ html_favicon = "_static/logo.svg"
 
 html_context = {
     "github_user": "pranjalrawat007",
-    "github_repo": "papercut",
+    "github_repo": "papercutter",
     "github_version": "main",
     "doc_path": "docs",
 }

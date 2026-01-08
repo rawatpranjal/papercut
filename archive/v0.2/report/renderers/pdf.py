@@ -6,8 +6,8 @@ import tempfile
 from pathlib import Path
 from typing import Optional
 
-from papercut.exceptions import PapercutError
-from papercut.report.generator import Report
+from papercutter.exceptions import PapercutterError
+from papercutter.report.generator import Report
 
 
 def check_pandoc_available() -> bool:
@@ -35,10 +35,10 @@ def render_pdf(
         Path to generated PDF.
 
     Raises:
-        PapercutError: If pandoc is not available or conversion fails.
+        PapercutterError: If pandoc is not available or conversion fails.
     """
     if not check_pandoc_available():
-        raise PapercutError(
+        raise PapercutterError(
             "PDF output requires pandoc",
             details="Install pandoc: https://pandoc.org/installing.html",
         )
@@ -91,7 +91,7 @@ geometry: margin=1in
             )
 
             if result.returncode != 0:
-                raise PapercutError(
+                raise PapercutterError(
                     "PDF conversion failed",
                     details=result.stderr or result.stdout,
                 )

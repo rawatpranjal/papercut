@@ -1,206 +1,156 @@
-# Papercut E2E Test Results
+# Papercutter E2E Test Results - RIGOROUS AUDIT
 
 **Date**: 2026-01-08
-**Test Environment**: macOS Darwin 23.5.0, Python 3.11
+**Auditor**: Claude (Ruthless Mode)
+**Verdict**: FAIL - Critical bugs found
 
 ---
 
-## Summary
+## Executive Summary
 
-| Category | Tests | Pass | Fail | Notes |
-|----------|-------|------|------|-------|
-| CLI Installation | 1 | 1 | 0 | Works via `python3 -m papercut.cli.app` |
-| Fetch Commands | 5 | 0 | 5 | Network issues + bugs |
-| Extract Text | 3 | 3 | 0 | All working |
-| Extract Tables | 2 | 1 | 1 | Detects tables but content empty |
-| Extract Refs | 1 | 0 | 1 | No refs found in test PDF |
+| Category | Status | Critical Issues |
+|----------|--------|-----------------|
+| Input Validation | **FAIL** | 4 crashes on invalid input |
+| Infinite Loops | **FAIL** | Confirmed infinite loop with overlap >= chunk_size |
+| Data Integrity | **FAIL** | Overlap not maintained correctly |
+| Test Coverage | **FAIL** | 39% coverage, CLI at 0% |
+| Security | **NOT TESTED** | Path traversal vulnerabilities identified |
 
 ---
 
-## Detailed Results
+## CRITICAL BUGS CONFIRMED
 
-### 1. CLI Installation
-
-**Status**: PASS (with workaround)
-
-- `papercut --help` fails due to typer/click version incompatibility
-- Workaround: Use `python3 -m papercut.cli.app` instead
-- Root cause: TypeError in typer rich_utils.py with Parameter.make_metavar()
+### BUG-001: INFINITE LOOP (CRITICAL)
+**Location**: `src/papercutter/core/text.py:82-106`
+**Trigger**: `--chunk-size 100 --overlap 200`
+**Status**: **CONFIRMED** - Process ran indefinitely at 75% CPU
 
 ```bash
-# Fails
-$ papercut --help
-TypeError: Parameter.make_metavar() missing 1 required positional argument: 'ctx'
-
-# Works
-$ python3 -m papercut.cli.app --help
-Usage: python -m papercut.cli.app [OPTIONS] COMMAND [ARGS]...
+# This command causes infinite loop:
+python3 -m papercutter.cli.app extract text file.pdf --chunk-size 100 --overlap 200 --pages 1
+# Had to kill process after 24+ seconds
 ```
 
----
+### BUG-002: CRASH ON INCOMPLETE PAGE RANGE (HIGH)
+**Location**: `src/papercutter/cli/extract.py:28`
+**Trigger**: `--pages "1-"`
 
-### 2. Fetch Commands
-
-#### 2.1 fetch arxiv
-
-**Status**: FAIL
-
-**Command**: `papercut fetch arxiv 2301.00001 --output tests/downloads/arxiv_test.pdf`
-
-**Issues Found**:
-1. **Bug Fixed**: `arxiv.arxiv.HTTPError` → `arxiv.HTTPError` (line 95 in arxiv.py)
-2. **Network Error**: Cannot connect to export.arxiv.org (may be firewall/network issue)
-3. **Bug**: When `--output` ends with `.pdf`, it's treated as a directory
-
-**Error**: `URLError: <urlopen error [Errno 8] nodename nor servname provided, or not known>`
-
-#### 2.2 fetch doi
-
-**Status**: NOT TESTED (network dependent)
-
-#### 2.3 fetch ssrn
-
-**Status**: NOT TESTED (network dependent)
-
-#### 2.4 fetch nber
-
-**Status**: NOT TESTED (network dependent)
-
-#### 2.5 fetch url
-
-**Status**: NOT TESTED (network dependent)
-
----
-
-### 3. Extract Commands
-
-#### 3.1 extract text (basic)
-
-**Status**: PASS
-
-**Command**: `papercut extract text output/01_introduction_and_motivation.pdf --pages 1-3`
-
-**Result**: Successfully extracted text from pages 1-3. Output is clean, readable text.
-
-**Sample Output**:
 ```
-1
-Introduction and Motivation
-One accurate measurement is worth more than a thousand expert
-opinions
-– Admiral Grace Hopper
-In2012,anemployeeworkingonBing,Microsoft'ssearchengine,suggested...
+ValueError: invalid literal for int() with base 10: ''
 ```
 
----
+**Stack trace shown to user** - bad UX.
 
-#### 3.2 extract text (chunked)
+### BUG-003: CRASH ON NON-NUMERIC PAGES (HIGH)
+**Location**: `src/papercutter/cli/extract.py:30`
+**Trigger**: `--pages "abc"`
 
-**Status**: PASS
-
-**Command**: `papercut extract text output/01_introduction_and_motivation.pdf --chunk-size 500 --overlap 50`
-
-**Result**: Successfully chunked text with 500 char chunks and 50 char overlap.
-
-**Output Format**: JSON with `chunks` array
-
-```json
-{
-  "chunks": [
-    "1\nIntroduction and Motivation\nOne accurate measurement is...",
-    "...he best revenue-generating idea in Bing's history!\nThe feature...",
-    ...
-  ]
-}
+```
+ValueError: invalid literal for int() with base 10: 'abc'
 ```
 
----
+### BUG-004: NEGATIVE PAGE INDEX CREATED (HIGH)
+**Location**: `src/papercutter/cli/extract.py:30`
+**Trigger**: `--pages "0"`
+**Result**: Creates `page_list = [-1]` which extracts the LAST page instead of showing error.
 
-#### 3.3 extract text (page range)
+**Silent wrong behavior** - user thinks they're getting page 0 but gets last page.
 
-**Status**: PASS
+### BUG-005: DATA INTEGRITY - OVERLAP NOT MAINTAINED (MEDIUM)
+**Location**: `src/papercutter/core/text.py:82-106`
+**Evidence**:
 
-**Command**: `papercut extract text output/01_introduction_and_motivation.pdf --pages 1-3`
-
-**Result**: Correctly limited extraction to specified page range.
-
----
-
-#### 3.4 extract tables
-
-**Status**: PARTIAL FAIL
-
-**Command**: `papercut extract tables output/02_running_and_analyzing_experiments.pdf`
-
-**Result**: Detects 9 tables but all have empty content.
-
-**Output**:
-```json
-{
-  "page": 3,
-  "rows": 2,
-  "data": [[""], [""]]
-}
+```
+Chunk 2 ends with: 'ata), ora computational error.'
+Chunk 3 starts with: 'in instrumentation (e.g., logg'
 ```
 
-**Issue**: pdfplumber table detection works but content extraction fails for this PDF format. May need better table extraction settings or fallback methods.
-
-**Command on Ch1**: `papercut extract tables output/01_introduction_and_motivation.pdf`
-
-**Result**: "No tables found in PDF." - Correct, this chapter has no tables.
+Overlap of 100 chars requested but chunks don't share the expected 100 characters.
 
 ---
 
-#### 3.5 extract refs
+## TEST RESULTS BY PHASE
 
-**Status**: FAIL (false negative)
+### Phase 1: Crash Tests
 
-**Command**: `papercut extract refs output/01_introduction_and_motivation.pdf`
+| Test | Input | Expected | Actual | Status |
+|------|-------|----------|--------|--------|
+| Empty pages | `--pages ""` | Error message | No crash, silent | PASS |
+| Incomplete range | `--pages "1-"` | Error message | ValueError + stack trace | **FAIL** |
+| Non-numeric | `--pages "abc"` | Error message | ValueError + stack trace | **FAIL** |
+| Zero page | `--pages "0"` | Error message | Silently extracts last page | **FAIL** |
+| Negative chunk | `--chunk-size -100` | Error message | Not tested (file issue) | SKIP |
 
-**Result**: "No references found in PDF."
+### Phase 2: Infinite Loop Tests
 
-**Issue**: This is Chapter 1 of a book. References may be:
-1. In a separate references chapter
-2. In-text citations not parsed as standalone references
-3. Reference format not recognized by the parser
+| Test | Parameters | Expected | Actual | Status |
+|------|------------|----------|--------|--------|
+| overlap > chunk | `--chunk-size 100 --overlap 200` | Error or valid output | **INFINITE LOOP** | **FAIL** |
+| overlap == chunk | `--chunk-size 100 --overlap 100` | Error or valid output | Not tested | SKIP |
 
----
+### Phase 3: Data Integrity Tests
 
-## Bugs Found
+| Test | Expected | Actual | Status |
+|------|----------|--------|--------|
+| Chunk overlap correctness | Last 100 chars of chunk N == first 100 chars of chunk N+1 | 1 of 3 overlaps incorrect | **FAIL** |
 
-| ID | Severity | Component | Description | Status |
-|----|----------|-----------|-------------|--------|
-| B1 | High | CLI | typer/click version incompatibility | Workaround available |
-| B2 | Medium | arxiv.py | `arxiv.arxiv.HTTPError` should be `arxiv.HTTPError` | **FIXED** |
-| B3 | Medium | fetch | `--output` with `.pdf` extension treated as directory | Open |
-| B4 | Low | tables | Empty table content extraction | Open |
-| B5 | Low | refs | Book chapter references not detected | Open |
+### Phase 4: Unit Test Coverage
 
----
+| Module | Coverage | Status |
+|--------|----------|--------|
+| Overall | 39% | **FAIL** |
+| CLI (app.py, extract.py, fetch.py) | 0% | **CRITICAL** |
+| PDF extraction (pdfplumber.py) | 0% | **CRITICAL** |
+| Fetcher.fetch() methods | 0% | **CRITICAL** |
+| core/text.py | 83% | OK |
+| core/tables.py | 92% | OK |
 
-## Test Files Used
-
-| File | Size | Description |
-|------|------|-------------|
-| output/01_introduction_and_motivation.pdf | 1.1 MB | Book chapter, no tables |
-| output/02_running_and_analyzing_experiments.pdf | 600 KB | Book chapter with tables |
-
----
-
-## Recommendations
-
-1. **Pin typer/click versions** in pyproject.toml to avoid compatibility issues
-2. **Fix output path handling** - detect `.pdf` extension and treat as file, not directory
-3. **Improve table extraction** - consider fallback to camelot or tabula for complex tables
-4. **Test with academic papers** - download actual research papers for better E2E testing
-5. **Add integration tests** with sample PDFs in fixtures/
+**67 tests pass but test the WRONG THINGS** - only validation, not behavior.
 
 ---
 
-## Next Steps
+## SECURITY ISSUES IDENTIFIED (NOT TESTED)
 
-1. Fix B3 (output path handling)
-2. Test fetch commands when network is available
-3. Add sample academic papers to fixtures/
-4. Test with papers that have clear reference sections
-5. Test table extraction with simpler PDF tables
+From code review:
+
+1. **Path Traversal**: Author names from external APIs (arXiv, DOI) used in filenames without sanitization
+2. **Weak Regex**: DOI pattern accepts `10.1234/<script>alert('xss')</script>`
+3. **Silent Exception Catch**: `except Exception: pass` hides all errors
+4. **No URL Encoding**: DOIs with special chars break URL construction
+
+---
+
+## REQUIRED FIXES
+
+### Priority 1 (CRITICAL)
+1. **Add validation for overlap < chunk_size** in `text.py` and `extract.py`
+2. **Add try-catch in parse_pages()** with user-friendly error messages
+3. **Validate page numbers are positive integers**
+
+### Priority 2 (HIGH)
+4. **Fix break point logic** - maintain exact overlap
+5. **Add CLI tests** - 0% coverage is unacceptable
+6. **Add integration tests** for actual PDF extraction
+
+### Priority 3 (MEDIUM)
+7. **Sanitize filenames** from external API data
+8. **URL encode DOIs** before API calls
+9. **Replace silent exception catches** with proper error handling
+
+---
+
+## PASS CRITERIA (NOT MET)
+
+| Criterion | Required | Actual | Status |
+|-----------|----------|--------|--------|
+| Zero crashes on invalid input | 0 | 3+ | **FAIL** |
+| Zero infinite loops | 0 | 1+ | **FAIL** |
+| Zero data integrity issues | 0 | 1+ | **FAIL** |
+| Test coverage > 70% | 70% | 39% | **FAIL** |
+| All unit tests pass | 100% | 100% | PASS |
+
+---
+
+## RECOMMENDATION
+
+**DO NOT SHIP** until critical bugs are fixed. The infinite loop bug alone could crash user systems. The input validation bugs expose stack traces to users. The data integrity bug produces incorrect output silently.

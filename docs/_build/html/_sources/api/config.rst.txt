@@ -1,9 +1,9 @@
 Configuration
 =============
 
-The ``papercut.config`` module provides configuration management using Pydantic Settings.
+The ``papercutter.config`` module provides configuration management using Pydantic Settings.
 
-.. module:: papercut.config.settings
+.. module:: papercutter.config.settings
 
 Settings Models
 ---------------
@@ -25,14 +25,14 @@ Settings
    - ``anthropic_api_key`` (Optional[str]): Anthropic API key
    - ``openai_api_key`` (Optional[str]): OpenAI API key
 
-   **Environment Variable Prefix:** ``PAPERCUT_``
+   **Environment Variable Prefix:** ``PAPERCUTTER_``
 
    Nested settings use double underscore (``__``) as separator:
 
    .. code-block:: bash
 
-      PAPERCUT_OUTPUT__DIRECTORY=/path/to/papers
-      PAPERCUT_EXTRACTION__BACKEND=pymupdf
+      PAPERCUTTER_OUTPUT__DIRECTORY=/path/to/papers
+      PAPERCUTTER_EXTRACTION__BACKEND=pymupdf
 
 OutputSettings
 ~~~~~~~~~~~~~~
@@ -126,7 +126,7 @@ get_settings
 
    .. code-block:: python
 
-      from papercut.config import get_settings
+      from papercutter.config import get_settings
 
       settings = get_settings()
       print(settings.output.directory)
@@ -141,13 +141,13 @@ Settings are loaded from multiple sources in order of precedence:
 
    .. code-block:: bash
 
-      export PAPERCUT_OUTPUT__DIRECTORY=/custom/path
-      export PAPERCUT_EXTRACTION__BACKEND=pymupdf
+      export PAPERCUTTER_OUTPUT__DIRECTORY=/custom/path
+      export PAPERCUTTER_EXTRACTION__BACKEND=pymupdf
       export ANTHROPIC_API_KEY=sk-ant-...
 
 2. **Configuration File** (future feature)
 
-   ``~/.papercut/config.yaml``
+   ``~/.papercutter/config.yaml``
 
 3. **Default Values** (lowest priority)
 
@@ -162,21 +162,21 @@ Common environment variables:
 
    * - Variable
      - Description
-   * - ``PAPERCUT_OUTPUT__DIRECTORY``
+   * - ``PAPERCUTTER_OUTPUT__DIRECTORY``
      - Default directory for downloaded papers
-   * - ``PAPERCUT_EXTRACTION__BACKEND``
+   * - ``PAPERCUTTER_EXTRACTION__BACKEND``
      - PDF extraction backend (``pdfplumber`` or ``pymupdf``)
-   * - ``PAPERCUT_EXTRACTION__TEXT__CHUNK_SIZE``
+   * - ``PAPERCUTTER_EXTRACTION__TEXT__CHUNK_SIZE``
      - Default chunk size for text extraction
-   * - ``PAPERCUT_EXTRACTION__TEXT__CHUNK_OVERLAP``
+   * - ``PAPERCUTTER_EXTRACTION__TEXT__CHUNK_OVERLAP``
      - Overlap between text chunks
-   * - ``PAPERCUT_EXTRACTION__TABLES__FORMAT``
+   * - ``PAPERCUTTER_EXTRACTION__TABLES__FORMAT``
      - Default table output format
-   * - ``PAPERCUT_LLM__DEFAULT_PROVIDER``
+   * - ``PAPERCUTTER_LLM__DEFAULT_PROVIDER``
      - Default LLM provider
-   * - ``PAPERCUT_LLM__DEFAULT_MODEL``
+   * - ``PAPERCUTTER_LLM__DEFAULT_MODEL``
      - Default LLM model name
-   * - ``PAPERCUT_LLM__TEMPERATURE``
+   * - ``PAPERCUTTER_LLM__TEMPERATURE``
      - LLM sampling temperature
    * - ``ANTHROPIC_API_KEY``
      - Anthropic API key
@@ -191,15 +191,15 @@ Set up environment for a research workflow:
 .. code-block:: bash
 
    # Output settings
-   export PAPERCUT_OUTPUT__DIRECTORY="$HOME/research/papers"
+   export PAPERCUTTER_OUTPUT__DIRECTORY="$HOME/research/papers"
 
    # Extraction settings
-   export PAPERCUT_EXTRACTION__BACKEND=pdfplumber
-   export PAPERCUT_EXTRACTION__TEXT__CHUNK_SIZE=1000
-   export PAPERCUT_EXTRACTION__TEXT__CHUNK_OVERLAP=200
+   export PAPERCUTTER_EXTRACTION__BACKEND=pdfplumber
+   export PAPERCUTTER_EXTRACTION__TEXT__CHUNK_SIZE=1000
+   export PAPERCUTTER_EXTRACTION__TEXT__CHUNK_OVERLAP=200
 
    # LLM settings (for future features)
-   export PAPERCUT_LLM__DEFAULT_MODEL=claude-sonnet-4-20250514
+   export PAPERCUTTER_LLM__DEFAULT_MODEL=claude-sonnet-4-20250514
    export ANTHROPIC_API_KEY=sk-ant-your-key-here
 
 Programmatic Configuration
@@ -209,7 +209,7 @@ Access and use settings in Python code:
 
 .. code-block:: python
 
-   from papercut.config import get_settings
+   from papercutter.config import get_settings
 
    settings = get_settings()
 

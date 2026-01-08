@@ -158,7 +158,7 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../api/index.html">
-    API Reference
+    API
   </a>
 </li>
 
@@ -296,7 +296,7 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../api/index.html">
-    API Reference
+    API
   </a>
 </li>
 
@@ -512,21 +512,96 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate a BibTeX citation key.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            Citation key string (e.g., &#39;smith2020&#39; or &#39;unknown2020&#39;).</span>
+<span class="sd">            Citation key string (e.g., &#39;vaswani2017attention&#39;).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">author_part</span> <span class="o">=</span> <span class="s2">&quot;unknown&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">authors</span><span class="p">:</span>
-            <span class="c1"># Get first author&#39;s last name</span>
-            <span class="n">first_author</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">authors</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="c1"># Try to extract last name</span>
-            <span class="n">parts</span> <span class="o">=</span> <span class="n">first_author</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
-            <span class="k">if</span> <span class="n">parts</span><span class="p">:</span>
-                <span class="n">author_part</span> <span class="o">=</span> <span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
-                <span class="c1"># Remove non-alphanumeric</span>
-                <span class="n">author_part</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[^a-z]&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">author_part</span><span class="p">)</span>
-
+        <span class="n">author_part</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_last_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">authors</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">authors</span> <span class="k">else</span> <span class="s2">&quot;unknown&quot;</span>
         <span class="n">year_part</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">year</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">year</span> <span class="k">else</span> <span class="s2">&quot;0000&quot;</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">author_part</span><span class="si">}{</span><span class="n">year_part</span><span class="si">}</span><span class="s2">&quot;</span></div>
+        <span class="n">title_part</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_title_word</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">title</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">author_part</span><span class="si">}{</span><span class="n">year_part</span><span class="si">}{</span><span class="n">title_part</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="k">def</span> <span class="nf">_extract_last_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">author</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Extract last name from author string.</span>
+
+<span class="sd">        Handles formats like:</span>
+<span class="sd">        - &quot;Smith, John&quot; -&gt; &quot;smith&quot;</span>
+<span class="sd">        - &quot;John Smith&quot; -&gt; &quot;smith&quot;</span>
+<span class="sd">        - &quot;van der Berg, Jan&quot; -&gt; &quot;vandenberg&quot;</span>
+<span class="sd">        - &quot;Smith-Jones, Mary&quot; -&gt; &quot;smithjones&quot;</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            author: Author name string.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Lowercase last name suitable for citation key.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">author</span> <span class="o">=</span> <span class="n">author</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">author</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;unknown&quot;</span>
+
+        <span class="c1"># Name particles that should be included in last name</span>
+        <span class="n">particles</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;van&quot;</span><span class="p">,</span> <span class="s2">&quot;von&quot;</span><span class="p">,</span> <span class="s2">&quot;de&quot;</span><span class="p">,</span> <span class="s2">&quot;del&quot;</span><span class="p">,</span> <span class="s2">&quot;della&quot;</span><span class="p">,</span> <span class="s2">&quot;der&quot;</span><span class="p">,</span> <span class="s2">&quot;den&quot;</span><span class="p">,</span> <span class="s2">&quot;la&quot;</span><span class="p">,</span> <span class="s2">&quot;le&quot;</span><span class="p">,</span> <span class="s2">&quot;di&quot;</span><span class="p">}</span>
+
+        <span class="c1"># Check for &quot;Last, First&quot; format</span>
+        <span class="k">if</span> <span class="s2">&quot;,&quot;</span> <span class="ow">in</span> <span class="n">author</span><span class="p">:</span>
+            <span class="n">last_name</span> <span class="o">=</span> <span class="n">author</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># &quot;First Last&quot; format - take everything after first name</span>
+            <span class="n">parts</span> <span class="o">=</span> <span class="n">author</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">last_name</span> <span class="o">=</span> <span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Find where last name starts (may include particles)</span>
+                <span class="n">last_name_parts</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">part</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">parts</span><span class="p">):</span>
+                    <span class="n">part_lower</span> <span class="o">=</span> <span class="n">part</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">part_lower</span> <span class="ow">in</span> <span class="n">particles</span><span class="p">:</span>
+                        <span class="c1"># Start collecting from here</span>
+                        <span class="n">last_name_parts</span> <span class="o">=</span> <span class="n">parts</span><span class="p">[</span><span class="n">i</span><span class="p">:]</span>
+                        <span class="k">break</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">last_name_parts</span><span class="p">:</span>
+                    <span class="c1"># No particles found, take last word</span>
+                    <span class="n">last_name</span> <span class="o">=</span> <span class="n">parts</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">last_name</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">last_name_parts</span><span class="p">)</span>
+
+        <span class="c1"># Normalize: lowercase, remove hyphens and non-alpha characters</span>
+        <span class="n">last_name</span> <span class="o">=</span> <span class="n">last_name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="n">last_name</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[^a-z]&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">last_name</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">last_name</span> <span class="k">if</span> <span class="n">last_name</span> <span class="k">else</span> <span class="s2">&quot;unknown&quot;</span>
+
+    <span class="k">def</span> <span class="nf">_extract_title_word</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Extract first significant word from title.</span>
+
+<span class="sd">        Skips common words like articles and prepositions.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            title: Paper title.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Lowercase first significant word.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">title</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+
+        <span class="c1"># Common words to skip</span>
+        <span class="n">skip_words</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;an&quot;</span><span class="p">,</span> <span class="s2">&quot;the&quot;</span><span class="p">,</span> <span class="s2">&quot;on&quot;</span><span class="p">,</span> <span class="s2">&quot;in&quot;</span><span class="p">,</span> <span class="s2">&quot;of&quot;</span><span class="p">,</span> <span class="s2">&quot;for&quot;</span><span class="p">,</span> <span class="s2">&quot;to&quot;</span><span class="p">,</span> <span class="s2">&quot;and&quot;</span><span class="p">,</span> <span class="s2">&quot;or&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;with&quot;</span><span class="p">,</span> <span class="s2">&quot;by&quot;</span><span class="p">,</span> <span class="s2">&quot;from&quot;</span><span class="p">,</span> <span class="s2">&quot;at&quot;</span><span class="p">,</span> <span class="s2">&quot;is&quot;</span><span class="p">,</span> <span class="s2">&quot;are&quot;</span><span class="p">,</span> <span class="s2">&quot;was&quot;</span><span class="p">,</span> <span class="s2">&quot;were&quot;</span><span class="p">,</span> <span class="s2">&quot;be&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;this&quot;</span><span class="p">,</span> <span class="s2">&quot;that&quot;</span><span class="p">,</span> <span class="s2">&quot;these&quot;</span><span class="p">,</span> <span class="s2">&quot;those&quot;</span><span class="p">,</span> <span class="s2">&quot;how&quot;</span><span class="p">,</span> <span class="s2">&quot;what&quot;</span><span class="p">,</span> <span class="s2">&quot;why&quot;</span><span class="p">,</span> <span class="s2">&quot;when&quot;</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="c1"># Split title into words</span>
+        <span class="n">words</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[a-zA-Z]+&quot;</span><span class="p">,</span> <span class="n">title</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">words</span><span class="p">:</span>
+            <span class="n">word_lower</span> <span class="o">=</span> <span class="n">word</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">word_lower</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">skip_words</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">word_lower</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">word_lower</span>
+
+        <span class="c1"># Fallback to first word if all are skip words</span>
+        <span class="k">return</span> <span class="n">words</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">if</span> <span class="n">words</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span></div>
 
 
 
@@ -543,14 +618,50 @@
         <span class="sa">r</span><span class="s2">&quot;(?i)^literature\s+cited\s*$&quot;</span><span class="p">,</span>
     <span class="p">]</span>
 
-    <span class="c1"># Pattern for DOI</span>
-    <span class="n">DOI_PATTERN</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;10\.\d{4,}/[^\s]+&quot;</span><span class="p">)</span>
+    <span class="c1"># Pattern for DOI - more precise, excludes trailing punctuation</span>
+    <span class="c1"># Matches DOI format: 10.NNNN/suffix where suffix contains alphanumeric and some punctuation</span>
+    <span class="n">DOI_PATTERN</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;10\.\d{4,9}/[^\s\])&lt;&gt;,;&#39;</span><span class="se">\&quot;</span><span class="s2">]+(?&lt;![.,;:)])&quot;</span><span class="p">)</span>
 
     <span class="c1"># Pattern for year in parentheses or standalone</span>
     <span class="n">YEAR_PATTERN</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\b(19|20)\d</span><span class="si">{2}</span><span class="s2">\b&quot;</span><span class="p">)</span>
 
     <span class="c1"># Pattern for page ranges</span>
     <span class="n">PAGES_PATTERN</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\b(\d+)\s*[-–—]\s*(\d+)\b&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Pre-compiled patterns for performance</span>
+    <span class="n">_COMPILED_SECTION_PATTERNS</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">re</span><span class="o">.</span><span class="n">Pattern</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">_NUMBERED_REF_SPLIT</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\n\s*\[\d+\]\s*&quot;</span><span class="p">)</span>
+    <span class="n">_QUOTED_TITLE</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;[&quot;&quot;\u201c\u201d]([^&quot;&quot;\u201c\u201d]+)[&quot;&quot;\u201c\u201d]&#39;</span><span class="p">)</span>
+    <span class="n">_SINGLE_QUOTED_TITLE</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&#39;([^&#39;]+)&#39;&quot;</span><span class="p">)</span>
+    <span class="n">_LEADING_PUNCT</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^[.,:\s)]+&quot;</span><span class="p">)</span>
+    <span class="n">_SENTENCE_END</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\.\s+[A-Z]&quot;</span><span class="p">)</span>
+    <span class="n">_TRAILING_PUNCT</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[.,;:\s]+$&quot;</span><span class="p">)</span>
+    <span class="n">_CITATION_PREFIX</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^\s*\[?\d+\]?\.?\s*&quot;</span><span class="p">)</span>
+    <span class="n">_TRAILING_AUTHOR_PUNCT</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[\s,.(]+$&quot;</span><span class="p">)</span>
+    <span class="n">_CAMEL_CASE</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;([a-z])([A-Z])&quot;</span><span class="p">)</span>
+    <span class="n">_INITIALS_CONCAT</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\.([A-Z])&quot;</span><span class="p">)</span>
+    <span class="n">_DIGITS_ONLY</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^\d+$&quot;</span><span class="p">)</span>
+    <span class="n">_INITIALS</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^[A-Z]\.?(?:\s*[A-Z]\.?)*$&quot;</span><span class="p">)</span>
+    <span class="n">_FIRST_NAME</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^[A-Z][a-z]{1,10}$&quot;</span><span class="p">)</span>
+    <span class="c1"># Combined journal patterns for title extraction</span>
+    <span class="n">_JOURNAL_PATTERNS</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[,.]?\s*\d+\s*[\(:]&quot;</span><span class="p">),</span>  <span class="c1"># Volume number like &quot;12(&quot; or &quot;12:&quot;</span>
+        <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[,.]?\s*\d+\s*[-–]\s*\d+&quot;</span><span class="p">),</span>  <span class="c1"># Page range like &quot;100-120&quot;</span>
+        <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[,.]?\s*[A-Z][a-z]+\s+(?:of|and|for)\s+&quot;</span><span class="p">),</span>  <span class="c1"># &quot;Journal of...&quot;</span>
+        <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[,.]?\s*(?:Journal|Review|Quarterly|Proceedings|Transactions)\b&quot;</span><span class="p">),</span>
+        <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[,.]?\s*In\s+[A-Z]&quot;</span><span class="p">),</span>  <span class="c1"># &quot;In Proceedings...&quot;</span>
+        <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[,.]?\s*arXiv:&quot;</span><span class="p">),</span>  <span class="c1"># arXiv identifier</span>
+        <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[,.]?\s*https?://&quot;</span><span class="p">),</span>  <span class="c1"># URL</span>
+    <span class="p">]</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_get_compiled_section_patterns</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">re</span><span class="o">.</span><span class="n">Pattern</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get pre-compiled section patterns (lazy initialization).&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_COMPILED_SECTION_PATTERNS</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">_COMPILED_SECTION_PATTERNS</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">SECTION_PATTERNS</span>
+            <span class="p">]</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_COMPILED_SECTION_PATTERNS</span>
 
 <div class="viewcode-block" id="ReferenceExtractor.__init__">
 <a class="viewcode-back" href="../../../api/core.html#papercut.core.references.ReferenceExtractor.__init__">[docs]</a>
@@ -603,9 +714,11 @@
 
         <span class="c1"># Find the start of references section</span>
         <span class="n">start_idx</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">compiled_patterns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_compiled_section_patterns</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">lines</span><span class="p">):</span>
-            <span class="k">for</span> <span class="n">pattern</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">SECTION_PATTERNS</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()):</span>
+            <span class="n">stripped</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">pattern</span> <span class="ow">in</span> <span class="n">compiled_patterns</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">pattern</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">stripped</span><span class="p">):</span>
                     <span class="n">start_idx</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
                     <span class="k">break</span>
             <span class="k">if</span> <span class="n">start_idx</span><span class="p">:</span>
@@ -628,7 +741,7 @@
 <span class="sd">            List of individual reference strings.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Try to split by numbered references [1], [2], etc.</span>
-        <span class="n">numbered</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\n\s*\[\d+\]\s*&quot;</span><span class="p">,</span> <span class="n">refs_text</span><span class="p">)</span>
+        <span class="n">numbered</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_NUMBERED_REF_SPLIT</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">refs_text</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">numbered</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[</span><span class="n">ref</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">ref</span> <span class="ow">in</span> <span class="n">numbered</span> <span class="k">if</span> <span class="n">ref</span><span class="o">.</span><span class="n">strip</span><span class="p">()]</span>
 
@@ -717,21 +830,43 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            Extracted title or None.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Look for quoted title</span>
-        <span class="n">quoted</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;&quot;([^&quot;]+)&quot;&#39;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+        <span class="c1"># 1. Look for quoted title (double or curly quotes)</span>
+        <span class="n">quoted</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_QUOTED_TITLE</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">quoted</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">quoted</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">title</span> <span class="o">=</span> <span class="n">quoted</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">title</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">10</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">title</span>
 
-        <span class="c1"># Look for title between year and journal indicators</span>
+        <span class="c1"># 2. Look for single-quoted title</span>
+        <span class="n">single_quoted</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_SINGLE_QUOTED_TITLE</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">single_quoted</span><span class="p">:</span>
+            <span class="n">title</span> <span class="o">=</span> <span class="n">single_quoted</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">title</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">15</span><span class="p">:</span>  <span class="c1"># Higher threshold for single quotes (avoid contractions)</span>
+                <span class="k">return</span> <span class="n">title</span>
+
+        <span class="c1"># 3. Try to find title between year and journal/volume indicators</span>
         <span class="n">year_match</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">YEAR_PATTERN</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">year_match</span><span class="p">:</span>
             <span class="n">after_year</span> <span class="o">=</span> <span class="n">text</span><span class="p">[</span><span class="n">year_match</span><span class="o">.</span><span class="n">end</span><span class="p">()</span> <span class="p">:]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-            <span class="c1"># Remove leading punctuation</span>
-            <span class="n">after_year</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^[.,:\s)]+&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">after_year</span><span class="p">)</span>
-            <span class="c1"># Take until period or journal-like content</span>
-            <span class="n">title_match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;([^.]+)&quot;</span><span class="p">,</span> <span class="n">after_year</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">title_match</span><span class="p">:</span>
-                <span class="n">title</span> <span class="o">=</span> <span class="n">title_match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="c1"># Remove leading punctuation and whitespace</span>
+            <span class="n">after_year</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_LEADING_PUNCT</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">after_year</span><span class="p">)</span>
+
+            <span class="c1"># Find where title ends (first match of journal pattern or period)</span>
+            <span class="n">title_end</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">after_year</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">pattern</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_JOURNAL_PATTERNS</span><span class="p">:</span>
+                <span class="n">match</span> <span class="o">=</span> <span class="n">pattern</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">after_year</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">match</span> <span class="ow">and</span> <span class="n">match</span><span class="o">.</span><span class="n">start</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">title_end</span><span class="p">:</span>
+                    <span class="n">title_end</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+            <span class="c1"># Also check for sentence-ending period followed by capital letter</span>
+            <span class="n">period_match</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_SENTENCE_END</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">after_year</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">period_match</span> <span class="ow">and</span> <span class="n">period_match</span><span class="o">.</span><span class="n">start</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">title_end</span><span class="p">:</span>
+                <span class="n">title_end</span> <span class="o">=</span> <span class="n">period_match</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">title_end</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">title</span> <span class="o">=</span> <span class="n">after_year</span><span class="p">[:</span><span class="n">title_end</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                <span class="c1"># Clean trailing punctuation</span>
+                <span class="n">title</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_TRAILING_PUNCT</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">title</span><span class="p">)</span>
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">title</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">10</span><span class="p">:</span>
                     <span class="k">return</span> <span class="n">title</span>
 
@@ -752,23 +887,63 @@
             <span class="k">return</span> <span class="p">[]</span>
 
         <span class="n">author_part</span> <span class="o">=</span> <span class="n">text</span><span class="p">[:</span> <span class="n">year_match</span><span class="o">.</span><span class="n">start</span><span class="p">()]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="c1"># Remove citation number prefix like &quot;[1]&quot; or &quot;1.&quot;</span>
+        <span class="n">author_part</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_CITATION_PREFIX</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">author_part</span><span class="p">)</span>
         <span class="c1"># Remove trailing punctuation and parentheses</span>
-        <span class="n">author_part</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[\s,.(]+$&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">author_part</span><span class="p">)</span>
+        <span class="n">author_part</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_TRAILING_AUTHOR_PUNCT</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">author_part</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">author_part</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[]</span>
 
-        <span class="c1"># Split by common separators</span>
-        <span class="c1"># Handle &quot;and&quot;, &quot;&amp;&quot;, commas</span>
+        <span class="c1"># Handle &quot;and&quot;, &quot;&amp;&quot;, semicolons with proper spacing</span>
+        <span class="c1"># Note: These simple patterns are fast enough inline</span>
         <span class="n">author_part</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\s+and\s+&quot;</span><span class="p">,</span> <span class="s2">&quot;, &quot;</span><span class="p">,</span> <span class="n">author_part</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">)</span>
-        <span class="n">author_part</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\s*&amp;\s*&quot;</span><span class="p">,</span> <span class="s2">&quot;, &quot;</span><span class="p">,</span> <span class="n">author_part</span><span class="p">)</span>
+        <span class="n">author_part</span> <span class="o">=</span> <span class="n">author_part</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; &amp; &quot;</span><span class="p">,</span> <span class="s2">&quot;, &quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;&amp;&quot;</span><span class="p">,</span> <span class="s2">&quot;, &quot;</span><span class="p">)</span>
+        <span class="n">author_part</span> <span class="o">=</span> <span class="n">author_part</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;; &quot;</span><span class="p">,</span> <span class="s2">&quot;, &quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;;&quot;</span><span class="p">,</span> <span class="s2">&quot;, &quot;</span><span class="p">)</span>
 
-        <span class="n">authors</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">author_part</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">strip</span><span class="p">()]</span>
+        <span class="c1"># Split by commas</span>
+        <span class="n">raw_parts</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">author_part</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">strip</span><span class="p">()]</span>
 
-        <span class="c1"># Clean up authors (remove et al., etc.)</span>
-        <span class="n">authors</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">authors</span> <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;et al&quot;</span><span class="p">,</span> <span class="s2">&quot;et al.&quot;</span><span class="p">)]</span>
+        <span class="c1"># Reconstruct proper names handling &quot;Last, First&quot; format</span>
+        <span class="n">authors</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">while</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">raw_parts</span><span class="p">):</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">raw_parts</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
 
-        <span class="k">return</span> <span class="n">authors</span><span class="p">[:</span><span class="mi">10</span><span class="p">]</span>  <span class="c1"># Limit to reasonable number</span></div>
+            <span class="c1"># Check if this might be &quot;Last, First&quot; format</span>
+            <span class="c1"># (last name followed by initials or first name on next part)</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">raw_parts</span><span class="p">):</span>
+                <span class="n">next_part</span> <span class="o">=</span> <span class="n">raw_parts</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+                <span class="c1"># If next part looks like initials (1-3 chars with optional periods) or first name</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_INITIALS</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">next_part</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_FIRST_NAME</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">next_part</span><span class="p">):</span>
+                    <span class="c1"># &quot;Last, First&quot; or &quot;Last, F.&quot; or &quot;Last, F. M.&quot; format</span>
+                    <span class="n">authors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">next_part</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="n">i</span> <span class="o">+=</span> <span class="mi">2</span>
+                    <span class="k">continue</span>
+
+            <span class="c1"># Fix concatenated names like &quot;JohnSmith&quot; -&gt; &quot;John Smith&quot;</span>
+            <span class="c1"># Insert space before capital letters that follow lowercase</span>
+            <span class="n">spaced_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_CAMEL_CASE</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\1 \2&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+
+            <span class="c1"># Also handle initials without spaces like &quot;J.Smith&quot; -&gt; &quot;J. Smith&quot;</span>
+            <span class="n">spaced_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_INITIALS_CONCAT</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;. \1&quot;</span><span class="p">,</span> <span class="n">spaced_name</span><span class="p">)</span>
+
+            <span class="n">authors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">spaced_name</span><span class="p">)</span>
+            <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="c1"># Clean up authors (remove et al., citation artifacts, etc.)</span>
+        <span class="n">cleaned_authors</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">authors</span><span class="p">:</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;et al&quot;</span><span class="p">,</span> <span class="s2">&quot;et al.&quot;</span><span class="p">,</span> <span class="s2">&quot;others&quot;</span><span class="p">):</span>
+                <span class="k">continue</span>
+            <span class="c1"># Skip if it looks like a citation number</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_DIGITS_ONLY</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">a</span><span class="p">:</span>
+                <span class="n">cleaned_authors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">cleaned_authors</span><span class="p">[:</span><span class="mi">10</span><span class="p">]</span>  <span class="c1"># Limit to reasonable number</span></div>
 
 </pre></div>
 

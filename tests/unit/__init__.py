@@ -1,1 +1,1 @@
-"""Unit tests for Papercut."""
+"""Unit tests for Papercutter."""

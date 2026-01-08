@@ -8,7 +8,7 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.progress import Progress, SpinnerColumn, TextColumn
 
-from papercut.exceptions import PapercutError
+from papercutter.exceptions import PapercutterError
 
 console = Console()
 
@@ -47,15 +47,15 @@ def summarize(
 
     Examples:
 
-        papercut book summarize textbook.pdf
+        papercutter book summarize textbook.pdf
 
-        papercut book summarize textbook.pdf -o summary.md
+        papercutter book summarize textbook.pdf -o summary.md
 
-        papercut book summarize textbook.pdf --title "My Textbook" -o summary.pdf
+        papercutter book summarize textbook.pdf --title "My Textbook" -o summary.pdf
     """
-    from papercut.books.combiner import BookSummarizer
-    from papercut.report.renderers.pdf import render_pdf
-    from papercut.report.generator import Report
+    from papercutter.books.combiner import BookSummarizer
+    from papercutter.report.renderers.pdf import render_pdf
+    from papercutter.report.generator import Report
 
     try:
         summarizer = BookSummarizer(model=model)
@@ -137,7 +137,7 @@ def summarize(
         else:
             console.print(Panel(markdown_content, title="Book Summary", border_style="blue"))
 
-    except PapercutError as e:
+    except PapercutterError as e:
         console.print(f"[red]Error:[/red] {e.message}")
         if e.details:
             console.print(f"[dim]{e.details}[/dim]")
@@ -155,9 +155,9 @@ def chapters(
 
     Example:
 
-        papercut book chapters textbook.pdf
+        papercutter book chapters textbook.pdf
     """
-    from papercut.books.splitter import ChapterSplitter
+    from papercutter.books.splitter import ChapterSplitter
 
     splitter = ChapterSplitter()
     detected = splitter.detect_chapters(pdf_path)

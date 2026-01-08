@@ -8,7 +8,7 @@ from rich.console import Console
 from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn, TaskProgressColumn
 from rich.table import Table
 
-from papercut.exceptions import PapercutError
+from papercutter.exceptions import PapercutterError
 
 console = Console()
 
@@ -47,13 +47,13 @@ def extract(
 
     Examples:
 
-        papercut meta extract paper.pdf
+        papercutter meta extract paper.pdf
 
-        papercut meta extract papers/*.pdf -o results.csv
+        papercutter meta extract papers/*.pdf -o results.csv
 
-        papercut meta extract papers/ -r -o results.json
+        papercutter meta extract papers/ -r -o results.json
     """
-    from papercut.meta.batch import BatchExtractor
+    from papercutter.meta.batch import BatchExtractor
 
     # Collect all PDF paths
     pdf_paths = []
@@ -114,7 +114,7 @@ def extract(
             if batch_result.successful:
                 _display_summary(batch_result)
 
-    except PapercutError as e:
+    except PapercutterError as e:
         console.print(f"[red]Error:[/red] {e.message}")
         raise typer.Exit(e.exit_code)
 

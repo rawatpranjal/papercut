@@ -4,11 +4,11 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Optional
 
-from papercut.core.text import TextExtractor
-from papercut.exceptions import ExtractionError, PapercutError
-from papercut.extractors.pdfplumber import PdfPlumberExtractor
-from papercut.llm.client import LLMClient, check_llm_available
-from papercut.llm.prompts import TEMPLATES, PromptTemplate, get_template
+from papercutter.core.text import TextExtractor
+from papercutter.exceptions import ExtractionError, PapercutterError
+from papercutter.extractors.pdfplumber import PdfPlumberExtractor
+from papercutter.llm.client import LLMClient, check_llm_available
+from papercutter.llm.prompts import TEMPLATES, PromptTemplate, get_template
 
 
 @dataclass
@@ -47,9 +47,9 @@ class ReportGenerator:
             max_tokens: Maximum tokens in response.
         """
         if not check_llm_available():
-            raise PapercutError(
+            raise PapercutterError(
                 "LLM features require litellm",
-                details="Install with: pip install papercut[llm]",
+                details="Install with: pip install papercutter[llm]",
             )
 
         self.client = LLMClient(
@@ -79,7 +79,7 @@ class ReportGenerator:
 
         Raises:
             ExtractionError: If PDF extraction fails.
-            PapercutError: If template not found or LLM fails.
+            PapercutterError: If template not found or LLM fails.
         """
         pdf_path = Path(pdf_path)
 
@@ -87,7 +87,7 @@ class ReportGenerator:
         prompt_template = get_template(template)
         if not prompt_template:
             available = ", ".join(TEMPLATES.keys())
-            raise PapercutError(
+            raise PapercutterError(
                 f"Unknown template: {template}",
                 details=f"Available templates: {available}",
             )

@@ -158,7 +158,7 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../api/index.html">
-    API Reference
+    API
   </a>
 </li>
 
@@ -296,7 +296,7 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../api/index.html">
-    API Reference
+    API
   </a>
 </li>
 
@@ -429,12 +429,19 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Base exception for all Papercut errors.&quot;&quot;&quot;</span>
 
     <span class="n">exit_code</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">default_hint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="PapercutError.__init__">
 <a class="viewcode-back" href="../../api/exceptions.html#papercut.exceptions.PapercutError.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">details</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">details</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">hint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">message</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">details</span> <span class="o">=</span> <span class="n">details</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hint</span> <span class="o">=</span> <span class="n">hint</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_hint</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">message</span><span class="p">)</span></div>
 </div>
 
@@ -455,7 +462,8 @@
 <span class="k">class</span> <span class="nc">PaperNotFoundError</span><span class="p">(</span><span class="n">FetchError</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Paper not found at source.&quot;&quot;&quot;</span>
 
-    <span class="n">exit_code</span> <span class="o">=</span> <span class="mi">11</span></div>
+    <span class="n">exit_code</span> <span class="o">=</span> <span class="mi">11</span>
+    <span class="n">default_hint</span> <span class="o">=</span> <span class="s2">&quot;Check the ID format (e.g., 2301.00001 for arXiv, 10.1234/... for DOI)&quot;</span></div>
 
 
 
@@ -464,7 +472,8 @@
 <span class="k">class</span> <span class="nc">RateLimitError</span><span class="p">(</span><span class="n">FetchError</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Rate limited by source.&quot;&quot;&quot;</span>
 
-    <span class="n">exit_code</span> <span class="o">=</span> <span class="mi">12</span></div>
+    <span class="n">exit_code</span> <span class="o">=</span> <span class="mi">12</span>
+    <span class="n">default_hint</span> <span class="o">=</span> <span class="s2">&quot;Wait a few minutes and try again&quot;</span></div>
 
 
 
@@ -473,7 +482,8 @@
 <span class="k">class</span> <span class="nc">NetworkError</span><span class="p">(</span><span class="n">FetchError</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Network connectivity issue.&quot;&quot;&quot;</span>
 
-    <span class="n">exit_code</span> <span class="o">=</span> <span class="mi">13</span></div>
+    <span class="n">exit_code</span> <span class="o">=</span> <span class="mi">13</span>
+    <span class="n">default_hint</span> <span class="o">=</span> <span class="s2">&quot;Check your internet connection&quot;</span></div>
 
 
 
@@ -492,7 +502,8 @@
 <span class="k">class</span> <span class="nc">InvalidPDFError</span><span class="p">(</span><span class="n">ExtractionError</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;PDF is corrupt or unreadable.&quot;&quot;&quot;</span>
 
-    <span class="n">exit_code</span> <span class="o">=</span> <span class="mi">21</span></div>
+    <span class="n">exit_code</span> <span class="o">=</span> <span class="mi">21</span>
+    <span class="n">default_hint</span> <span class="o">=</span> <span class="s2">&quot;Ensure the file is a valid PDF document&quot;</span></div>
 
 
 
@@ -501,7 +512,8 @@
 <span class="k">class</span> <span class="nc">NoContentError</span><span class="p">(</span><span class="n">ExtractionError</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;No extractable content found.&quot;&quot;&quot;</span>
 
-    <span class="n">exit_code</span> <span class="o">=</span> <span class="mi">22</span></div>
+    <span class="n">exit_code</span> <span class="o">=</span> <span class="mi">22</span>
+    <span class="n">default_hint</span> <span class="o">=</span> <span class="s2">&quot;The PDF may be scanned/image-only. OCR is not supported.&quot;</span></div>
 
 
 
@@ -520,7 +532,8 @@
 <span class="k">class</span> <span class="nc">MissingAPIKeyError</span><span class="p">(</span><span class="n">ConfigError</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Required API key not configured.&quot;&quot;&quot;</span>
 
-    <span class="n">exit_code</span> <span class="o">=</span> <span class="mi">31</span></div>
+    <span class="n">exit_code</span> <span class="o">=</span> <span class="mi">31</span>
+    <span class="n">default_hint</span> <span class="o">=</span> <span class="s2">&quot;Set PAPERCUT_ANTHROPIC_API_KEY or configure in ~/.papercut/config.yaml&quot;</span></div>
 
 
 
@@ -532,6 +545,35 @@
 
     <span class="n">exit_code</span> <span class="o">=</span> <span class="mi">40</span></div>
 
+
+
+<span class="k">class</span> <span class="nc">LLMNotAvailableError</span><span class="p">(</span><span class="n">LLMError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;LLM not available or not configured.&quot;&quot;&quot;</span>
+
+    <span class="n">exit_code</span> <span class="o">=</span> <span class="mi">41</span>
+    <span class="n">default_hint</span> <span class="o">=</span> <span class="s2">&quot;Set PAPERCUT_ANTHROPIC_API_KEY or install: pip install papercut[llm]&quot;</span>
+
+
+<span class="c1"># Equation errors (50-59)</span>
+<span class="k">class</span> <span class="nc">EquationExtractionError</span><span class="p">(</span><span class="n">ExtractionError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Error during equation extraction.&quot;&quot;&quot;</span>
+
+    <span class="n">exit_code</span> <span class="o">=</span> <span class="mi">50</span>
+    <span class="n">default_hint</span> <span class="o">=</span> <span class="s2">&quot;Ensure PyMuPDF is installed: pip install pymupdf&quot;</span>
+
+
+<span class="k">class</span> <span class="nc">EquationConversionError</span><span class="p">(</span><span class="n">PapercutError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Error during LaTeX conversion.&quot;&quot;&quot;</span>
+
+    <span class="n">exit_code</span> <span class="o">=</span> <span class="mi">51</span>
+    <span class="n">default_hint</span> <span class="o">=</span> <span class="s2">&quot;Try a different conversion method: --method nougat|pix2tex|mathpix&quot;</span>
+
+
+<span class="k">class</span> <span class="nc">MathPixAPIError</span><span class="p">(</span><span class="n">EquationConversionError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;MathPix API error.&quot;&quot;&quot;</span>
+
+    <span class="n">exit_code</span> <span class="o">=</span> <span class="mi">52</span>
+    <span class="n">default_hint</span> <span class="o">=</span> <span class="s2">&quot;Check PAPERCUT_MATHPIX_APP_ID and PAPERCUT_MATHPIX_APP_KEY&quot;</span>
 </pre></div>
 
                 </article>

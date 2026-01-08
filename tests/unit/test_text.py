@@ -2,7 +2,7 @@
 
 import pytest
 
-from papercut.core.text import TextExtractor
+from papercutter.core.text import TextExtractor
 
 
 class TestTextChunking:

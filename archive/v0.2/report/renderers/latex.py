@@ -1,6 +1,6 @@
 """LaTeX renderer for reports."""
 
-from papercut.report.generator import Report
+from papercutter.report.generator import Report
 
 
 def render_latex(report: Report) -> str:

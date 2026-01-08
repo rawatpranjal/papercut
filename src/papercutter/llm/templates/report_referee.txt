@@ -1,0 +1,29 @@
+Analyze this paper as a referee/reviewer:
+
+{content}
+
+Generate a referee report with:
+
+## Summary
+Brief (1 paragraph) summary of the paper's contribution.
+
+## Main Contributions
+List 3-5 main contributions of this paper.
+
+## Strengths
+- Identify the strongest aspects of the paper
+- Note what the authors do well
+
+## Weaknesses
+- Identify limitations or concerns
+- Note areas needing improvement
+
+## Specific Comments
+Provide detailed comments on:
+- Clarity of exposition
+- Validity of methodology
+- Interpretation of results
+- Missing citations or comparisons
+
+## Recommendation
+Provide an overall assessment and suggestions for revision.

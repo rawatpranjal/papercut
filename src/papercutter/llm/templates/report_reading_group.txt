@@ -1,0 +1,27 @@
+Analyze this paper for a reading group discussion:
+
+{content}
+
+Generate a reading group guide with:
+
+## Summary
+A 2-3 paragraph summary of the paper.
+
+## Key Arguments
+- List the main arguments/claims made in the paper
+- Note the evidence provided for each
+
+## Methodology Assessment
+- Describe the research approach
+- Note any strengths or potential weaknesses
+
+## Discussion Questions
+Generate 5-7 thought-provoking questions for group discussion, such as:
+- Questions about the methodology
+- Questions about alternative interpretations
+- Questions about implications and applications
+
+## Critical Points
+- What are the paper's main contributions?
+- What are potential criticisms or limitations?
+- How does this relate to other work in the field?

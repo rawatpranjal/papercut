@@ -8,7 +8,7 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.syntax import Syntax
 
-from papercut.exceptions import PapercutError
+from papercutter.exceptions import PapercutterError
 
 console = Console()
 
@@ -53,13 +53,13 @@ def generate(
 
     Examples:
 
-        papercut simulate generate paper.pdf
+        papercutter simulate generate paper.pdf
 
-        papercut simulate generate paper.pdf -l r -o model.R
+        papercutter simulate generate paper.pdf -l r -o model.R
 
-        papercut simulate generate paper.pdf --both -o output_dir/
+        papercutter simulate generate paper.pdf --both -o output_dir/
     """
-    from papercut.codegen.generator import SimulationGenerator
+    from papercutter.codegen.generator import SimulationGenerator
 
     # Validate language
     language = language.lower()
@@ -125,7 +125,7 @@ def generate(
                     border_style="blue",
                 ))
 
-    except PapercutError as e:
+    except PapercutterError as e:
         console.print(f"[red]Error:[/red] {e.message}")
         if e.details:
             console.print(f"[dim]{e.details}[/dim]")

@@ -2,7 +2,7 @@
 
 import pytest
 
-from papercut.core.references import Reference, ReferenceExtractor
+from papercutter.core.references import Reference, ReferenceExtractor
 
 
 class TestReference:
@@ -21,7 +21,7 @@ class TestReference:
 
         bibtex = ref.to_bibtex()
 
-        assert "@article{smith2020," in bibtex
+        assert "@article{smith2020great," in bibtex
         assert "author = {Smith, J.}" in bibtex
         assert "title = {A great paper}" in bibtex
         assert "year = {2020}" in bibtex
@@ -68,16 +68,17 @@ class TestReference:
         assert d["year"] == 2022
 
     def test_generate_key_from_author(self):
-        """Should generate key from first author's last name."""
+        """Should generate key from first author's last name and title."""
         ref = Reference(
             raw_text="Test",
             authors=["van der Berg, Jan"],
             year=2020,
+            title="Some Paper Title",
         )
 
         key = ref._generate_key()
 
-        assert key == "van2020"
+        assert key == "vanderberg2020some"
 
     def test_generate_key_unknown_author(self):
         """Should use 'unknown' when no authors."""
@@ -89,6 +90,58 @@ class TestReference:
         key = ref._generate_key()
 
         assert key == "unknown2020"
+
+    def test_generate_key_attention_paper(self):
+        """Should generate proper key like vaswani2017attention."""
+        ref = Reference(
+            raw_text="Test",
+            authors=["Vaswani, Ashish"],
+            year=2017,
+            title="Attention Is All You Need",
+        )
+
+        key = ref._generate_key()
+
+        assert key == "vaswani2017attention"
+
+    def test_generate_key_skips_common_words(self):
+        """Should skip common words in title."""
+        ref = Reference(
+            raw_text="Test",
+            authors=["Smith, John"],
+            year=2020,
+            title="The Theory of Everything",
+        )
+
+        key = ref._generate_key()
+
+        assert key == "smith2020theory"
+
+    def test_generate_key_simple_name(self):
+        """Should handle simple First Last format."""
+        ref = Reference(
+            raw_text="Test",
+            authors=["John Smith"],
+            year=2021,
+            title="Machine Learning Basics",
+        )
+
+        key = ref._generate_key()
+
+        assert key == "smith2021machine"
+
+    def test_generate_key_hyphenated_name(self):
+        """Should handle hyphenated last names."""
+        ref = Reference(
+            raw_text="Test",
+            authors=["Smith-Jones, Mary"],
+            year=2022,
+            title="Testing Hyphenated Names",
+        )
+
+        key = ref._generate_key()
+
+        assert key == "smithjones2022testing"
 
 
 class TestReferenceExtractor:

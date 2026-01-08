@@ -7,8 +7,8 @@ import typer
 from rich.console import Console
 from rich.panel import Panel
 
-from papercut.exceptions import PapercutError
-from papercut.llm.prompts import list_templates
+from papercutter.exceptions import PapercutterError
+from papercutter.llm.prompts import list_templates
 
 console = Console()
 
@@ -65,15 +65,15 @@ def generate(
 
     Examples:
 
-        papercut report generate paper.pdf
+        papercutter report generate paper.pdf
 
-        papercut report generate paper.pdf -t meta_analysis -o data.json
+        papercutter report generate paper.pdf -t meta_analysis -o data.json
 
-        papercut report generate paper.pdf -o summary.pdf
+        papercutter report generate paper.pdf -o summary.pdf
     """
-    from papercut.report.generator import ReportGenerator
-    from papercut.report.renderers import render_json, render_latex, render_markdown
-    from papercut.report.renderers.pdf import render_pdf
+    from papercutter.report.generator import ReportGenerator
+    from papercutter.report.renderers import render_json, render_latex, render_markdown
+    from papercutter.report.renderers.pdf import render_pdf
 
     # Validate template
     available_templates = list_templates()
@@ -114,7 +114,7 @@ def generate(
         else:
             console.print(Panel(rendered, title=f"{template} report", border_style="blue"))
 
-    except PapercutError as e:
+    except PapercutterError as e:
         console.print(f"[red]Error:[/red] {e.message}")
         if e.details:
             console.print(f"[dim]{e.details}[/dim]")
@@ -124,7 +124,7 @@ def generate(
 @app.command("templates")
 def templates():
     """List available report templates."""
-    from papercut.llm.prompts import TEMPLATES
+    from papercutter.llm.prompts import TEMPLATES
 
     console.print("\n[bold]Available Templates[/bold]\n")
 

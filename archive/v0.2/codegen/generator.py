@@ -4,10 +4,10 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Literal, Optional
 
-from papercut.core.text import TextExtractor
-from papercut.extractors.pdfplumber import PdfPlumberExtractor
-from papercut.llm.client import get_client
-from papercut.llm.prompts import get_template
+from papercutter.core.text import TextExtractor
+from papercutter.extractors.pdfplumber import PdfPlumberExtractor
+from papercutter.llm.client import get_client
+from papercutter.llm.prompts import get_template
 
 
 Language = Literal["python", "r"]

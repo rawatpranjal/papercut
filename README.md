@@ -1,21 +1,39 @@
-# Papercut
+# Papercutter
+
+[![PyPI version](https://badge.fury.io/py/papercutter.svg)](https://pypi.org/project/papercutter/)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![CI](https://github.com/pranjalrawat007/papercutter/actions/workflows/ci.yml/badge.svg)](https://github.com/pranjalrawat007/papercutter/actions/workflows/ci.yml)
 
 Extract knowledge from academic papers. A CLI-first Python package for researchers.
 
 ## Installation
 
 ```bash
-pip install -e .
+pip install papercutter
 ```
 
-For development:
+With LLM features (summarization, reports, study aids):
 ```bash
+pip install papercutter[llm]
+```
+
+With fast PDF processing (PyMuPDF):
+```bash
+pip install papercutter[fast]
+```
+
+All optional dependencies:
+```bash
+pip install papercutter[all]
+```
+
+### Development Installation
+
+```bash
+git clone https://github.com/pranjalrawat007/papercutter.git
+cd papercutter
 pip install -e ".[dev]"
-```
-
-For LLM features (v0.2):
-```bash
-pip install -e ".[llm]"
 ```
 
 ## Quick Start
@@ -26,19 +44,19 @@ Download papers from various academic sources:
 
 ```bash
 # From arXiv
-papercut fetch arxiv 2301.00001
+papercutter fetch arxiv 2301.00001
 
 # From DOI
-papercut fetch doi 10.1257/aer.20180779
+papercutter fetch doi 10.1257/aer.20180779
 
 # From SSRN
-papercut fetch ssrn 4123456
+papercutter fetch ssrn 4123456
 
 # From NBER
-papercut fetch nber w29000
+papercutter fetch nber w29000
 
 # From direct URL
-papercut fetch url "https://example.com/paper.pdf" --name smith_2024
+papercutter fetch url "https://example.com/paper.pdf" --name smith_2024
 ```
 
 ### Extract Text
@@ -47,16 +65,16 @@ Extract clean text from PDFs:
 
 ```bash
 # Full text to stdout
-papercut extract text paper.pdf
+papercutter extract text paper.pdf
 
 # Save to file
-papercut extract text paper.pdf --output paper.txt
+papercutter extract text paper.pdf --output paper.txt
 
 # Chunk for LLM processing
-papercut extract text paper.pdf --chunk-size 4000 --overlap 200
+papercutter extract text paper.pdf --chunk-size 4000 --overlap 200
 
 # Extract specific pages
-papercut extract text paper.pdf --pages "1-10,15"
+papercutter extract text paper.pdf --pages "1-10,15"
 ```
 
 ### Extract Tables
@@ -65,13 +83,13 @@ Extract tables from PDFs as CSV or JSON:
 
 ```bash
 # All tables to stdout as JSON
-papercut extract tables paper.pdf
+papercutter extract tables paper.pdf
 
 # Save as CSV files
-papercut extract tables paper.pdf --output ./tables/ --format csv
+papercutter extract tables paper.pdf --output ./tables/ --format csv
 
 # Extract from specific pages
-papercut extract tables paper.pdf --pages "5-10" --format json
+papercutter extract tables paper.pdf --pages "5-10" --format json
 ```
 
 ### Extract References
@@ -80,18 +98,18 @@ Extract bibliography as BibTeX:
 
 ```bash
 # BibTeX to stdout
-papercut extract refs paper.pdf
+papercutter extract refs paper.pdf
 
 # Save to file
-papercut extract refs paper.pdf --output refs.bib
+papercutter extract refs paper.pdf --output refs.bib
 
 # As JSON
-papercut extract refs paper.pdf --format json
+papercutter extract refs paper.pdf --format json
 ```
 
 ## Configuration
 
-Papercut stores configuration in `~/.papercut/config.yaml`:
+Papercutter stores configuration in `~/.papercutter/config.yaml`:
 
 ```yaml
 output:
@@ -113,9 +131,19 @@ llm:
 
 Environment variables override config:
 ```bash
-export PAPERCUT_ANTHROPIC_API_KEY=sk-ant-...
-export PAPERCUT_OPENAI_API_KEY=sk-...
+export PAPERCUTTER_ANTHROPIC_API_KEY=sk-ant-...
+export PAPERCUTTER_OPENAI_API_KEY=sk-...
 ```
+
+## Migration from Papercut
+
+Papercutter is a direct rename of the original Papercut project. To upgrade an existing installation:
+
+1. Reinstall the package: `pip uninstall papercut && pip install papercutter`.
+2. Update scripts and shell aliases to call `papercutter` instead of `papercut`.
+3. Rename your config directory if you have custom settings: `mv ~/.papercut ~/.papercutter`.
+4. (Optional) Rename the cache directory to retain cached artifacts: `mv ~/.cache/papercut ~/.cache/papercutter`.
+5. Update any `PAPERCUT_*` environment variables to the new `PAPERCUTTER_*` prefix.
 
 ## Development
 

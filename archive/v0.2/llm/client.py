@@ -3,8 +3,8 @@
 from functools import lru_cache
 from typing import Any, Optional
 
-from papercut.config import get_settings
-from papercut.exceptions import LLMError, MissingAPIKeyError
+from papercutter.config import get_settings
+from papercutter.exceptions import LLMError, MissingAPIKeyError
 
 # Try to import litellm, provide helpful error if not installed
 try:
@@ -51,7 +51,7 @@ class LLMClient:
         if not LITELLM_AVAILABLE:
             raise LLMError(
                 "LLM features require litellm",
-                details="Install with: pip install papercut[llm]",
+                details="Install with: pip install papercutter[llm]",
             )
 
         settings = get_settings()

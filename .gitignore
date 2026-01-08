@@ -51,5 +51,5 @@ htmlcov/
 # macOS
 .DS_Store
 
-# Papercut cache
-.papercut/
+# Papercutter cache
+.papercutter/

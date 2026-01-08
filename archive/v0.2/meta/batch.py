@@ -7,10 +7,10 @@ from io import StringIO
 from pathlib import Path
 from typing import Any, Optional
 
-from papercut.core.text import TextExtractor
-from papercut.extractors.pdfplumber import PdfPlumberExtractor
-from papercut.llm.client import LLMClient, get_client
-from papercut.llm.prompts import get_template
+from papercutter.core.text import TextExtractor
+from papercutter.extractors.pdfplumber import PdfPlumberExtractor
+from papercutter.llm.client import LLMClient, get_client
+from papercutter.llm.prompts import get_template
 
 
 @dataclass

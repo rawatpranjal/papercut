@@ -4,21 +4,21 @@ Installation
 Requirements
 ------------
 
-Papercut requires Python 3.10 or later.
+Papercutter requires Python 3.10 or later.
 
 Basic Installation
 ------------------
 
-Install Papercut using pip:
+Install Papercutter using pip:
 
 .. code-block:: bash
 
-   pip install papercut
+   pip install papercutter
 
 Optional Dependencies
 ---------------------
 
-Papercut provides optional dependency groups for additional functionality:
+Papercutter provides optional dependency groups for additional functionality:
 
 **LLM Support**
 
@@ -26,7 +26,7 @@ For LLM-powered features (coming in v0.2):
 
 .. code-block:: bash
 
-   pip install papercut[llm]
+   pip install papercutter[llm]
 
 This installs ``litellm`` for multi-provider LLM support.
 
@@ -36,7 +36,7 @@ For faster PDF processing using PyMuPDF:
 
 .. code-block:: bash
 
-   pip install papercut[fast]
+   pip install papercutter[fast]
 
 **All Extras**
 
@@ -44,18 +44,18 @@ Install all optional dependencies:
 
 .. code-block:: bash
 
-   pip install papercut[all]
+   pip install papercutter[all]
 
 Development Installation
 ------------------------
 
-To install Papercut for development:
+To install Papercutter for development:
 
 .. code-block:: bash
 
    # Clone the repository
-   git clone https://github.com/pranjalrawat007/papercut.git
-   cd papercut
+   git clone https://github.com/pranjalrawat007/papercutter.git
+   cd papercutter
 
    # Create a virtual environment
    python -m venv venv
@@ -67,7 +67,7 @@ To install Papercut for development:
 Configuration
 -------------
 
-Papercut can be configured via environment variables with the ``PAPERCUT_`` prefix.
+Papercutter can be configured via environment variables with the ``PAPERCUTTER_`` prefix.
 
 **Common Environment Variables:**
 
@@ -77,11 +77,11 @@ Papercut can be configured via environment variables with the ``PAPERCUT_`` pref
 
    * - Variable
      - Description
-   * - ``PAPERCUT_OUTPUT__DIRECTORY``
+   * - ``PAPERCUTTER_OUTPUT__DIRECTORY``
      - Default output directory for downloaded papers
-   * - ``PAPERCUT_EXTRACTION__BACKEND``
+   * - ``PAPERCUTTER_EXTRACTION__BACKEND``
      - PDF extraction backend (default: ``pdfplumber``)
-   * - ``PAPERCUT_LLM__DEFAULT_MODEL``
+   * - ``PAPERCUTTER_LLM__DEFAULT_MODEL``
      - Default LLM model for AI features
    * - ``ANTHROPIC_API_KEY``
      - API key for Anthropic Claude models
@@ -92,18 +92,40 @@ Example:
 
 .. code-block:: bash
 
-   export PAPERCUT_OUTPUT__DIRECTORY="$HOME/research/papers"
-   export PAPERCUT_EXTRACTION__BACKEND="pdfplumber"
+   export PAPERCUTTER_OUTPUT__DIRECTORY="$HOME/research/papers"
+   export PAPERCUTTER_EXTRACTION__BACKEND="pdfplumber"
 
 Verifying Installation
 ----------------------
 
-After installation, verify that Papercut is working:
+After installation, verify that Papercutter is working:
 
 .. code-block:: bash
 
    # Check version
-   papercut --version
+   papercutter --version
 
    # View help
-   papercut --help
+   papercutter --help
+
+.. _papercut-migration:
+
+Migrating from Papercut
+-----------------------
+
+Papercutter is the renamed successor to Papercut. If you are upgrading an existing environment:
+
+1. Uninstall the old package and install the new one::
+
+      pip uninstall papercut
+      pip install papercutter
+
+2. Update shell aliases, scripts, and documentation to call ``papercutter`` instead of ``papercut``.
+3. Rename existing config and cache directories if you want to keep previous settings::
+
+      mv ~/.papercut ~/.papercutter
+      mv ~/.cache/papercut ~/.cache/papercutter
+
+4. Update any ``PAPERCUT_*`` environment variables to the new ``PAPERCUTTER_*`` prefix (for example ``PAPERCUTTER_ANTHROPIC_API_KEY``).
+
+Once these steps are complete, the CLI, environment variables, and config paths will all align with the new package name.

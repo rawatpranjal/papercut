@@ -4,9 +4,9 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Optional
 
-from papercut.books.splitter import Chapter, ChapterSplitter
-from papercut.llm.client import LLMClient, get_client
-from papercut.llm.prompts import get_template
+from papercutter.books.splitter import Chapter, ChapterSplitter
+from papercutter.llm.client import LLMClient, get_client
+from papercutter.llm.prompts import get_template
 
 
 @dataclass

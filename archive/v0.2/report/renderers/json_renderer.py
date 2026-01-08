@@ -3,7 +3,7 @@
 import json
 from typing import Any
 
-from papercut.report.generator import Report
+from papercutter.report.generator import Report
 
 
 def render_json(report: Report) -> str:

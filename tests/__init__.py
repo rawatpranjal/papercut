@@ -1,1 +1,1 @@
-"""Tests for Papercut."""
+"""Tests for Papercutter."""
