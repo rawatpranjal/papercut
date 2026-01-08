@@ -3,7 +3,7 @@
 [![PyPI version](https://badge.fury.io/py/papercutter.svg)](https://pypi.org/project/papercutter/)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![CI](https://github.com/pranjalrawat007/papercutter/actions/workflows/ci.yml/badge.svg)](https://github.com/pranjalrawat007/papercutter/actions/workflows/ci.yml)
+[![CI](https://github.com/rawatpranjal/papercutter/actions/workflows/ci.yml/badge.svg)](https://github.com/rawatpranjal/papercutter/actions/workflows/ci.yml)
 
 Extract knowledge from academic papers. A CLI-first Python package for researchers.
 
@@ -31,7 +31,7 @@ pip install papercutter[all]
 ### Development Installation
 
 ```bash
-git clone https://github.com/pranjalrawat007/papercutter.git
+git clone https://github.com/rawatpranjal/papercutter.git
 cd papercutter
 pip install -e ".[dev]"
 ```

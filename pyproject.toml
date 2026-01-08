@@ -72,8 +72,8 @@ all = ["papercutter[fast,llm,equations,dev]"]
 papercutter = "papercutter.cli.app:app"
 
 [project.urls]
-Homepage = "https://github.com/pranjalrawat007/papercutter"
-Repository = "https://github.com/pranjalrawat007/papercutter"
+Homepage = "https://github.com/rawatpranjal/papercutter"
+Repository = "https://github.com/rawatpranjal/papercutter"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/papercutter"]

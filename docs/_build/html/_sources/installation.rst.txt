@@ -54,7 +54,7 @@ To install Papercutter for development:
 .. code-block:: bash
 
    # Clone the repository
-   git clone https://github.com/pranjalrawat007/papercutter.git
+   git clone https://github.com/rawatpranjal/papercutter.git
    cd papercutter
 
    # Create a virtual environment

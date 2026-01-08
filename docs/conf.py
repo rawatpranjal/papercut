@@ -49,7 +49,7 @@ html_theme_options = {
         "image_dark": "_static/logo.svg",
         "text": "Papercutter",
     },
-    "github_url": "https://github.com/pranjalrawat007/papercutter",
+    "github_url": "https://github.com/rawatpranjal/papercutter",
     "show_toc_level": 2,
     "navigation_with_keys": True,
     "show_nav_level": 2,
@@ -57,7 +57,7 @@ html_theme_options = {
     "icon_links": [
         {
             "name": "GitHub",
-            "url": "https://github.com/pranjalrawat007/papercutter",
+            "url": "https://github.com/rawatpranjal/papercutter",
             "icon": "fa-brands fa-github",
         },
         {
@@ -71,7 +71,7 @@ html_theme_options = {
 html_favicon = "_static/logo.svg"
 
 html_context = {
-    "github_user": "pranjalrawat007",
+    "github_user": "rawatpranjal",
     "github_repo": "papercutter",
     "github_version": "main",
     "doc_path": "docs",

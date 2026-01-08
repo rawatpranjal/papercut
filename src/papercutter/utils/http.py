@@ -13,7 +13,7 @@ DEFAULT_TIMEOUT = 30.0
 
 # Default headers to mimic a browser
 DEFAULT_HEADERS = {
-    "User-Agent": "Mozilla/5.0 (compatible; Papercutter/0.1; +https://github.com/pranjalrawat007/papercutter)"
+    "User-Agent": "Mozilla/5.0 (compatible; Papercutter/0.1; +https://github.com/rawatpranjal/papercutter)"
 }
 """Default HTTP headers used for outbound requests."""
 
