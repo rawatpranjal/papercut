@@ -129,7 +129,7 @@ class BibTeXMatcher:
             except ImportError:
                 logger.warning(
                     "thefuzz not installed, using simple matching. "
-                    "Install with: pip install thefuzz"
+                    "Install with: pip install papercutter[factory]"
                 )
                 self._fuzz = False  # Flag that it's unavailable
         return self._fuzz

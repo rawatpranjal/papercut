@@ -27,7 +27,7 @@ Advanced usage (for more control):
     >>> text = extractor.extract(doc.path)
 """
 
-__version__ = "2.0.0"
+__version__ = "2.0.1"
 
 # Exceptions
 # Convenience API

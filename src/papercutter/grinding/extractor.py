@@ -11,6 +11,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from papercutter.exceptions import LLMNotAvailableError
 from papercutter.grinding.matrix import (
     ExtractedValue,
     ExtractionMatrix,
@@ -161,6 +162,10 @@ class Extractor:
             extractions = self._parse_response(response.content)
             extraction.extractions = extractions
 
+        except LLMNotAvailableError:
+            # Re-raise LLM availability errors - don't silently fail
+            raise
+
         except Exception as e:
             logger.error(f"Extraction failed for {paper_id}: {e}")
             # Mark all fields as failed
@@ -217,6 +222,10 @@ class Extractor:
                             status="completed",
                         )
                     )
+
+            except LLMNotAvailableError:
+                # Re-raise LLM availability errors - don't silently fail
+                raise
 
             except Exception as e:
                 result.papers_failed += 1

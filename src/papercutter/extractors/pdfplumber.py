@@ -148,7 +148,7 @@ class PdfPlumberExtractor:
                     if page_text:
                         text_parts.append(page_text)
 
-                return "\n\n".join(text_parts)
+                return "\n\n".join(text_parts).strip()
 
         except Exception as e:
             if "Invalid" in str(e) or "corrupt" in str(e).lower():
@@ -183,7 +183,7 @@ class PdfPlumberExtractor:
 
         # Combine in order
         text_parts = [results[idx] for idx in sorted(results.keys()) if results[idx]]
-        return "\n\n".join(text_parts)
+        return "\n\n".join(text_parts).strip()
 
     def extract_tables(
         self,

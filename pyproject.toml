@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "papercutter"
-version = "2.0.0"
+version = "2.0.1"
 description = "Automated evidence synthesis pipeline for systematic literature reviews"
 readme = "README.md"
 license = "MIT"
@@ -53,6 +53,7 @@ docling = [
 ]
 factory = [
     "jinja2>=3.0.0",
+    "thefuzz>=0.22.0",
     "papercutter[docling,llm]",
 ]
 equations = [

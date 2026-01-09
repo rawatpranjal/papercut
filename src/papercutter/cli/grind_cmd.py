@@ -9,6 +9,7 @@ import typer
 from rich.console import Console
 from rich.progress import BarColumn, Progress, SpinnerColumn, TextColumn
 
+from papercutter.exceptions import LLMNotAvailableError
 from papercutter.grinding import (
     ExtractionProgress,
     ExtractionSchema,
@@ -22,6 +23,16 @@ console = Console()
 
 
 def grind(
+    pilot: bool = typer.Option(
+        False,
+        "--pilot",
+        help="Process random 5-paper sample for validation with source quotes.",
+    ),
+    full: bool = typer.Option(
+        False,
+        "--full",
+        help="Process all papers (skips already-extracted ones).",
+    ),
     output: Path | None = typer.Option(
         None,
         "--output",
@@ -55,9 +66,9 @@ def grind(
     4. Outputs the extraction matrix
 
     Examples:
-        papercutter grind                        # Extract and save to project
-        papercutter grind -o matrix.csv          # Export to CSV
-        papercutter grind --no-synthesize        # Skip summaries
+        papercutter grind --pilot     # Validate on 5 random papers
+        papercutter grind --full      # Process all papers
+        papercutter grind -o out.csv  # Export to CSV
     """
     directory = Path(directory).resolve()
     manager = ProjectManager(directory)
@@ -85,7 +96,14 @@ def grind(
         console.print("Run 'papercutter ingest' first.")
         raise typer.Exit(1)
 
-    console.print(f"[bold]Processing {len(md_files)} papers...[/bold]")
+    # Handle --pilot mode: select random 5 papers
+    if pilot:
+        import random
+        sample_size = min(5, len(md_files))
+        md_files = random.sample(md_files, sample_size)
+        console.print(f"[bold]Pilot mode: Processing {sample_size} random papers...[/bold]")
+    else:
+        console.print(f"[bold]Processing {len(md_files)} papers...[/bold]")
 
     # Build schema from config
     schema = _build_schema(manager)
@@ -102,23 +120,36 @@ def grind(
 
     # Run extraction
     console.print()
-    with Progress(
-        SpinnerColumn(),
-        TextColumn("[progress.description]{task.description}"),
-        BarColumn(),
-        TextColumn("{task.completed}/{task.total}"),
-        console=console,
-    ) as progress:
-        task = progress.add_task("Extracting evidence...", total=len(md_files))
+    try:
+        with Progress(
+            SpinnerColumn(),
+            TextColumn("[progress.description]{task.description}"),
+            BarColumn(),
+            TextColumn("{task.completed}/{task.total}"),
+            console=console,
+        ) as progress:
+            task = progress.add_task("Extracting evidence...", total=len(md_files))
 
-        def _update_progress(p: ExtractionProgress) -> None:
-            progress.update(task, completed=p.current)
-            if verbose:
-                _progress_callback(p)
+            def _update_progress(p: ExtractionProgress) -> None:
+                progress.update(task, completed=p.current)
+                if verbose:
+                    _progress_callback(p)
 
-        matrix, result = extractor.extract_from_directory(
-            markdown_dir, progress_callback=_update_progress
-        )
+            matrix, result = extractor.extract_from_directory(
+                markdown_dir, progress_callback=_update_progress
+            )
+    except LLMNotAvailableError as e:
+        console.print()
+        console.print("[red]LLM features not available.[/red]")
+        console.print(f"[yellow]{e}[/yellow]")
+        console.print()
+        console.print("Install LLM dependencies:")
+        console.print("  [bold]pip install papercutter[llm][/bold]")
+        console.print()
+        console.print("Then set your API key:")
+        console.print("  [bold]export ANTHROPIC_API_KEY=sk-...[/bold]")
+        console.print("  [dim]# or: export OPENAI_API_KEY=sk-...[/dim]")
+        raise typer.Exit(1) from None
 
     console.print(
         f"[green]Extracted from {result.papers_succeeded}/{result.papers_processed} papers[/green]"
@@ -171,6 +202,13 @@ def grind(
         csv_path = manager.project_dir / "matrix.csv"
         matrix.to_csv(csv_path)
         console.print(f"CSV saved to: {csv_path}")
+
+        # In pilot mode, also save trace CSV
+        if pilot:
+            trace_path = manager.project_dir / "pilot_trace.csv"
+            matrix.to_csv(trace_path)
+            console.print(f"[green]Pilot trace saved to: {trace_path}[/green]")
+            console.print("[dim]Review pilot_trace.csv to verify extraction accuracy[/dim]")
 
     # Display summary
     console.print()
