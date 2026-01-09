@@ -13,20 +13,28 @@ Install Papercutter using pip:
 
 .. code-block:: bash
 
-   pip install papercutter
+   pip3 install papercutter
 
 Optional Dependencies
 ---------------------
 
 Papercutter provides optional dependency groups for additional functionality:
 
-**LLM Support**
+**Factory Pipeline (Recommended)**
 
-For LLM-powered features (coming in v0.2):
+For the full systematic review pipeline with Docling and LLM features:
 
 .. code-block:: bash
 
-   pip install papercutter[llm]
+   pip3 install papercutter[factory]
+
+**LLM Support**
+
+For LLM-powered features only:
+
+.. code-block:: bash
+
+   pip3 install papercutter[llm]
 
 This installs ``litellm`` for multi-provider LLM support.
 
@@ -36,7 +44,7 @@ For faster PDF processing using PyMuPDF:
 
 .. code-block:: bash
 
-   pip install papercutter[fast]
+   pip3 install papercutter[fast]
 
 **All Extras**
 
@@ -44,7 +52,7 @@ Install all optional dependencies:
 
 .. code-block:: bash
 
-   pip install papercutter[all]
+   pip3 install papercutter[all]
 
 Development Installation
 ------------------------
@@ -58,11 +66,11 @@ To install Papercutter for development:
    cd papercutter
 
    # Create a virtual environment
-   python -m venv venv
+   python3 -m venv venv
    source venv/bin/activate  # On Windows: venv\Scripts\activate
 
    # Install in development mode with dev dependencies
-   pip install -e ".[dev]"
+   pip3 install -e ".[dev]"
 
 Configuration
 -------------
@@ -117,8 +125,8 @@ Papercutter is the renamed successor to Papercut. If you are upgrading an existi
 
 1. Uninstall the old package and install the new one::
 
-      pip uninstall papercut
-      pip install papercutter
+      pip3 uninstall papercut
+      pip3 install papercutter
 
 2. Update shell aliases, scripts, and documentation to call ``papercutter`` instead of ``papercut``.
 3. Rename existing config and cache directories if you want to keep previous settings::
