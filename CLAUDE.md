@@ -4,7 +4,9 @@
 
 **Papercutter Factory** is a CLI pipeline for automated evidence synthesis in systematic literature reviews. It transforms unstructured PDF collections into structured datasets and reports.
 
-**Entry point**: `papercutter` CLI (or `python -m papercutter`)
+**Entry point**: `papercutter` CLI (or `python3 -m papercutter`)
+
+**Version**: 2.0.1 (PyPI aligned)
 
 ## Project Structure
 
@@ -83,16 +85,16 @@ papercutter status
 
 ```bash
 # Install in development mode
-pip install -e ".[dev]"
+pip3 install -e ".[dev]"
 
 # Install with Docling (PDF processing)
-pip install -e ".[docling]"
+pip3 install -e ".[docling]"
 
 # Install with Factory features
-pip install -e ".[factory]"
+pip3 install -e ".[factory]"
 
 # Install all
-pip install -e ".[dev,docling,factory,llm]"
+pip3 install -e ".[dev,docling,factory,llm]"
 ```
 
 ### Using the Makefile
@@ -161,6 +163,22 @@ pytest --cov=src/papercutter tests/
 - **Line length**: 100 characters
 - **Linter**: Ruff (E, W, F, I, B, UP, RUF rules)
 - **Type checking**: mypy with Python 3.10 target
+- **Python**: Use `python3` not `python` (macOS compatibility)
+
+## Publishing
+
+```bash
+# Build
+python3 -m build
+
+# Upload to PyPI (token saved in ~/.pypirc)
+python3 -m twine upload dist/*
+```
+
+Versioning policy:
+- PATCH (2.0.x): Bug fixes, minor improvements
+- MINOR (2.x.0): New features
+- MAJOR (x.0.0): Breaking changes
 
 ## File Locations Reference
 
