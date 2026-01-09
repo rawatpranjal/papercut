@@ -258,7 +258,7 @@ class DocumentIndexer:
         pdf_path = Path(pdf_path)
 
         # Check cache
-        if self.use_cache and not force:
+        if self.use_cache and not force and self.cache is not None:
             cached = self.cache.get_index(pdf_path)
             if cached:
                 return self._dict_to_index(cached)
@@ -307,7 +307,7 @@ class DocumentIndexer:
         self._count_references(reader, index, get_page_text)
 
         # Cache result
-        if self.use_cache:
+        if self.use_cache and self.cache is not None:
             self.cache.set_index(pdf_path, index.to_dict())
 
         return index
@@ -538,27 +538,39 @@ class DocumentIndexer:
         index: DocumentIndex,
         get_page_text: PageTextGetter,
     ) -> None:
-        """Count references in the document."""
-        # Look for references section
-        # For books, scan more pages since references may be in an earlier chapter
-        refs_count = 0
+        """Count references in the document.
+
+        Uses heuristics to detect reference format (numbered vs author-year) and
+        counts accordingly. Only uses one format to avoid double-counting.
+        """
         total_pages = len(reader.pages)
 
-        # Scan last 50 pages for books, last 5 for papers
-        pages_to_scan = 50 if index.type == "book" else 5
+        # Scan last 50 pages for books, last 10 for papers
+        pages_to_scan = 50 if index.type == "book" else 10
         pages_to_scan = min(pages_to_scan, total_pages)
+
+        numbered_count = 0
+        author_year_count = 0
+        found_refs_section = False
 
         for page_num in range(max(0, total_pages - pages_to_scan), total_pages):
             text = get_page_text(page_num)
 
             # Check if this is a references page
             if self._REF_SECTION_PATTERN.search(text):
-                # Count reference entries (lines starting with [ or numbers)
-                refs_count += len(self._REF_NUMBERED_PATTERN.findall(text))
-                # Also count author-year style
-                refs_count += len(self._REF_AUTHOR_YEAR_PATTERN.findall(text))
+                found_refs_section = True
+                # Count both styles separately
+                numbered_count += len(self._REF_NUMBERED_PATTERN.findall(text))
+                author_year_count += len(self._REF_AUTHOR_YEAR_PATTERN.findall(text))
 
-        index.refs_count = refs_count
+        # Use the count from whichever format is dominant (avoid double-counting)
+        # If numbered refs found, prefer those as they're more reliable
+        if numbered_count > 0:
+            index.refs_count = numbered_count
+        elif found_refs_section:
+            index.refs_count = author_year_count
+        else:
+            index.refs_count = 0
 
     def _dict_to_index(self, data: dict[str, Any]) -> DocumentIndex:
         """Convert dict back to DocumentIndex."""

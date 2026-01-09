@@ -40,7 +40,21 @@ console = Console(stderr=True)
 
 app = typer.Typer(
     name="papercutter",
-    help="Extract and map content from academic papers.",
+    help="""Papercutter: The Evidence Factory for systematic literature reviews.
+
+    [bold]Pipeline Commands:[/bold]
+    init        Initialize a new project
+    ingest      Process PDFs (split, match BibTeX, convert to Markdown)
+    configure   Set up extraction schema (auto-generated with LLM)
+    grind       Extract structured evidence from papers
+    factory-report  Generate LaTeX/Markdown review document
+    status      Show project status
+
+    [bold]Legacy Commands:[/bold]
+    fetch       Download papers from arXiv, DOI, SSRN, NBER
+    extract     Extract text, tables, figures, references
+    summarize   LLM-powered summarization
+    """,
     no_args_is_help=True,
     rich_markup_mode="rich",
 )
@@ -115,12 +129,29 @@ def _setup_commands():
         summarize_cmd,
     )
 
-    # Add subcommand groups
+    # NEW: Factory pipeline commands
+    from papercutter.cli import (
+        init_cmd,
+        ingest_cmd,
+        configure_cmd,
+        grind_cmd,
+        factory_report_cmd,
+        status_cmd,
+    )
+
+    # Factory pipeline commands (new 5-command architecture)
+    app.command("init")(_wrap_command(init_cmd.init))
+    app.command("ingest")(_wrap_command(ingest_cmd.ingest))
+    app.command("configure")(_wrap_command(configure_cmd.configure))
+    app.command("grind")(_wrap_command(grind_cmd.grind))
+    app.command("status")(_wrap_command(status_cmd.status))
+
+    # Add subcommand groups (legacy)
     app.add_typer(fetch.app, name="fetch")
     app.add_typer(extract.app, name="extract")
 
     # Register direct commands with error handling
-    # Layer 1 (extraction)
+    # Layer 1 (extraction) - legacy
     app.command("index")(_wrap_command(index_cmd.index))
     app.command("chapters")(_wrap_command(index_cmd.chapters))
     app.command("info")(_wrap_command(index_cmd.info))
@@ -132,10 +163,13 @@ def _setup_commands():
     app.command("equation")(_wrap_command(equations_cmd.equation))
     app.command("search")(_wrap_command(search_cmd.search))
 
-    # Layer 2 (intelligence/LLM)
+    # Layer 2 (intelligence/LLM) - legacy
     app.command("summarize")(_wrap_command(summarize_cmd.summarize))
     app.command("report")(_wrap_command(report_cmd.report))
     app.command("study")(_wrap_command(study_cmd.study))
+
+    # NEW: Factory report (as 'factory-report' to avoid conflict with legacy)
+    app.command("factory-report")(_wrap_command(factory_report_cmd.report))
 
 
 # Setup commands

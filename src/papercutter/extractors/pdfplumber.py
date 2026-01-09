@@ -63,20 +63,22 @@ def _extract_page_text(args: tuple[str, int]) -> tuple[int, str]:
         return (page_idx, "")
 
 
-def _extract_page_tables(args: tuple[str, int]) -> tuple[int, list[list[Any]]]:
+def _extract_page_tables(
+    args: tuple[str, int, dict[str, Any] | None]
+) -> tuple[int, list[list[Any]]]:
     """Extract tables from a single page (for parallel processing).
 
     Args:
-        args: Tuple of (pdf_path, page_index).
+        args: Tuple of (pdf_path, page_index, table_settings).
 
     Returns:
         Tuple of (page_index, list_of_tables).
     """
-    pdf_path, page_idx = args
+    pdf_path, page_idx, table_settings = args
     try:
         with pdfplumber.open(pdf_path) as pdf:
             page = pdf.pages[page_idx]
-            tables = page.extract_tables()
+            tables = page.extract_tables(table_settings=table_settings or {})
             return (page_idx, [t for t in tables if t])
     except Exception:
         return (page_idx, [])
@@ -187,6 +189,7 @@ class PdfPlumberExtractor:
         self,
         path: Path,
         pages: list[int] | None = None,
+        table_settings: dict[str, Any] | None = None,
         parallel: bool = False,
     ) -> list[dict[str, Any]]:
         """Extract tables from PDF.
@@ -195,6 +198,9 @@ class PdfPlumberExtractor:
             path: Path to the PDF file.
             pages: Optional list of 0-indexed page numbers to extract.
                    If None, extract from all pages.
+            table_settings: Optional dict of pdfplumber table detection settings.
+                   Keys: vertical_strategy, horizontal_strategy, snap_tolerance,
+                   join_tolerance, edge_min_length, min_words_vertical, min_words_horizontal.
             parallel: Use parallel processing for large documents.
                      Automatically enabled for documents with 10+ pages.
 
@@ -221,7 +227,9 @@ class PdfPlumberExtractor:
 
                 if use_parallel and len(target_indices) >= _MIN_PAGES_FOR_PARALLEL:
                     try:
-                        return self._extract_tables_parallel(path, target_indices)
+                        return self._extract_tables_parallel(
+                            path, target_indices, table_settings
+                        )
                     except (RuntimeError, OSError, FileNotFoundError, BrokenPipeError) as e:
                         # Fall back to sequential on macOS multiprocessing issues
                         error_str = str(e).lower()
@@ -233,7 +241,9 @@ class PdfPlumberExtractor:
                 # Sequential extraction
                 tables = []
                 for page_idx in target_indices:
-                    page_tables = pdf.pages[page_idx].extract_tables()
+                    page_tables = pdf.pages[page_idx].extract_tables(
+                        table_settings=table_settings or {}
+                    )
                     for table_data in page_tables:
                         if table_data:
                             tables.append({
@@ -256,19 +266,23 @@ class PdfPlumberExtractor:
             ) from e
 
     def _extract_tables_parallel(
-        self, path: Path, page_indices: list[int]
+        self,
+        path: Path,
+        page_indices: list[int],
+        table_settings: dict[str, Any] | None = None,
     ) -> list[dict[str, Any]]:
         """Extract tables from multiple pages in parallel.
 
         Args:
             path: Path to the PDF file.
             page_indices: List of 0-indexed page numbers.
+            table_settings: Optional pdfplumber table detection settings.
 
         Returns:
             List of table dictionaries.
         """
         path_str = str(path.absolute())
-        args = [(path_str, idx) for idx in page_indices]
+        args = [(path_str, idx, table_settings) for idx in page_indices]
 
         page_results: dict[int, list[list[Any]]] = {}
         with ProcessPoolExecutor(max_workers=self.max_workers) as executor:

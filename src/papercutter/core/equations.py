@@ -550,7 +550,8 @@ class EquationExtractor:
         mat = fitz.Matrix(self.dpi / 72, self.dpi / 72)
         pix = page.get_pixmap(matrix=mat, clip=rect)
 
-        return pix.tobytes("png")
+        result: bytes = pix.tobytes("png")
+        return result
 
     def _extract_context(
         self, page: Any, bbox: dict[str, float], chars: int = 100
@@ -575,7 +576,7 @@ class EquationExtractor:
             bbox["y0"],
         )
 
-        above_text = page.get_text("text", clip=above_rect).strip()
+        above_text: str = page.get_text("text", clip=above_rect).strip()
 
         if above_text:
             # Take last portion

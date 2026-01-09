@@ -44,7 +44,8 @@ def summarize(
 ):
     """Generate an LLM-powered summary of a paper.
 
-    Requires an API key (set PAPERCUTTER_API_KEY or ANTHROPIC_API_KEY).
+    Requires an API key (set ANTHROPIC_API_KEY or OPENAI_API_KEY env var,
+    or add to ~/.papercutter/config.yaml).
 
     Examples:
 
@@ -65,7 +66,8 @@ def summarize(
         if not summarizer.is_available():
             result = {
                 "success": False,
-                "error": "LLM not available. Set PAPERCUTTER_API_KEY or ANTHROPIC_API_KEY.",
+                "error": "LLM not available. Set ANTHROPIC_API_KEY or OPENAI_API_KEY env var, "
+                "or add to ~/.papercutter/config.yaml",
             }
             formatter.output(result)
             raise typer.Exit(1)
@@ -76,7 +78,7 @@ def summarize(
             console.print("[dim]Valid options: short, default, long[/dim]")
             raise typer.Exit(1)
 
-        console.print(f"[dim]Summarizing {pdf_path.name}...[/dim]", err=True)
+        Console(stderr=True).print(f"[dim]Summarizing {pdf_path.name}...[/dim]")
 
         summary = summarizer.summarize(
             pdf_path=pdf_path,

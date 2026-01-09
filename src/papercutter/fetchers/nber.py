@@ -151,7 +151,7 @@ class NBERFetcher(BaseFetcher):
             Metadata dictionary.
         """
         url = self.PAPER_URL.format(paper_id=paper_id)
-        metadata = {}
+        metadata: dict[str, Any] = {}
 
         try:
             with get_client() as client:

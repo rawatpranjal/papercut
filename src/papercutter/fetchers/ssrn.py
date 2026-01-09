@@ -182,7 +182,7 @@ class SSRNFetcher(BaseFetcher):
         """
         # Basic metadata extraction from abstract page
         url = f"{self.ABSTRACT_URL}?abstract_id={ssrn_id}"
-        metadata = {}
+        metadata: dict[str, Any] = {}
 
         try:
             with get_client() as client:

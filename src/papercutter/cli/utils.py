@@ -47,7 +47,7 @@ def is_quiet() -> bool:
     # Handle both bool and int
     if isinstance(quiet_val, bool):
         return quiet_val
-    return quiet_val >= 1
+    return bool(quiet_val >= 1)
 
 
 def is_silent() -> bool:
@@ -58,12 +58,12 @@ def is_silent() -> bool:
     quiet_val = get_context_value("quiet", 0)
     if isinstance(quiet_val, bool):
         return False
-    return quiet_val >= 2
+    return bool(quiet_val >= 2)
 
 
 def is_verbose() -> bool:
     """Check if verbose mode is enabled (-v)."""
-    return get_context_value("verbose", False)
+    return bool(get_context_value("verbose", False))
 
 
 def handle_errors(func: F) -> F:

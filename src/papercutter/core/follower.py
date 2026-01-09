@@ -146,6 +146,9 @@ class ReferenceFollower:
 
             try:
                 # Use registry to fetch (it will find the right fetcher)
+                if ref.resolved_id is None:
+                    result.failed.append((ref, "No resolved ID"))
+                    continue
                 doc = self.registry.fetch(ref.resolved_id, output_dir)
                 result.downloaded.append(doc)
             except Exception as e:
@@ -207,6 +210,8 @@ class ReferenceFollower:
         """Download a single reference."""
         # Add rate limit delay
         time.sleep(self.rate_limit_delay)
+        if ref.resolved_id is None:
+            raise ValueError("Cannot download reference without resolved_id")
         return self.registry.fetch(ref.resolved_id, output_dir)
 
     def generate_manifest(
@@ -231,12 +236,12 @@ class ReferenceFollower:
         failed_ids = {r[0].resolved_id for r in result.failed}
 
         for ref in resolved_refs:
-            entry = {
+            entry: dict[str, Any] = {
                 "raw_text": ref.reference.raw_text[:200],  # Truncate
             }
-            if ref.is_resolved:
+            if ref.is_resolved and ref.resolved_id is not None:
                 entry["resolved_id"] = ref.resolved_id
-                entry["source_type"] = ref.source_type
+                entry["source_type"] = ref.source_type or "unknown"
                 if ref.resolved_id in failed_ids:
                     entry["status"] = "failed"
                     # Find error message
@@ -257,7 +262,7 @@ class ReferenceFollower:
         # Group by source type
         by_source: dict[str, list[str]] = {}
         for ref in resolved_refs:
-            if ref.is_resolved:
+            if ref.is_resolved and ref.resolved_id is not None:
                 source = ref.source_type or "unknown"
                 if source not in by_source:
                     by_source[source] = []

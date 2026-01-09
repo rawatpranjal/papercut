@@ -113,7 +113,7 @@ class ChapterSplitter:
         if not outline:
             return []
 
-        chapters = []
+        chapters: list[Chapter] = []
         self._extract_outline_items(reader, outline, chapters, level=1)
 
         if not chapters:

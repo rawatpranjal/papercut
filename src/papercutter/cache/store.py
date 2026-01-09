@@ -4,7 +4,7 @@ import json
 import shutil
 from functools import lru_cache
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 from papercutter.cache.hash import file_hash
 
@@ -100,7 +100,7 @@ class CacheStore:
             return None
 
         with open(index_path) as f:
-            return json.load(f)
+            return cast(dict[str, Any], json.load(f))
 
     def set_index(self, pdf_path: Path, index: dict[str, Any]) -> None:
         """Cache index for a PDF.
@@ -195,7 +195,7 @@ class CacheStore:
             return None
 
         with open(table_path) as f:
-            return json.load(f)
+            return cast(dict[str, Any], json.load(f))
 
     def set_table(self, pdf_path: Path, table_id: int, table: dict[str, Any]) -> None:
         """Cache table.
@@ -328,7 +328,7 @@ class CacheStore:
             return None
 
         with open(latex_path) as f:
-            return json.load(f)
+            return cast(dict[str, Any], json.load(f))
 
     def set_equation_latex(
         self, pdf_path: Path, equation_id: int, latex_data: dict[str, Any]

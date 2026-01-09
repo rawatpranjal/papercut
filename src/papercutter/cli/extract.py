@@ -21,6 +21,21 @@ def _get_console() -> Console:
     return Console()
 
 
+def _validate_pdf_path(pdf_path: Path) -> None:
+    """Validate that a PDF path exists and is a file.
+
+    Args:
+        pdf_path: Path to validate.
+
+    Raises:
+        typer.BadParameter: If path doesn't exist or isn't a file.
+    """
+    if not pdf_path.exists():
+        raise typer.BadParameter(f"PDF file not found: {pdf_path}")
+    if not pdf_path.is_file():
+        raise typer.BadParameter(f"Not a file: {pdf_path}")
+
+
 def parse_pages(pages_str: str | None) -> list[int] | None:
     """Parse page range string like '1-5,8,10-12' into list of page numbers.
 
@@ -36,7 +51,7 @@ def parse_pages(pages_str: str | None) -> list[int] | None:
     if not pages_str or not pages_str.strip():
         return None
 
-    pages = []
+    pages: list[int] = []
     try:
         for part in pages_str.split(","):
             part = part.strip()
@@ -103,6 +118,7 @@ def _run_text_batch(
 
     for line_no, pdf_path in entries:
         try:
+            _validate_pdf_path(pdf_path)
             result = build_result(pdf_path)
             output_file = output_dir / f"{pdf_path.stem}.json"
             output_file.write_text(json.dumps(result, indent=2))
@@ -241,7 +257,7 @@ def text(
                     "chunks": [c.to_dict() for c in chunks],
                 }
 
-            chunks = extractor.extract_chunked(
+            text_chunks = extractor.extract_chunked(
                 target_pdf,
                 chunk_size=chunk_size,
                 overlap=overlap,
@@ -253,8 +269,8 @@ def text(
                 "chunked": True,
                 "chunk_size": chunk_size,
                 "overlap": overlap,
-                "count": len(chunks),
-                "chunks": chunks,
+                "count": len(text_chunks),
+                "chunks": text_chunks,
             }
 
         if include_metadata:
@@ -296,6 +312,7 @@ def text(
     if pdf_path is None:
         raise typer.BadParameter("pdf_path is required unless --batch is provided")
 
+    _validate_pdf_path(pdf_path)
     result = build_result(pdf_path)
 
     if output:
@@ -335,6 +352,8 @@ def table(
     from papercutter.cache import get_cache
     from papercutter.core.tables import TableExtractor
     from papercutter.extractors.pdfplumber import PdfPlumberExtractor
+
+    _validate_pdf_path(pdf_path)
 
     formatter = get_formatter(json_flag=use_json, pretty_flag=pretty, quiet=is_quiet())
     cache = get_cache()
@@ -392,6 +411,42 @@ def tables(
         "-p",
         help="Page range to extract (e.g., '1-5,8,10-12')",
     ),
+    strictness: str = typer.Option(
+        "standard",
+        "--strictness",
+        "-s",
+        help="Validation strictness: permissive, standard, or strict",
+    ),
+    table_strategy: str | None = typer.Option(
+        None,
+        "--table-strategy",
+        help="Table detection strategy: 'lines' (default) or 'text'",
+    ),
+    snap_tolerance: int | None = typer.Option(
+        None,
+        "--snap-tolerance",
+        help="Tolerance for snapping edges together (default: 3)",
+    ),
+    join_tolerance: int | None = typer.Option(
+        None,
+        "--join-tolerance",
+        help="Tolerance for joining table elements (default: 3)",
+    ),
+    edge_min_length: int | None = typer.Option(
+        None,
+        "--edge-min-length",
+        help="Minimum edge length to consider (default: 3)",
+    ),
+    min_words_vertical: int | None = typer.Option(
+        None,
+        "--min-words-vertical",
+        help="Min words for vertical boundary detection (default: 3)",
+    ),
+    min_words_horizontal: int | None = typer.Option(
+        None,
+        "--min-words-horizontal",
+        help="Min words for horizontal boundary detection (default: 1)",
+    ),
     use_json: bool = typer.Option(
         False,
         "--json",
@@ -402,18 +457,101 @@ def tables(
         "--pretty",
         help="Force pretty output",
     ),
+    llm: bool = typer.Option(
+        False,
+        "--llm",
+        help="Force LLM vision extraction for all pages (requires API key)",
+    ),
+    offline: bool = typer.Option(
+        False,
+        "--offline",
+        help="Never use LLM, even for low-confidence tables",
+    ),
+    confidence: float = typer.Option(
+        0.5,
+        "--confidence",
+        "-c",
+        help="Confidence threshold for LLM fallback (0.0-1.0)",
+    ),
+    estimate: bool = typer.Option(
+        False,
+        "--estimate",
+        help="Show cost estimate without running LLM extraction",
+    ),
+    vision_model: str = typer.Option(
+        "gpt-4o-mini",
+        "--vision-model",
+        help="Model to use for vision extraction",
+    ),
 ):
     """Extract all tables from PDF.
 
-    Returns JSON with all tables.
+    Returns JSON with all tables. Supports optional LLM vision fallback
+    for low-confidence extractions.
+
+    Strictness levels:
+    - permissive: Minimal filtering, may include false positives
+    - standard: Balanced filtering (default)
+    - strict: Aggressive filtering, may miss some valid tables
+
+    Table detection strategies:
+    - lines: Detect tables using visible lines/borders (default, best for formal tables)
+    - text: Detect tables using text alignment (better for borderless tables)
+
+    LLM fallback modes:
+    - Default: Try traditional first, LLM fallback for confidence < threshold
+    - --llm: Force LLM vision extraction for all pages
+    - --offline: Never use LLM (traditional extraction only)
+    - --estimate: Show cost estimate without running LLM
+
+    Examples:
+        papercutter extract tables paper.pdf --table-strategy text
+        papercutter extract tables paper.pdf --snap-tolerance 5 --strictness permissive
+        papercutter extract tables paper.pdf --confidence 0.7 --json
+        papercutter extract tables paper.pdf --llm --json
+        papercutter extract tables paper.pdf --estimate
     """
     from papercutter.core.tables import TableExtractor
     from papercutter.extractors.pdfplumber import PdfPlumberExtractor
 
+    _validate_pdf_path(pdf_path)
+
+    # Validate strictness
+    valid_levels = ("permissive", "standard", "strict")
+    if strictness not in valid_levels:
+        raise typer.BadParameter(
+            f"Invalid strictness: {strictness}. Must be one of: {', '.join(valid_levels)}"
+        )
+
+    # Validate table_strategy
+    if table_strategy and table_strategy not in ("lines", "text"):
+        raise typer.BadParameter(
+            f"Invalid table-strategy: {table_strategy}. Must be 'lines' or 'text'"
+        )
+
+    # Build table_settings dict from CLI options
+    table_settings: dict[str, str | int] | None = None
+    if any([table_strategy, snap_tolerance, join_tolerance,
+            edge_min_length, min_words_vertical, min_words_horizontal]):
+        table_settings = {}
+        if table_strategy:
+            table_settings["vertical_strategy"] = table_strategy
+            table_settings["horizontal_strategy"] = table_strategy
+        if snap_tolerance is not None:
+            table_settings["snap_tolerance"] = snap_tolerance
+        if join_tolerance is not None:
+            table_settings["join_tolerance"] = join_tolerance
+        if edge_min_length is not None:
+            table_settings["edge_min_length"] = edge_min_length
+        if min_words_vertical is not None:
+            table_settings["min_words_vertical"] = min_words_vertical
+        if min_words_horizontal is not None:
+            table_settings["min_words_horizontal"] = min_words_horizontal
+
     console = _get_console()
     formatter = get_formatter(json_flag=use_json, pretty_flag=pretty, quiet=is_quiet())
     backend = PdfPlumberExtractor()
-    extractor = TableExtractor(backend)
+    extractor = TableExtractor(backend, strictness=strictness)
     page_list = parse_pages(pages)
 
     # Validate page range before extraction
@@ -425,7 +563,43 @@ def tables(
                 f"Pages {invalid} out of range (document has {page_count} pages)"
             )
 
-    extracted_tables = extractor.extract(pdf_path, pages=page_list)
+    # Handle --estimate flag first
+    if estimate:
+        cost_info = extractor.estimate_fallback_cost(
+            pdf_path,
+            pages=page_list,
+            confidence_threshold=confidence,
+        )
+        formatter.output(cost_info)
+        return
+
+    # Extract tables with appropriate method
+    used_hybrid = False
+    used_llm = False
+
+    if llm or (not offline and confidence < 1.0):
+        # Use fallback extraction (may use LLM)
+        extracted_tables = extractor.extract_with_fallback(
+            pdf_path,
+            pages=page_list,
+            confidence_threshold=confidence,
+            force_llm=llm,
+            offline=offline,
+            vision_model=vision_model,
+        )
+        used_llm = any(t.extraction_method == "vision-llm" for t in extracted_tables)
+    elif table_settings is None:
+        # First try default extraction
+        extracted_tables = extractor.extract(pdf_path, pages=page_list)
+
+        # If no tables found, try hybrid extraction (both lines and text strategies)
+        if len(extracted_tables) == 0:
+            extracted_tables = extractor.extract_hybrid(pdf_path, pages=page_list)
+            if len(extracted_tables) > 0:
+                used_hybrid = True
+    else:
+        # User specified explicit settings, use those
+        extracted_tables = extractor.extract(pdf_path, pages=page_list, table_settings=table_settings)
 
     tables_data = [
         {
@@ -435,6 +609,8 @@ def tables(
             "rows": t.data,
             "row_count": len(t.data),
             "col_count": t.cols,
+            "confidence": round(t.confidence, 2),
+            "extraction_method": t.extraction_method,
         }
         for i, t in enumerate(extracted_tables)
     ]
@@ -453,7 +629,17 @@ def tables(
             csv_path.write_text(t.to_csv())
         if not is_quiet():
             console.print(f"[green]Saved {len(extracted_tables)} table(s) to:[/green] {output}")
+            if used_hybrid:
+                console.print("[dim]Used hybrid extraction (lines + text strategies)[/dim]")
+            if used_llm:
+                llm_count = sum(1 for t in extracted_tables if t.extraction_method == "vision-llm")
+                console.print(f"[dim]Used LLM vision extraction for {llm_count} table(s)[/dim]")
     else:
+        if used_hybrid:
+            result["hybrid_extraction"] = True
+        if used_llm:
+            result["llm_extraction"] = True
+            result["llm_tables"] = sum(1 for t in extracted_tables if t.extraction_method == "vision-llm")
         formatter.output(result)
 
 
@@ -490,6 +676,8 @@ def figure(
     """
     from papercutter.cache import get_cache
     from papercutter.core.figures import FigureExtractor
+
+    _validate_pdf_path(pdf_path)
 
     formatter = get_formatter(json_flag=use_json, pretty_flag=pretty, quiet=is_quiet())
     cache = get_cache()
@@ -574,6 +762,8 @@ def figures(
     Requires PyMuPDF: pip install pymupdf
     """
     from papercutter.core.figures import FigureExtractor
+
+    _validate_pdf_path(pdf_path)
 
     console = _get_console()
     formatter = get_formatter(json_flag=use_json, pretty_flag=pretty, quiet=is_quiet())
@@ -688,6 +878,8 @@ def refs(
     from papercutter.core.references import ReferenceExtractor
     from papercutter.extractors.pdfplumber import PdfPlumberExtractor
 
+    _validate_pdf_path(pdf_path)
+
     console = _get_console()
     formatter = get_formatter(json_flag=use_json, pretty_flag=pretty, quiet=is_quiet())
     extractor = ReferenceExtractor(PdfPlumberExtractor())
@@ -707,7 +899,10 @@ def refs(
         ]
 
     if effective_format == "bibtex":
-        bibtex_output = "\n\n".join(ref.to_bibtex() for ref in all_refs)
+        # Use a set to track used keys and ensure uniqueness
+        used_keys: set[str] = set()
+        bibtex_entries = [ref.to_bibtex(used_keys) for ref in all_refs]
+        bibtex_output = "\n\n".join(bibtex_entries)
         result = {
             "success": True,
             "file": str(pdf_path.name),
@@ -817,6 +1012,8 @@ def section(
     from papercutter.extractors.pdfplumber import PdfPlumberExtractor
     from papercutter.index import DocumentIndexer
 
+    _validate_pdf_path(pdf_path)
+
     console = _get_console()
     formatter = get_formatter(json_flag=use_json, pretty_flag=pretty, quiet=is_quiet())
 
@@ -889,10 +1086,13 @@ def section(
         raise typer.Exit(1)
 
     # Extract text for the section
+    # pages is (start_1idx, end_1idx) - both 1-indexed, end is inclusive
     extractor = TextExtractor(PdfPlumberExtractor())
-    start_page = matched.pages[0] - 1  # Convert to 0-indexed
-    end_page = matched.pages[1]  # End is exclusive in range
-    pages = list(range(start_page, end_page))
+    start_0idx = matched.pages[0] - 1  # Convert to 0-indexed
+    end_0idx = matched.pages[1] - 1    # Convert to 0-indexed
+    # Ensure valid range (end >= start)
+    end_0idx = max(end_0idx, start_0idx)
+    pages = list(range(start_0idx, end_0idx + 1))  # +1 because range is exclusive
     section_text = extractor.extract(pdf_path, pages=pages)
 
     result = {

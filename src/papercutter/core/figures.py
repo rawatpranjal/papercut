@@ -184,7 +184,7 @@ class FigureExtractor:
 
             # Use PyMuPDF's pixmap for conversion
             pix = fitz.Pixmap(image_bytes)
-            png_data = pix.tobytes("png")
+            png_data: bytes = pix.tobytes("png")
             return png_data
         except Exception:
             # Return original if conversion fails

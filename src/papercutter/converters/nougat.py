@@ -93,6 +93,10 @@ class NougatConverter(BaseConverter):
         # Convert bytes to PIL Image
         image = Image.open(BytesIO(image_data)).convert("RGB")
 
+        # Type assertions after _ensure_model
+        assert self._processor is not None
+        assert self._model is not None
+
         # Process image
         pixel_values = self._processor(image, return_tensors="pt").pixel_values
 

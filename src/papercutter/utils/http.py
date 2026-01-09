@@ -24,8 +24,14 @@ def _sanitize_filename(filename: str) -> str:
     # URL-decode to catch encoded traversal attempts like %2e%2e%2f
     filename = unquote(filename)
 
+    # Normalize path separators to handle both Unix and Windows paths
+    # Replace backslashes with forward slashes first
+    filename = filename.replace("\\", "/")
+
     # Get just the filename component, stripping any path
-    filename = os.path.basename(filename)
+    # Split on / to handle cross-platform paths
+    parts = filename.split("/")
+    filename = parts[-1] if parts else filename
 
     # Remove leading dots to prevent hidden files and traversal
     filename = filename.lstrip(".")

@@ -1,6 +1,7 @@
 """Equation extraction command."""
 
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import typer
 from rich.console import Console
@@ -9,8 +10,19 @@ from papercutter.cli.extract import parse_pages
 from papercutter.cli.utils import handle_errors, is_quiet
 from papercutter.output import get_formatter
 
+if TYPE_CHECKING:
+    from papercutter.converters.base import BaseConverter
+
 # Available conversion methods
 METHODS = ["none", "nougat", "pix2tex", "mathpix"]
+
+
+def _validate_pdf_path(pdf_path: Path) -> None:
+    """Validate that a PDF path exists and is a file."""
+    if not pdf_path.exists():
+        raise typer.BadParameter(f"PDF file not found: {pdf_path}")
+    if not pdf_path.is_file():
+        raise typer.BadParameter(f"Not a file: {pdf_path}")
 
 
 def _get_console() -> Console:
@@ -18,7 +30,7 @@ def _get_console() -> Console:
     return Console()
 
 
-def _get_converter(method: str):
+def _get_converter(method: str) -> "BaseConverter | None":
     """Get the appropriate converter for the method.
 
     Args:
@@ -36,34 +48,34 @@ def _get_converter(method: str):
     if method == "nougat":
         from papercutter.converters.nougat import NougatConverter
 
-        converter = NougatConverter()
-        if not converter.is_available():
+        nougat_conv = NougatConverter()
+        if not nougat_conv.is_available():
             raise ImportError(
                 "Nougat is not installed. Install with: pip install 'papercutter[equations-nougat]'"
             )
         # Note: Model download warning is handled in NougatConverter._ensure_model()
-        return converter
+        return nougat_conv
 
     if method == "pix2tex":
         from papercutter.converters.pix2tex import Pix2TexConverter
 
-        converter = Pix2TexConverter()
-        if not converter.is_available():
+        pix2tex_conv = Pix2TexConverter()
+        if not pix2tex_conv.is_available():
             raise ImportError(
                 "pix2tex is not installed. Install with: pip install 'papercutter[equations-pix2tex]'"
             )
-        return converter
+        return pix2tex_conv
 
     if method == "mathpix":
         from papercutter.converters.mathpix import MathPixConverter
 
-        converter = MathPixConverter()
-        if not converter.is_available():
+        mathpix_conv = MathPixConverter()
+        if not mathpix_conv.is_available():
             raise ImportError(
                 "MathPix API keys not configured. "
                 "Set PAPERCUTTER_MATHPIX_APP_ID and PAPERCUTTER_MATHPIX_APP_KEY"
             )
-        return converter
+        return mathpix_conv
 
     return None
 
@@ -145,6 +157,8 @@ def equations(
     """
     from papercutter.cache import get_cache
     from papercutter.core.equations import EquationExtractor
+
+    _validate_pdf_path(pdf_path)
 
     console = _get_console()
     formatter = get_formatter(json_flag=use_json, pretty_flag=pretty, quiet=is_quiet())
@@ -276,6 +290,8 @@ def equation(
     """
     from papercutter.cache import get_cache
     from papercutter.core.equations import EquationExtractor
+
+    _validate_pdf_path(pdf_path)
 
     formatter = get_formatter(json_flag=use_json, pretty_flag=pretty, quiet=is_quiet())
     cache = get_cache()

@@ -1,13 +1,25 @@
 """Read command for extracting text from specific parts of PDFs."""
 
 from pathlib import Path
+from typing import Any
 
 import typer
 from rich.console import Console
 
+from papercutter.cli.extract import parse_pages
 from papercutter.output import get_formatter
 
 console = Console()
+
+
+def _validate_pdf_path(pdf_path: Path) -> None:
+    """Validate that a PDF path exists and is a file."""
+    if not pdf_path.exists():
+        console.print(f"[red]File not found:[/red] {pdf_path}")
+        raise typer.Exit(1)
+    if not pdf_path.is_file():
+        console.print(f"[red]Not a file:[/red] {pdf_path}")
+        raise typer.Exit(1)
 
 
 def read(
@@ -67,18 +79,21 @@ def read(
     from papercutter.extractors.pdfplumber import PdfPlumberExtractor
     from papercutter.index import DocumentIndexer
 
+    _validate_pdf_path(pdf_path)
+
     formatter = get_formatter(json_flag=use_json, pretty_flag=pretty)
     cache = get_cache()
     extractor = TextExtractor(PdfPlumberExtractor())
 
     try:
         # Determine what to extract
+        query: dict[str, Any]
         if all_text:
             text = extractor.extract(pdf_path)
             query = {"all": True}
 
         elif pages:
-            page_list = _parse_pages(pages)
+            page_list = parse_pages(pages) or []
 
             # Check cache
             if len(page_list) > 0:
@@ -113,7 +128,12 @@ def read(
                 raise typer.Exit(1)
 
             # Extract pages for this section
-            page_list = list(range(found_section.pages[0] - 1, found_section.pages[1]))
+            # pages is (start_1idx, end_1idx) - both 1-indexed, end is inclusive
+            start_0idx = found_section.pages[0] - 1  # Convert to 0-indexed
+            end_0idx = found_section.pages[1] - 1    # Convert to 0-indexed
+            # Ensure valid range (end >= start)
+            end_0idx = max(end_0idx, start_0idx)
+            page_list = list(range(start_0idx, end_0idx + 1))  # +1 because range is exclusive
             text = extractor.extract(pdf_path, pages=page_list)
             query = {
                 "section": found_section.title,
@@ -139,7 +159,12 @@ def read(
                 raise typer.Exit(1)
 
             # Extract pages for this chapter
-            page_list = list(range(found_chapter["pages"][0] - 1, found_chapter["pages"][1]))
+            # pages is [start_1idx, end_1idx] - both 1-indexed, end is inclusive
+            start_0idx = found_chapter["pages"][0] - 1  # Convert to 0-indexed
+            end_0idx = found_chapter["pages"][1] - 1    # Convert to 0-indexed
+            # Ensure valid range (end >= start)
+            end_0idx = max(end_0idx, start_0idx)
+            page_list = list(range(start_0idx, end_0idx + 1))  # +1 because range is exclusive
             text = extractor.extract(pdf_path, pages=page_list)
             query = {
                 "chapter": found_chapter["title"],
@@ -178,28 +203,3 @@ def read(
         raise typer.Exit(1)
 
 
-def _parse_pages(pages_str: str) -> list[int]:
-    """Parse page range string into list of 0-indexed page numbers.
-
-    Args:
-        pages_str: Page specification like '5' or '5-10' or '5,8,10-12'
-
-    Returns:
-        List of 0-indexed page numbers.
-    """
-    pages = []
-
-    for part in pages_str.split(","):
-        part = part.strip()
-        if not part:
-            continue
-
-        if "-" in part:
-            start, end = part.split("-", 1)
-            start_int = int(start)
-            end_int = int(end)
-            pages.extend(range(start_int - 1, end_int))  # Convert to 0-indexed
-        else:
-            pages.append(int(part) - 1)  # Convert to 0-indexed
-
-    return sorted(set(pages))

@@ -114,7 +114,7 @@ class Pix2TexConverter(BaseConverter):
 
     def is_available(self) -> bool:
         """Check if pix2tex is available."""
-        return self._available
+        return bool(self._available)
 
     @property
     def name(self) -> str:

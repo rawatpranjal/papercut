@@ -22,14 +22,19 @@ class Reference:
     doi: str | None = None
     url: str | None = None
 
-    def to_bibtex(self) -> str:
+    def to_bibtex(self, used_keys: set[str] | None = None) -> str:
         """Convert reference to BibTeX format.
+
+        Args:
+            used_keys: Optional set of already-used citation keys. If provided,
+                      ensures uniqueness by appending suffixes. The set is modified
+                      in-place to include the new key.
 
         Returns:
             BibTeX entry string.
         """
-        # Generate a citation key
-        key = self._generate_key()
+        # Generate a unique citation key
+        key = self._generate_unique_key(used_keys)
         entry_type = "article" if self.journal else "misc"
 
         lines = [f"@{entry_type}{{{key},"]
@@ -116,6 +121,29 @@ class Reference:
 
         return f"{author_part}{year_part}{title_part}"
 
+    def _generate_unique_key(self, used_keys: set[str] | None = None) -> str:
+        """Generate a unique BibTeX citation key.
+
+        Args:
+            used_keys: Set of already-used keys. Modified in-place if provided.
+
+        Returns:
+            Unique citation key string.
+        """
+        base_key = self._generate_key()
+
+        if used_keys is None:
+            return base_key
+
+        key = base_key
+        counter = 2
+        while key in used_keys:
+            key = f"{base_key}_{counter}"
+            counter += 1
+
+        used_keys.add(key)
+        return key
+
     def _extract_last_name(self, author: str) -> str:
         """Extract last name from author string.
 
@@ -192,12 +220,12 @@ class Reference:
         words = re.findall(r"[a-zA-Z]+", title)
 
         for word in words:
-            word_lower = word.lower()
+            word_lower: str = word.lower()
             if word_lower not in skip_words and len(word_lower) > 1:
                 return word_lower
 
         # Fallback to first word if all are skip words
-        return words[0].lower() if words else ""
+        return str(words[0].lower()) if words else ""
 
 
 class ReferenceExtractor:
@@ -211,9 +239,10 @@ class ReferenceExtractor:
         r"(?i)^literature\s+cited\s*$",
     ]
 
-    # Pattern for DOI - more precise, excludes trailing punctuation
-    # Matches DOI format: 10.NNNN/suffix where suffix contains alphanumeric and some punctuation
-    DOI_PATTERN = re.compile(r"10\.\d{4,9}/[^\s\])<>,;'\"]+(?<![.,;:)])")
+    # Pattern for DOI - allows parentheses which are common in DOIs like 10.1016/S0950-5849(02)00067-7
+    # Matches DOI format: 10.NNNN/suffix where suffix contains alphanumeric, parentheses, and some punctuation
+    # Excludes trailing punctuation via negative lookbehind
+    DOI_PATTERN = re.compile(r"10\.\d{4,9}/[^\s\]<>,;'\"]+(?<![.,;:)])")
 
     # Pattern for year in parentheses or standalone
     YEAR_PATTERN = re.compile(r"\b(19|20)\d{2}\b")
@@ -224,8 +253,24 @@ class ReferenceExtractor:
     # Pre-compiled patterns for performance
     _COMPILED_SECTION_PATTERNS: list[re.Pattern] | None = None
     _NUMBERED_REF_SPLIT = re.compile(r"\n\s*\[\d+\]\s*")
-    _QUOTED_TITLE = re.compile(r'[""\u201c\u201d]([^""\u201c\u201d]+)[""\u201c\u201d]')
-    _SINGLE_QUOTED_TITLE = re.compile(r"'([^']+)'")
+    # Patterns for quoted titles - include straight and curly quotes
+    _QUOTED_TITLE = re.compile(r'[""\u201c\u201d]([^""\u201c\u201d]{10,})[""\u201c\u201d]')
+    _SINGLE_QUOTED_TITLE = re.compile(r"'([^']{15,})'")
+    # APA-style pattern: "year). Title. Journal" or "year. Title. Journal"
+    _APA_TITLE = re.compile(
+        r'\d{4}\)?[.\s]+([A-Z][^.]+(?:\.[^.]+)?)\.\s*'
+        r'(?:In\s+|Journal|Quarterly|Review|Proceedings|American|'
+        r'[A-Z][a-z]+\s+\d+[\(:])',
+        re.IGNORECASE
+    )
+    # Pattern for "Authors. Title. Venue, Year" format (title BEFORE year)
+    # Matches: ". Title text here. arXiv" or ". Title. In Proceedings"
+    _TITLE_BEFORE_YEAR = re.compile(
+        r'\.\s+([A-Z][^.]{10,}?)\.\s*'
+        r'(?:ar\s*Xiv|In\s+|Co\s*RR|Proceedings|Neural|Advances|ICML|'
+        r'NIPS|ICLR|ACL|EMNLP|NAACL|https?://)',
+        re.IGNORECASE
+    )
     _LEADING_PUNCT = re.compile(r"^[.,:\s)]+")
     _SENTENCE_END = re.compile(r"\.\s+[A-Z]")
     _TRAILING_PUNCT = re.compile(r"[.,;:\s]+$")
@@ -335,7 +380,7 @@ class ReferenceExtractor:
         # Try to split by line-based patterns (each ref on new line starting with author)
         lines = refs_text.split("\n")
         refs = []
-        current_ref = []
+        current_ref: list[str] = []
 
         for line in lines:
             line = line.strip()
@@ -406,6 +451,9 @@ class ReferenceExtractor:
         # Try to extract authors (before the year typically)
         ref.authors = self._extract_authors(raw_text)
 
+        # Try to extract journal/venue
+        ref.journal = self._extract_journal(raw_text)
+
         return ref
 
     def _extract_title(self, text: str) -> str | None:
@@ -421,35 +469,63 @@ class ReferenceExtractor:
         quoted = self._QUOTED_TITLE.search(text)
         if quoted:
             title = quoted.group(1).strip()
-            if len(title) > 10:
-                # Normalize whitespace (remove newlines and extra spaces)
-                return re.sub(r'\s+', ' ', title).strip()
+            # Normalize whitespace (remove newlines and extra spaces)
+            return re.sub(r'\s+', ' ', title).strip()
 
         # 2. Look for single-quoted title
         single_quoted = self._SINGLE_QUOTED_TITLE.search(text)
         if single_quoted:
             title = single_quoted.group(1).strip()
-            if len(title) > 15:  # Higher threshold for single quotes (avoid contractions)
-                # Normalize whitespace
+            # Normalize whitespace
+            return re.sub(r'\s+', ' ', title).strip()
+
+        # 3. Try APA-style pattern: "Year). Title. Journal..."
+        apa_match = self._APA_TITLE.search(text)
+        if apa_match:
+            title = apa_match.group(1).strip()
+            # Clean trailing punctuation
+            title = self._TRAILING_PUNCT.sub("", title)
+            if len(title) > 10:
                 return re.sub(r'\s+', ' ', title).strip()
 
-        # 3. Try to find title between year and journal/volume indicators
+        # 3b. Try "Authors. Title. Venue, Year" format (title BEFORE year)
+        title_before_year = self._TITLE_BEFORE_YEAR.search(text)
+        if title_before_year:
+            title = title_before_year.group(1).strip()
+            # Clean trailing punctuation
+            title = self._TRAILING_PUNCT.sub("", title)
+            if len(title) > 10:
+                return re.sub(r'\s+', ' ', title).strip()
+
+        # 4. Try to find title between year and journal/volume indicators
         year_match = self.YEAR_PATTERN.search(text)
         if year_match:
             after_year = text[year_match.end() :].strip()
             # Remove leading punctuation and whitespace
             after_year = self._LEADING_PUNCT.sub("", after_year)
 
-            # Find where title ends (first match of journal pattern or period)
+            # Find where title ends - use only reliable journal indicators
+            # (skip volume/page patterns as they may appear in titles)
             title_end = len(after_year)
-            for pattern in self._JOURNAL_PATTERNS:
+
+            # Look for explicit journal markers
+            journal_markers = [
+                re.compile(
+                    r"[,.]?\s*(?:Journal|Review|Quarterly|Proceedings|Transactions)\b", re.I
+                ),
+                re.compile(r"[,.]?\s*In\s+[A-Z]"),  # "In Proceedings..."
+                re.compile(r"[,.]?\s*arXiv:"),  # arXiv identifier
+                re.compile(r"[,.]?\s*https?://"),  # URL
+            ]
+            for pattern in journal_markers:
                 match = pattern.search(after_year)
                 if match and match.start() < title_end:
                     title_end = match.start()
 
             # Also check for sentence-ending period followed by capital letter
+            # But only if we're at least 20 characters in (avoid cutting too short)
             period_match = self._SENTENCE_END.search(after_year)
-            if period_match and period_match.start() < title_end:
+            if period_match and period_match.start() < title_end and period_match.start() > 20:
                 title_end = period_match.start()
 
             if title_end > 0:
@@ -525,6 +601,13 @@ class ReferenceExtractor:
         cleaned_authors = []
         seen_authors = set()  # For deduplication (case-insensitive)
 
+        # Keywords that indicate a journal name, not an author
+        journal_keywords = (
+            "journal", "quarterly", "review", "proceedings", "conference",
+            "transactions", "letters", "annals", "bulletin", "american",
+            "economic", "international", "national", "working paper",
+        )
+
         for a in authors:
             a = a.strip()
             # Skip common artifacts
@@ -534,9 +617,56 @@ class ReferenceExtractor:
             # Skip if it looks like a citation number
             if self._DIGITS_ONLY.match(a):
                 continue
+            # Skip if it looks like a journal name
+            if any(kw in a_lower for kw in journal_keywords):
+                continue
+            # Skip if it starts with common journal prefixes
+            if a_lower.startswith(("in ", "the ", "a ")):
+                continue
             # Deduplicate (case-insensitive)
             if a_lower not in seen_authors:
                 seen_authors.add(a_lower)
                 cleaned_authors.append(a)
 
         return cleaned_authors[:10]  # Limit to reasonable number
+
+    def _extract_journal(self, text: str) -> str | None:
+        """Extract journal/venue name from reference text.
+
+        Args:
+            text: Reference text.
+
+        Returns:
+            Extracted journal name or None.
+        """
+        # Patterns for common journal/venue indicators
+        journal_patterns = [
+            # "In Proceedings of..." or "In Conference..."
+            re.compile(
+                r'\bIn\s+([A-Z][^,\.]{10,80}?(?:Conference|Proceedings|Workshop|Symposium))',
+                re.IGNORECASE
+            ),
+            # "Journal of..." pattern
+            re.compile(
+                r'\b([A-Z][^,\.]{5,60}?(?:Journal|Review|Quarterly|Transactions|Letters))\b'
+            ),
+            # Explicit journal indicators: "published in X" or "appears in X"
+            re.compile(
+                r'(?:published|appears?)\s+in\s+([A-Z][^,\.]{10,60})',
+                re.IGNORECASE
+            ),
+            # arXiv pattern
+            re.compile(r'\b(arXiv(?::\d{4}\.\d{4,5})?)\b'),
+        ]
+
+        for pattern in journal_patterns:
+            match = pattern.search(text)
+            if match:
+                journal = match.group(1).strip()
+                # Clean up: normalize whitespace and remove trailing punctuation
+                journal = re.sub(r'\s+', ' ', journal)
+                journal = re.sub(r'[,.\s]+$', '', journal)
+                if len(journal) > 5:  # Minimum length check
+                    return journal
+
+        return None

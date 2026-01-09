@@ -294,7 +294,8 @@ class TextExtractor:
 
         if len(full_text) <= chunk_size:
             # Single chunk for small documents
-            fig_refs, table_refs = ([], [])
+            fig_refs: list[str] = []
+            table_refs: list[str] = []
             if detect_references:
                 fig_refs, table_refs = self._extract_references(full_text)
 

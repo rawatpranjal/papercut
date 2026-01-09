@@ -181,7 +181,8 @@ class DOIFetcher(BaseFetcher):
         # Check CrossRef links for PDF
         for link in metadata.get("links", []):
             if link.get("content-type") == "application/pdf":
-                return link.get("URL")
+                url = link.get("URL")
+                return str(url) if url else None
 
         # Try Unpaywall API (free legal copies)
         unpaywall_url = self._check_unpaywall(doi)
@@ -247,7 +248,8 @@ class DOIFetcher(BaseFetcher):
         """Async version of PDF URL discovery."""
         for link in metadata.get("links", []):
             if link.get("content-type") == "application/pdf":
-                return link.get("URL")
+                url = link.get("URL")
+                return str(url) if url else None
 
         unpaywall_url = await self._check_unpaywall_async(doi)
         if unpaywall_url:
@@ -281,7 +283,8 @@ class DOIFetcher(BaseFetcher):
                 data = response.json()
                 best_oa = data.get("best_oa_location", {})
                 if best_oa:
-                    return best_oa.get("url_for_pdf") or best_oa.get("url")
+                    url = best_oa.get("url_for_pdf") or best_oa.get("url")
+                    return str(url) if url else None
         except Exception:
             pass
 
@@ -309,7 +312,8 @@ class DOIFetcher(BaseFetcher):
                 data = response.json()
                 best_oa = data.get("best_oa_location", {})
                 if best_oa:
-                    return best_oa.get("url_for_pdf") or best_oa.get("url")
+                    url = best_oa.get("url_for_pdf") or best_oa.get("url")
+                    return str(url) if url else None
         except Exception:
             pass
 

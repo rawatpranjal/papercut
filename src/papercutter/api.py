@@ -10,7 +10,7 @@ For more control, use the underlying classes directly.
 """
 
 from pathlib import Path
-from typing import Union
+from typing import Union, cast
 
 from papercutter.core.figures import ExtractedFigure, FigureExtractor
 from papercutter.core.references import Reference, ReferenceExtractor
@@ -163,13 +163,13 @@ def fetch_paper(identifier: str, output_dir: PathLike = ".") -> Document:
         >>> doc = fetch_paper("10.1257/aer.20180779", "/tmp")  # Auto-detect DOI
     """
     resolved = _resolve_identifier(identifier)
-    return resolved.fetcher.fetch(resolved.identifier, Path(output_dir))
+    return cast(Document, resolved.fetcher.fetch(resolved.identifier, Path(output_dir)))
 
 
 async def fetch_paper_async(identifier: str, output_dir: PathLike = ".") -> Document:
     """Asynchronously fetch a paper using automatic source detection."""
     resolved = _resolve_identifier(identifier)
-    return await resolved.fetcher.fetch_async(resolved.identifier, Path(output_dir))
+    return cast(Document, await resolved.fetcher.fetch_async(resolved.identifier, Path(output_dir)))
 
 
 def _resolve_identifier(identifier: str):

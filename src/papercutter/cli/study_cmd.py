@@ -56,7 +56,8 @@ def study(
     - quiz: Practice questions at different levels
     - flashcards: Flashcard-format study cards
 
-    Requires an API key (set PAPERCUTTER_API_KEY or ANTHROPIC_API_KEY).
+    Requires an API key (set ANTHROPIC_API_KEY or OPENAI_API_KEY env var,
+    or add to ~/.papercutter/config.yaml).
 
     Examples:
 
@@ -78,7 +79,8 @@ def study(
         if not study_aid.is_available():
             result = {
                 "success": False,
-                "error": "LLM not available. Set PAPERCUTTER_API_KEY or ANTHROPIC_API_KEY.",
+                "error": "LLM not available. Set ANTHROPIC_API_KEY or OPENAI_API_KEY env var, "
+                "or add to ~/.papercutter/config.yaml",
             }
             formatter.output(result)
             raise typer.Exit(1)
@@ -101,7 +103,7 @@ def study(
             page_list = parse_pages(pages)
 
         desc = f"chapter {chapter}" if chapter else f"pages {pages}"
-        console.print(f"[dim]Generating {mode} materials for {desc}...[/dim]", err=True)
+        Console(stderr=True).print(f"[dim]Generating {mode} materials for {desc}...[/dim]")
 
         material = study_aid.generate(
             pdf_path=pdf_path,

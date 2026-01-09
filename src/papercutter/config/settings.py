@@ -2,7 +2,9 @@
 
 from functools import lru_cache
 from pathlib import Path
+from typing import Any
 
+import yaml
 from pydantic import BaseModel, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -17,6 +19,23 @@ def get_config_dir() -> Path:
 def get_config_path() -> Path:
     """Get the path to the config file."""
     return get_config_dir() / "config.yaml"
+
+
+def _load_yaml_config() -> dict[str, Any]:
+    """Load configuration from YAML file if it exists.
+
+    Returns:
+        Dictionary of configuration values, or empty dict if file doesn't exist.
+    """
+    config_path = get_config_path()
+    if config_path.exists():
+        try:
+            with open(config_path) as f:
+                return yaml.safe_load(f) or {}
+        except (yaml.YAMLError, OSError):
+            # Silently ignore malformed or unreadable config
+            return {}
+    return {}
 
 
 class TextExtractionSettings(BaseModel):
@@ -80,7 +99,7 @@ class Settings(BaseSettings):
     extraction: ExtractionSettings = Field(default_factory=ExtractionSettings)
     llm: LLMSettings = Field(default_factory=LLMSettings)
 
-    # API keys (can be set via environment variables)
+    # API keys (can be set via environment variables or config file)
     anthropic_api_key: str | None = None
     openai_api_key: str | None = None
     mathpix_app_id: str | None = None
@@ -89,5 +108,12 @@ class Settings(BaseSettings):
 
 @lru_cache
 def get_settings() -> Settings:
-    """Get cached settings instance."""
-    return Settings()
+    """Get cached settings instance.
+
+    Settings are loaded from (in order of priority, highest first):
+    1. Environment variables (PAPERCUTTER_* prefix)
+    2. YAML config file (~/.papercutter/config.yaml)
+    3. Default values
+    """
+    yaml_config = _load_yaml_config()
+    return Settings(**yaml_config)

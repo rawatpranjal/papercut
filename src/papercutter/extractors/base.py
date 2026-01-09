@@ -21,7 +21,10 @@ class Extractor(Protocol):
         ...
 
     def extract_tables(
-        self, path: Path, pages: list[int] | None = None
+        self,
+        path: Path,
+        pages: list[int] | None = None,
+        table_settings: dict[str, Any] | None = None,
     ) -> list[dict[str, Any]]:
         """Extract tables from PDF.
 
@@ -29,6 +32,9 @@ class Extractor(Protocol):
             path: Path to the PDF file.
             pages: Optional list of 0-indexed page numbers to extract.
                    If None, extract from all pages.
+            table_settings: Optional dict of pdfplumber table detection settings.
+                   Keys: vertical_strategy, horizontal_strategy, snap_tolerance,
+                   join_tolerance, edge_min_length, min_words_vertical, min_words_horizontal.
 
         Returns:
             List of dictionaries containing table data and metadata.

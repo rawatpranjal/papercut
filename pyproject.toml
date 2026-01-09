@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "papercutter"
-version = "1.1.0"
+version = "1.2.0"
 description = "Extract and map content from academic papers for LLM processing"
 readme = "README.md"
 license = "MIT"
@@ -46,6 +46,14 @@ fast = [
 ]
 llm = [
     "litellm>=1.30.0",
+    "instructor>=1.0.0",
+]
+docling = [
+    "docling>=2.0.0",
+]
+factory = [
+    "jinja2>=3.0.0",
+    "papercutter[docling,llm]",
 ]
 equations = [
     "pymupdf>=1.24.0",
@@ -67,7 +75,7 @@ dev = [
     "ruff>=0.3.0",
     "mypy>=1.8.0",
 ]
-all = ["papercutter[fast,llm,equations,dev]"]
+all = ["papercutter[fast,llm,equations,factory,dev]"]
 
 [project.scripts]
 papercutter = "papercutter.cli.app:app"
@@ -105,7 +113,7 @@ warn_return_any = true
 warn_unused_ignores = true
 
 [[tool.mypy.overrides]]
-module = ["pdfplumber.*", "arxiv.*", "bibtexparser.*", "fitz.*", "transformers.*", "torch.*", "pix2tex.*"]
+module = ["pdfplumber.*", "arxiv.*", "bibtexparser.*", "fitz.*", "transformers.*", "torch.*", "pix2tex.*", "docling.*", "jinja2.*"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]

@@ -2,6 +2,7 @@
 
 import json
 from pathlib import Path
+from typing import Any, Literal, cast
 
 import typer
 from rich.console import Console
@@ -9,6 +10,16 @@ from rich.console import Console
 from papercutter.output import get_formatter
 
 console = Console()
+
+
+def _validate_pdf_path(pdf_path: Path) -> None:
+    """Validate that a PDF path exists and is a file."""
+    if not pdf_path.exists():
+        console.print(f"[red]File not found:[/red] {pdf_path}")
+        raise typer.Exit(1)
+    if not pdf_path.is_file():
+        console.print(f"[red]Not a file:[/red] {pdf_path}")
+        raise typer.Exit(1)
 
 
 def index(
@@ -57,6 +68,8 @@ def index(
     """
     from papercutter.index import DocumentIndexer
 
+    _validate_pdf_path(pdf_path)
+
     # Validate type
     if doc_type and doc_type not in ("paper", "book"):
         console.print(f"[red]Invalid type:[/red] {doc_type}")
@@ -67,18 +80,23 @@ def index(
     formatter = get_formatter(json_flag=use_json, pretty_flag=pretty)
 
     try:
+        # Cast doc_type to expected Literal type
+        typed_doc_type: Literal["paper", "book"] | None = (
+            cast(Literal["paper", "book"], doc_type) if doc_type else None
+        )
         doc_index = indexer.index(
             pdf_path=pdf_path,
-            doc_type=doc_type,
+            doc_type=typed_doc_type,
             force=force,
         )
 
         result = doc_index.to_dict()
 
         # Add success/cached metadata
-        output_data = {
+        is_cached = not force and indexer.cache is not None and indexer.cache.has_index(pdf_path)
+        output_data: dict[str, Any] = {
             "success": True,
-            "cached": not force and indexer.cache.has_index(pdf_path),
+            "cached": is_cached,
             **result,
         }
 
@@ -120,28 +138,56 @@ def chapters(
         papercutter chapters textbook.pdf
     """
     from papercutter.books.splitter import ChapterSplitter
+    from papercutter.index import DocumentIndexer
+
+    _validate_pdf_path(pdf_path)
 
     formatter = get_formatter(json_flag=use_json, pretty_flag=pretty)
+
+    # First check if this is actually a book
+    indexer = DocumentIndexer(use_cache=True)
+    doc_index = indexer.index(pdf_path)
+
+    if doc_index.type == "paper":
+        result = {
+            "success": False,
+            "file": str(pdf_path.name),
+            "error": "This document appears to be a paper, not a book.",
+            "hint": "Use 'papercutter index' to see sections, or 'papercutter info' for document details.",
+        }
+        formatter.output(result)
+        raise typer.Exit(1)
+
     splitter = ChapterSplitter()
     detected = splitter.detect_chapters(pdf_path)
 
     if not detected:
         result = {"success": True, "file": str(pdf_path.name), "chapters": [], "count": 0}
     else:
-        result = {
-            "success": True,
-            "file": str(pdf_path.name),
-            "count": len(detected),
-            "chapters": [
-                {
-                    "id": i + 1,
-                    "title": ch.title,
-                    "pages": [ch.start_page + 1, ch.end_page],
-                    "page_count": ch.page_count,
-                }
-                for i, ch in enumerate(detected)
-            ],
-        }
+        # Filter out "Full Book" placeholder if it's the only result
+        if len(detected) == 1 and detected[0].title in ("Full Book", "Full Document"):
+            result = {
+                "success": True,
+                "file": str(pdf_path.name),
+                "count": 0,
+                "chapters": [],
+                "hint": "No chapters detected. Try 'papercutter index' for section detection.",
+            }
+        else:
+            result = {
+                "success": True,
+                "file": str(pdf_path.name),
+                "count": len(detected),
+                "chapters": [
+                    {
+                        "id": i + 1,
+                        "title": ch.title,
+                        "pages": [ch.start_page + 1, ch.end_page],
+                        "page_count": ch.page_count,
+                    }
+                    for i, ch in enumerate(detected)
+                ],
+            }
 
     formatter.output(result)
 
@@ -189,13 +235,15 @@ def info(
 
     from papercutter.cache import file_hash
 
+    _validate_pdf_path(pdf_path)
+
     formatter = get_formatter(json_flag=use_json, pretty_flag=pretty)
 
     try:
         if quick:
             # Quick mode: basic info only (original behavior)
             reader = PdfReader(pdf_path)
-            result = {
+            result: dict[str, Any] = {
                 "success": True,
                 "file": str(pdf_path.name),
                 "pages": len(reader.pages),

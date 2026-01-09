@@ -44,7 +44,8 @@ def report(
     - meta: Data extraction for meta-analysis
     - executive: Non-technical summary
 
-    Requires an API key (set PAPERCUTTER_API_KEY or ANTHROPIC_API_KEY).
+    Requires an API key (set ANTHROPIC_API_KEY or OPENAI_API_KEY env var,
+    or add to ~/.papercutter/config.yaml).
 
     Examples:
 
@@ -65,7 +66,8 @@ def report(
         if not generator.is_available():
             result = {
                 "success": False,
-                "error": "LLM not available. Set PAPERCUTTER_API_KEY or ANTHROPIC_API_KEY.",
+                "error": "LLM not available. Set ANTHROPIC_API_KEY or OPENAI_API_KEY env var, "
+                "or add to ~/.papercutter/config.yaml",
             }
             formatter.output(result)
             raise typer.Exit(1)
@@ -84,7 +86,7 @@ def report(
         else:
             template_name = template
 
-        console.print(f"[dim]Generating {template_name} report for {pdf_path.name}...[/dim]", err=True)
+        Console(stderr=True).print(f"[dim]Generating {template_name} report for {pdf_path.name}...[/dim]")
 
         report_obj = generator.generate(
             pdf_path=pdf_path,

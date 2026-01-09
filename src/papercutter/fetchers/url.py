@@ -130,8 +130,25 @@ class URLFetcher(BaseFetcher):
                 details=str(e),
             ) from e
 
+    # Patterns for extracting paper IDs from common academic URLs
+    _PAPER_ID_PATTERNS = [
+        # arXiv: https://arxiv.org/pdf/2301.00001 or /abs/2301.00001
+        (re.compile(r"arxiv\.org/(?:pdf|abs)/(\d{4}\.\d{4,5})"), "arxiv_{}.pdf"),
+        # arXiv old format: hep-th/9901001
+        (re.compile(r"arxiv\.org/(?:pdf|abs)/([a-z-]+/\d+)"), "arxiv_{}.pdf"),
+        # SSRN: papers.ssrn.com/sol3/papers.cfm?abstract_id=1234567
+        (re.compile(r"ssrn\.com/.*abstract_id=(\d+)"), "ssrn_{}.pdf"),
+        # NBER: nber.org/papers/w29000
+        (re.compile(r"nber\.org/papers/([wW]?\d+)"), "nber_{}.pdf"),
+        # DOI-based URLs
+        (re.compile(r"doi\.org/(10\.\d{4,9}/[^\s/]+)"), "doi_{}.pdf"),
+    ]
+
     def _filename_from_url(self, url: str) -> str:
         """Extract filename from URL.
+
+        Tries to extract meaningful paper IDs from academic URLs before
+        falling back to generic names.
 
         Args:
             url: URL to extract filename from.
@@ -142,6 +159,17 @@ class URLFetcher(BaseFetcher):
         parsed = urlparse(url)
         # URL-decode the path to handle encoded characters
         decoded_path = unquote(parsed.path)
+        full_url = unquote(url)
+
+        # Try to extract paper ID from URL patterns
+        for pattern, template in self._PAPER_ID_PATTERNS:
+            match = pattern.search(full_url)
+            if match:
+                paper_id = match.group(1)
+                # Sanitize the paper ID for safe filename
+                safe_id = _sanitize_name(paper_id.replace("/", "_"))
+                return template.format(safe_id)
+
         # Use os.path.basename to safely extract just the filename
         basename = os.path.basename(decoded_path)
 
