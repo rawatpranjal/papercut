@@ -80,8 +80,8 @@ class OutputSettings(BaseModel):
 class LLMSettings(BaseModel):
     """Settings for LLM integration (v0.2)."""
 
-    default_provider: str = "anthropic"
-    default_model: str = "claude-sonnet-4-20250514"
+    default_provider: str = "openai"
+    default_model: str = "gpt-4.1-mini"
     temperature: float = 0.1
     max_tokens: int = 4096
 

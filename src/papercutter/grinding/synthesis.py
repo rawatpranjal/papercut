@@ -344,15 +344,32 @@ class Synthesizer:
 
             compressed = response.content.strip()
 
-            # Hard truncate if still too long
+            # Hard truncate if still too long (word-boundary aware)
             if len(compressed) > max_chars:
-                compressed = compressed[: max_chars - 3] + "..."
+                compressed = self._truncate_smart(compressed, max_chars)
 
             return compressed
 
         except Exception as e:
             logger.warning(f"Compression failed, truncating: {e}")
-            return text[: max_chars - 3] + "..."
+            return self._truncate_smart(text, max_chars)
+
+    def _truncate_smart(self, text: str, max_chars: int) -> str:
+        """Truncate text at word boundary to avoid mid-word cuts."""
+        if len(text) <= max_chars:
+            return text
+
+        # Leave room for "..."
+        truncated = text[: max_chars - 3]
+
+        # Find last space (word boundary)
+        last_space = truncated.rfind(" ")
+
+        # Only use word boundary if it's not too far back
+        if last_space > max_chars // 2:
+            truncated = truncated[:last_space]
+
+        return truncated.rstrip() + "..."
 
 
 def synthesize_paper(

@@ -14,7 +14,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 project = "Papercutter"
 copyright = "2024, Pranjal Rawat"
 author = "Pranjal Rawat"
-release = "2.0.1"
+release = "2.0.2"
 
 # -- General configuration ---------------------------------------------------
 

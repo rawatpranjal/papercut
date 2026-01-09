@@ -57,7 +57,7 @@ class LLMClient:
     - Others supported by litellm
     """
 
-    DEFAULT_MODEL = "claude-sonnet-4-20250514"
+    DEFAULT_MODEL = "gpt-4.1-mini"
 
     def __init__(
         self,

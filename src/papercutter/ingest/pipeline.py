@@ -292,9 +292,38 @@ class IngestPipeline:
             line = line.strip()
             # Skip short lines, numbers, page markers
             if len(line) > 15 and len(line) < 200:
-                if not line.isdigit():
+                if not line.isdigit() and not self._is_garbage_title(line):
                     return line
         return None
+
+    def _is_garbage_title(self, text: str) -> bool:
+        """Check if text looks like garbage metadata rather than a title."""
+        import re
+
+        text_lower = text.lower().strip()
+
+        # Common garbage patterns
+        garbage_patterns = [
+            r"^draft\s*(version)?",  # "Draft version..."
+            r"^working\s+paper",  # "Working paper..."
+            r"^page\s*\d+",  # "Page 1"
+            r"^\d{1,2}[/.-]\d{1,2}[/.-]\d{2,4}",  # Dates like "1/2/2024"
+            r"^(january|february|march|april|may|june|july|august|september|october|november|december)\s+\d",  # "January 2, 2024"
+            r"^[0-9\s./:,-]+$",  # Just numbers, punctuation
+            r"^(vol|volume|issue|no|number)[\s.]+\d",  # "Vol. 1", "Issue 2"
+            r"^(submitted|revised|accepted|published)",  # Submission dates
+            r"^https?://",  # URLs
+            r"^doi:",  # DOI strings
+            r"^arxiv:",  # arXiv IDs
+            r"^copyright\s",  # Copyright notices
+            r"^\d+\s*(st|nd|rd|th)\s+(edition|ed)",  # "2nd edition"
+        ]
+
+        for pattern in garbage_patterns:
+            if re.search(pattern, text_lower):
+                return True
+
+        return False
 
     def _extract_doi_from_text(self, text: str) -> str | None:
         """Extract DOI from text."""

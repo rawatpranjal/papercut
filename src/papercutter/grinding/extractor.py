@@ -135,9 +135,10 @@ class Extractor:
             bibtex_key=bibtex_key,
         )
 
-        # Truncate content if needed
+        # Truncate content if needed (word-boundary aware)
         if len(content) > self.max_content_chars:
-            content = content[: self.max_content_chars] + "\n\n[Content truncated...]"
+            content = self._truncate_smart(content, self.max_content_chars)
+            content += "\n\n[Content truncated...]"
 
         # Build schema prompt
         schema_prompt = self.schema.to_extraction_prompt()
@@ -175,7 +176,48 @@ class Extractor:
                     confidence=0.0,
                 )
 
+        # Warn if all fields are N/A
+        self._check_all_na(paper_id, extraction)
+
         return extraction
+
+    def _truncate_smart(self, text: str, max_chars: int) -> str:
+        """Truncate text at word boundary to avoid mid-word cuts."""
+        if len(text) <= max_chars:
+            return text
+
+        truncated = text[: max_chars - 50]  # Leave room for marker
+
+        # Find last paragraph or sentence boundary
+        for boundary in ["\n\n", "\n", ". ", "? ", "! "]:
+            last_boundary = truncated.rfind(boundary)
+            if last_boundary > max_chars // 2:
+                return truncated[: last_boundary + len(boundary)].rstrip()
+
+        # Fall back to word boundary
+        last_space = truncated.rfind(" ")
+        if last_space > max_chars // 2:
+            return truncated[:last_space].rstrip()
+
+        return truncated.rstrip()
+
+    def _check_all_na(self, paper_id: str, extraction: PaperExtraction) -> None:
+        """Warn if all extracted values are N/A."""
+        if not extraction.extractions:
+            return
+
+        na_count = sum(
+            1 for ev in extraction.extractions.values()
+            if str(ev.value).upper() in ("N/A", "NA", "EXTRACTION_FAILED")
+        )
+        total = len(extraction.extractions)
+
+        if na_count == total and total > 0:
+            logger.warning(
+                f"Paper '{paper_id}': All {total} fields are N/A. "
+                "This may indicate poor text quality or schema mismatch. "
+                "Consider manual review."
+            )
 
     def extract_batch(
         self,

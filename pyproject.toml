@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "papercutter"
-version = "2.0.1"
+version = "2.0.2"
 description = "Automated evidence synthesis pipeline for systematic literature reviews"
 readme = "README.md"
 license = "MIT"

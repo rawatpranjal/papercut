@@ -6,7 +6,7 @@
 
 **Entry point**: `papercutter` CLI (or `python3 -m papercutter`)
 
-**Version**: 2.0.1 (PyPI aligned)
+**Version**: 2.0.2 (PyPI aligned)
 
 ## Project Structure
 
