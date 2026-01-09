@@ -39,7 +39,7 @@ from papercutter.ingest.pipeline import (
     IngestProgress,
     IngestResult,
 )
-from papercutter.ingest.splitter import Chapter, Splitter, SplitResult
+from papercutter.ingest.splitter import Chapter, SplitResult, Splitter
 
 __all__ = [
     # Fetchers

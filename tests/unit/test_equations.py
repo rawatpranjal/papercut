@@ -2,7 +2,7 @@
 
 import pytest
 
-from papercutter.core.equations import (
+from papercutter.legacy.core.equations import (
     EquationBbox,
     EquationExtractor,
     EquationType,

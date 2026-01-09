@@ -17,11 +17,11 @@ from papercutter.project.state import (
 )
 
 __all__ = [
+    "GrindingConfig",
     "PaperEntry",
     "PaperStatus",
+    "ProjectConfig",
     "ProjectInventory",
     "ProjectManager",
-    "GrindingConfig",
     "ReportConfig",
-    "ProjectConfig",
 ]

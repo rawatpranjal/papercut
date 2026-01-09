@@ -6,6 +6,8 @@ API
 
    cli
    core
+   converters
+   resolver
    intelligence
    books
    index_module

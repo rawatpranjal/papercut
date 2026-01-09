@@ -35,3 +35,33 @@ Figures
 
 .. autoclass:: papercutter.core.figures.FigureExtractor
    :members:
+
+Equations
+---------
+
+Equation detection and extraction with optional LaTeX conversion.
+Requires PyMuPDF (``pip install pymupdf``).
+
+.. autoclass:: papercutter.core.equations.EquationType
+   :members:
+   :undoc-members:
+
+.. autoclass:: papercutter.core.equations.EquationBbox
+   :members:
+   :undoc-members:
+
+.. autoclass:: papercutter.core.equations.LaTeXConversion
+   :members:
+   :undoc-members:
+
+.. autoclass:: papercutter.core.equations.ExtractedEquation
+   :members:
+   :undoc-members:
+
+.. autoclass:: papercutter.core.equations.EquationExtractionResult
+   :members:
+   :undoc-members:
+
+.. autoclass:: papercutter.core.equations.EquationExtractor
+   :members:
+   :undoc-members:

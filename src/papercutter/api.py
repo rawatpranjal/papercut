@@ -12,18 +12,18 @@ For more control, use the underlying classes directly.
 from pathlib import Path
 from typing import Union, cast
 
-from papercutter.core.figures import ExtractedFigure, FigureExtractor
-from papercutter.core.references import Reference, ReferenceExtractor
-from papercutter.core.tables import ExtractedTable, TableExtractor
-from papercutter.core.text import TextExtractor
 from papercutter.extractors.pdfplumber import PdfPlumberExtractor
-from papercutter.fetchers.arxiv import ArxivFetcher
-from papercutter.fetchers.base import Document
-from papercutter.fetchers.doi import DOIFetcher
-from papercutter.fetchers.nber import NBERFetcher
-from papercutter.fetchers.registry import get_registry
-from papercutter.fetchers.ssrn import SSRNFetcher
-from papercutter.fetchers.url import URLFetcher
+from papercutter.legacy.core.figures import ExtractedFigure, FigureExtractor
+from papercutter.legacy.core.references import Reference, ReferenceExtractor
+from papercutter.legacy.core.tables import ExtractedTable, TableExtractor
+from papercutter.legacy.core.text import TextExtractor
+from papercutter.legacy.fetchers.arxiv import ArxivFetcher
+from papercutter.legacy.fetchers.base import Document
+from papercutter.legacy.fetchers.doi import DOIFetcher
+from papercutter.legacy.fetchers.nber import NBERFetcher
+from papercutter.legacy.fetchers.registry import get_registry
+from papercutter.legacy.fetchers.ssrn import SSRNFetcher
+from papercutter.legacy.fetchers.url import URLFetcher
 
 PathLike = Union[Path, str]
 

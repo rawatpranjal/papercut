@@ -9,8 +9,8 @@ import typer
 from rich.console import Console
 from rich.table import Table
 
-from papercutter.project.manager import ProjectManager
 from papercutter.project.inventory import PaperStatus
+from papercutter.project.manager import ProjectManager
 
 console = Console()
 
@@ -60,7 +60,7 @@ def status(
     console.print()
 
     # Inventory status
-    entries = manager.inventory.entries
+    entries = list(manager.inventory.papers.values())
     if not entries:
         console.print("[yellow]No papers in inventory.[/yellow]")
         console.print("Run 'papercutter ingest <path>' to add papers.")

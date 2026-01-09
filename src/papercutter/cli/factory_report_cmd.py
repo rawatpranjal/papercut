@@ -4,7 +4,6 @@ Generates LaTeX or Markdown reports from extraction results.
 """
 
 from pathlib import Path
-from typing import Annotated
 
 import typer
 from rich.console import Console
@@ -152,7 +151,7 @@ def report(
 
     # Show stats
     console.print()
-    console.print(f"Report includes:")
+    console.print("Report includes:")
     console.print(f"  Papers: {matrix.paper_count}")
     if not no_matrix:
         console.print(f"  Matrix fields: {len(matrix.field_keys)}")

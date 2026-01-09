@@ -7,13 +7,13 @@ from __future__ import annotations
 
 import json
 import logging
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Callable
 
 from papercutter.grinding.matrix import (
-    ExtractionMatrix,
     ExtractedValue,
+    ExtractionMatrix,
     PaperExtraction,
 )
 from papercutter.grinding.schema import ExtractionSchema, FieldType

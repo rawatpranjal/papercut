@@ -53,7 +53,7 @@ class TestURLFetcherSanitization:
 
     def test_sanitize_name_removes_traversal(self):
         """Test that user-provided names are sanitized."""
-        from papercutter.fetchers.url import _sanitize_name
+        from papercutter.legacy.fetchers.url import _sanitize_name
 
         # Test path traversal
         assert _sanitize_name("../../../etc/passwd") == "passwd"
@@ -74,7 +74,7 @@ class TestChunkingInfiniteLoopPrevention:
 
     def test_chunk_text_rejects_invalid_overlap(self):
         """Test that overlap >= chunk_size raises an error."""
-        from papercutter.core.text import TextExtractor
+        from papercutter.legacy.core.text import TextExtractor
         from unittest.mock import Mock
 
         backend = Mock()
@@ -90,7 +90,7 @@ class TestChunkingInfiniteLoopPrevention:
 
     def test_chunk_text_rejects_invalid_chunk_size(self):
         """Test that chunk_size <= 0 raises an error."""
-        from papercutter.core.text import TextExtractor
+        from papercutter.legacy.core.text import TextExtractor
         from unittest.mock import Mock
 
         backend = Mock()
@@ -132,7 +132,7 @@ class TestBibTeXSanitization:
 
     def test_bibtex_removes_newlines(self):
         """Test that newlines are removed from BibTeX fields."""
-        from papercutter.core.references import Reference
+        from papercutter.legacy.core.references import Reference
 
         ref = Reference(
             raw_text="Test reference",
@@ -152,7 +152,7 @@ class TestBibTeXSanitization:
 
     def test_bibtex_escapes_special_chars(self):
         """Test that special BibTeX characters are escaped."""
-        from papercutter.core.references import Reference
+        from papercutter.legacy.core.references import Reference
 
         ref = Reference(
             raw_text="Test reference",
@@ -173,7 +173,7 @@ class TestAuthorDeduplication:
 
     def test_duplicate_authors_removed(self):
         """Test that duplicate author names are deduplicated."""
-        from papercutter.core.references import ReferenceExtractor
+        from papercutter.legacy.core.references import ReferenceExtractor
         from unittest.mock import Mock
 
         backend = Mock()
@@ -190,7 +190,7 @@ class TestAuthorDeduplication:
 
     def test_and_not_included_as_author(self):
         """Test that 'and' is not included as an author name."""
-        from papercutter.core.references import ReferenceExtractor
+        from papercutter.legacy.core.references import ReferenceExtractor
         from unittest.mock import Mock
 
         backend = Mock()

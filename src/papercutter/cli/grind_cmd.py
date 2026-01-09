@@ -4,16 +4,15 @@ Extracts evidence from papers based on the configured schema.
 """
 
 from pathlib import Path
-from typing import Annotated
 
 import typer
 from rich.console import Console
-from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn
+from rich.progress import BarColumn, Progress, SpinnerColumn, TextColumn
 
 from papercutter.grinding import (
+    ExtractionProgress,
     ExtractionSchema,
     Extractor,
-    ExtractionProgress,
     Synthesizer,
 )
 from papercutter.grinding.schema import FieldType, SchemaField
@@ -176,7 +175,7 @@ def grind(
     # Display summary
     console.print()
     summary = matrix.summary()
-    console.print(f"[bold]Extraction summary:[/bold]")
+    console.print("[bold]Extraction summary:[/bold]")
     console.print(f"  Papers: {summary['paper_count']}")
     console.print(f"  Fields: {summary['field_count']}")
 

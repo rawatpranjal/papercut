@@ -156,7 +156,7 @@ class ReportBuilder:
 
         try:
             template = env.get_template(template_name)
-        except Exception as e:
+        except Exception:
             logger.warning(f"Template {template_name} not found, using built-in")
             # Use built-in template
             content = self._get_builtin_template()

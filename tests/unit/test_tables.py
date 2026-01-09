@@ -2,7 +2,7 @@
 
 import pytest
 
-from papercutter.core.tables import ExtractedTable
+from papercutter.legacy.core.tables import ExtractedTable
 
 
 class TestExtractedTable:

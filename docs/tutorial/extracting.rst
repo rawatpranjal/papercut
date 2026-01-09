@@ -48,28 +48,22 @@ When preparing text for language model processing, use chunking to split the tex
 
    papercutter extract text paper.pdf --chunk-size 1000 --overlap 200
 
-This outputs JSON with chunked content:
+This outputs JSON with chunked content. Example from "Attention Is All You Need":
 
 .. code-block:: json
 
    {
+     "success": true,
+     "file": "Vaswani_2017_attention_is_all_you_need.pdf",
+     "chunked": true,
+     "chunk_size": 500,
+     "overlap": 100,
+     "count": 29,
      "chunks": [
-       {
-         "index": 0,
-         "text": "First chunk of text...",
-         "start_char": 0,
-         "end_char": 1000
-       },
-       {
-         "index": 1,
-         "text": "Second chunk with overlap...",
-         "start_char": 800,
-         "end_char": 1800
-       }
-     ],
-     "total_chunks": 15,
-     "chunk_size": 1000,
-     "overlap": 200
+       "Attention Is All You Need...",
+       "Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit...",
+       "Abstract: The dominant sequence transduction models are based on..."
+     ]
    }
 
 Parameters:
@@ -91,16 +85,16 @@ Extract all tables from a PDF:
    papercutter extract tables paper.pdf -o ./tables/
 
    # Output as JSON to stdout
-   papercutter extract tables paper.pdf -f json
+   papercutter extract tables paper.pdf --json
 
 Output Formats
 ~~~~~~~~~~~~~~
 
-**CSV Format** (default):
+**CSV Format** (default with ``-o``):
 
 .. code-block:: bash
 
-   papercutter extract tables paper.pdf -f csv -o ./tables/
+   papercutter extract tables paper.pdf -o ./tables/
 
 Creates individual CSV files for each table:
 
@@ -111,11 +105,11 @@ Creates individual CSV files for each table:
    ├── table_page3_1.csv
    └── table_page3_2.csv
 
-**JSON Format**:
+**JSON Format** (use ``--json`` flag):
 
 .. code-block:: bash
 
-   papercutter extract tables paper.pdf -f json -o tables.json
+   papercutter extract tables paper.pdf --json
 
 Outputs structured JSON:
 
@@ -211,75 +205,129 @@ Example output:
       ]
    }
 
-Real-World Example: Deriving a Literature Package
--------------------------------------------------
+Section Extraction
+------------------
 
-Below is a reproducible sequence using an openly available arXiv paper (``2302.05442``) to produce text chunks, tables, and machine-readable references in a single workspace:
+Extract text from specific named sections of a document.
 
-1. **Fetch the paper (if you have not already):**
+List Sections
+~~~~~~~~~~~~~
+
+View all detected sections in a paper:
+
+.. code-block:: bash
+
+   papercutter extract section paper.pdf --list
+
+Example from "Attention Is All You Need" (arXiv:1706.03762):
+
+.. code-block:: json
+
+   {
+     "success": true,
+     "file": "Vaswani_2017_attention_is_all_you_need.pdf",
+     "count": 9,
+     "sections": [
+       {"id": 1, "title": "Abstract", "pages": [1, 1]},
+       {"id": 2, "title": "1   Introduction", "pages": [2, 2]},
+       {"id": 3, "title": "3.1   Encoder and Decoder Stacks", "pages": [3, 4]},
+       {"id": 4, "title": "3.3   Position-wise Feed-Forward Networks", "pages": [5, 5]},
+       {"id": 5, "title": "3.5   Positional Encoding", "pages": [6, 6]},
+       {"id": 6, "title": "5.1   Training Data and Batching", "pages": [7, 7]},
+       {"id": 7, "title": "6   Results", "pages": [8, 8]},
+       {"id": 8, "title": "6.3   English Constituency Parsing", "pages": [9, 9]},
+       {"id": 9, "title": "7   Conclusion", "pages": [10, 15]}
+     ]
+   }
+
+Extract a Section
+~~~~~~~~~~~~~~~~~
+
+Extract text from a specific section by name (partial match supported):
+
+.. code-block:: bash
+
+   papercutter extract section paper.pdf --section "Methods"
+
+   # Partial match works
+   papercutter extract section paper.pdf -s "Intro"
+
+Or by section ID:
+
+.. code-block:: bash
+
+   papercutter extract section paper.pdf -s 3
+
+Save to file:
+
+.. code-block:: bash
+
+   papercutter extract section paper.pdf -s Introduction -o intro.txt
+
+.. note::
+
+   Section detection works best with papers that have clear heading structure.
+   For books with chapters, use ``papercutter chapters`` instead.
+
+Real-World Example: Extracting Content from "Attention Is All You Need"
+------------------------------------------------------------------------
+
+Below is a reproducible sequence using the famous Transformer paper (arXiv:1706.03762):
+
+1. **Fetch the paper:**
 
    .. code-block:: bash
 
-      papercutter fetch arxiv 2302.05442 -o ./workspace
+      papercutter fetch arxiv 1706.03762 -o ./workspace
 
-2. **Chunk the text for LLM processing and save the JSON output:**
-
-   .. code-block:: bash
-
-      papercutter extract text ./workspace/Han_2023_small_data.pdf \\
-        --chunk-size 1500 --overlap 250 --json -o ./workspace/han_chunks.json
-
-   Sample chunk entry:
-
-   .. code-block:: json
-
-      {
-        "index": 4,
-        "text": "We evaluate the few-shot performance of the proposed classifier on ...",
-        "page_range": [6, 7],
-        "overlap": 250
-      }
-
-3. **Export every detected table both as CSV (for spreadsheets) and JSON (for scripting):**
+2. **Chunk the text for LLM processing:**
 
    .. code-block:: bash
 
-      papercutter extract tables ./workspace/Han_2023_small_data.pdf \\
-        -o ./workspace/tables --format csv
+      papercutter extract text ./workspace/Vaswani_2017_attention_is_all_you_need.pdf \
+        --chunk-size 500 --overlap 100 -p 1-2 --json -o ./workspace/chunks.json
 
-      papercutter extract tables ./workspace/Han_2023_small_data.pdf \\
-        -f json -o ./workspace/tables.json
+   Output shows 29 chunks from the first 2 pages.
 
-   Directory structure:
+3. **Extract tables:**
+
+   .. code-block:: bash
+
+      papercutter extract tables ./workspace/Vaswani_2017_attention_is_all_you_need.pdf \
+        -o ./workspace/tables/
+
+   The paper has 6 tables (experimental results).
+
+4. **Extract references:**
+
+   .. code-block:: bash
+
+      papercutter extract refs ./workspace/Vaswani_2017_attention_is_all_you_need.pdf \
+        -o ./workspace/refs.bib
+
+   Extracts 40 references to BibTeX format.
+
+5. **List detected sections:**
+
+   .. code-block:: bash
+
+      papercutter extract section ./workspace/Vaswani_2017_attention_is_all_you_need.pdf --list
+
+   Shows 9 detected sections including Abstract, Introduction, Results, and Conclusion.
+
+   Directory structure after extraction:
 
    ::
 
       workspace/
-      ├── Han_2023_small_data.pdf
-      ├── han_chunks.json
+      ├── Vaswani_2017_attention_is_all_you_need.pdf
+      ├── chunks.json
       ├── tables/
-      │   ├── table_page4_1.csv
-      │   └── table_page5_1.csv
-      └── tables.json
+      │   ├── table_1.csv
+      │   └── ...
+      └── refs.bib
 
-4. **Capture citation data to plug into BibTeX or reference managers:**
-
-   .. code-block:: bash
-
-      papercutter extract refs ./workspace/Han_2023_small_data.pdf -o ./workspace/han_refs.bib
-
-   Snippet of the produced BibTeX file:
-
-   .. code-block:: bibtex
-
-      @article{han2023small,
-        author = {Han, Jihoon and Lin, Alexandra and others},
-        title = {Small-Data Generalization in Transformer Models},
-        journal = {arXiv preprint arXiv:2302.05442},
-        year = {2023}
-      }
-
-This single folder now holds chunks for LLMs, tabular data for spreadsheets, and citations for reference managers—exactly what you need to build briefs, dashboards, or downstream analyses around a specific paper.
+This workspace now contains chunks for LLMs, tabular data, and references—ready for downstream analysis.
 
 Extraction Backend
 ------------------
@@ -305,13 +353,23 @@ Tips and Best Practices
 
 4. **Large Documents**: For very large PDFs, consider extracting specific page ranges to reduce processing time.
 
-5. **Batch Processing**: Use shell scripting to process multiple files:
+5. **LLM-Ready Chunks**: Use ``--include-metadata`` with ``--chunk-size`` for chunks that include page numbers, section context, and figure/table references:
 
    .. code-block:: bash
 
-      for pdf in papers/*.pdf; do
-        papercutter extract text "$pdf" -o "text/$(basename "$pdf" .pdf).txt"
-      done
+      papercutter extract text paper.pdf --chunk-size 2000 --include-metadata
+
+6. **Batch Processing**: Process multiple PDFs using the built-in batch mode:
+
+   .. code-block:: bash
+
+      # Create a file listing PDFs to process
+      ls papers/*.pdf > pdfs.txt
+
+      # Batch extract to directory
+      papercutter extract text --batch pdfs.txt -o ./output/
+
+   See :doc:`fetching` for batch fetching with ``--batch`` and ``--metadata`` options.
 
 .. seealso::
 

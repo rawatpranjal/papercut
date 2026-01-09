@@ -4,7 +4,6 @@ Auto-generates extraction schema by sampling papers and using LLM.
 """
 
 from pathlib import Path
-from typing import Annotated
 
 import typer
 from rich.console import Console

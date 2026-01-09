@@ -8,10 +8,10 @@ from papercutter.utils.bibtex import (
 from papercutter.utils.hashing import content_hash, file_hash, string_hash
 
 __all__ = [
-    "file_hash",
-    "content_hash",
-    "string_hash",
     "BibTeXEntry",
-    "generate_citation_key",
+    "content_hash",
+    "file_hash",
     "format_authors_bibtex",
+    "generate_citation_key",
+    "string_hash",
 ]

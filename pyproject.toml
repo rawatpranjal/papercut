@@ -4,15 +4,15 @@ build-backend = "hatchling.build"
 
 [project]
 name = "papercutter"
-version = "1.2.0"
-description = "Extract and map content from academic papers for LLM processing"
+version = "2.0.0"
+description = "Automated evidence synthesis pipeline for systematic literature reviews"
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.10"
 authors = [
     { name = "Pranjal Rawat" }
 ]
-keywords = ["pdf", "academic", "papers", "extraction", "arxiv", "research"]
+keywords = ["pdf", "systematic-review", "evidence-synthesis", "research", "llm", "docling"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Environment :: Console",

@@ -11,10 +11,10 @@ arXiv is a popular preprint server for scientific papers. Fetch papers using the
 .. code-block:: bash
 
    # Standard format
-   papercutter fetch arxiv 2301.00001 -o ./papers
+   papercutter fetch arxiv 1706.03762 -o ./papers
 
    # With category prefix (auto-handled)
-   papercutter fetch arxiv cs.AI/2301.00001 -o ./papers
+   papercutter fetch arxiv cs.AI/1706.03762 -o ./papers
 
 The fetcher automatically extracts metadata including title, authors, and abstract.
 
@@ -80,10 +80,10 @@ All fetch commands support the ``-o`` / ``--output`` option to specify the outpu
 .. code-block:: bash
 
    # Save to specific directory
-   papercutter fetch arxiv 2301.00001 -o ~/research/papers
+   papercutter fetch arxiv 1706.03762 -o ~/research/papers
 
    # Save to current directory
-   papercutter fetch arxiv 2301.00001 -o .
+   papercutter fetch arxiv 1706.03762 -o .
 
 If not specified, papers are saved to the default output directory configured in settings (default: ``~/papers``).
 
@@ -107,7 +107,7 @@ This metadata is available programmatically when using Papercutter as a library:
    from papercutter.fetchers.base import Document
 
    # Document is returned by fetch operations
-   doc: Document = fetcher.fetch("2301.00001", output_dir)
+   doc: Document = fetcher.fetch("1706.03762", output_dir)
 
    print(doc.title)
    print(doc.authors)
@@ -126,11 +126,96 @@ Example error handling in scripts:
 
 .. code-block:: bash
 
-   papercutter fetch arxiv 2301.00001 -o ./papers || echo "Failed to fetch paper"
+   papercutter fetch arxiv 1706.03762 -o ./papers || echo "Failed to fetch paper"
 
 .. seealso::
 
    :doc:`python/fetching` for Python API examples including batch fetching and error handling.
+
+Batch Processing
+----------------
+
+Papercutter provides powerful batch processing for downloading multiple papers efficiently.
+
+Unified Batch Command
+~~~~~~~~~~~~~~~~~~~~~
+
+The ``papercutter fetch batch`` command handles mixed identifier types from a single file:
+
+.. code-block:: bash
+
+   papercutter fetch batch reading_list.txt -o ./library/
+
+The batch file supports multiple formats with automatic source detection:
+
+.. code-block:: text
+
+   # reading_list.txt
+   # Comments are supported
+
+   arxiv:1706.03762
+   doi:10.1257/aer.20180779
+   ssrn:4123456
+   nber:w29000
+   https://example.com/paper.pdf
+
+Parallel Downloads
+~~~~~~~~~~~~~~~~~~
+
+Speed up batch downloads with parallel fetching:
+
+.. code-block:: bash
+
+   papercutter fetch batch papers.txt --parallel --max-concurrent 5 -o ./library/
+
+Parameters:
+
+- ``--parallel`` / ``-p``: Enable async parallel downloads
+- ``--max-concurrent``: Maximum concurrent downloads (default: 5)
+- ``--delay`` / ``-d``: Delay between sequential downloads in seconds
+
+Metadata Sidecars
+~~~~~~~~~~~~~~~~~
+
+Save metadata alongside PDFs:
+
+.. code-block:: bash
+
+   papercutter fetch batch papers.txt --metadata -o ./library/
+
+Creates ``.meta.json`` files with title, authors, DOI, and other metadata.
+
+Dry Run
+~~~~~~~
+
+Preview what would be downloaded:
+
+.. code-block:: bash
+
+   papercutter fetch batch papers.txt --dry-run
+
+Error Handling
+~~~~~~~~~~~~~~
+
+Control behavior on download failures:
+
+.. code-block:: bash
+
+   # Continue after failures (default)
+   papercutter fetch batch papers.txt --continue-on-error
+
+   # Stop on first failure
+   papercutter fetch batch papers.txt --stop-on-error
+
+Source-Specific Batch
+~~~~~~~~~~~~~~~~~~~~~
+
+Each source also supports its own ``--batch`` option:
+
+.. code-block:: bash
+
+   papercutter fetch arxiv --batch arxiv_ids.txt -o ./arxiv/
+   papercutter fetch doi --batch dois.txt -o ./dois/ --metadata
 
 Real-World Example: Building a Reading Stack
 --------------------------------------------

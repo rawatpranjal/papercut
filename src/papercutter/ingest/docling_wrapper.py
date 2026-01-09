@@ -98,9 +98,9 @@ class DoclingWrapper:
             )
 
         try:
-            from docling.document_converter import DocumentConverter
-            from docling.datamodel.pipeline_options import PdfPipelineOptions
             from docling.datamodel.base_models import InputFormat
+            from docling.datamodel.pipeline_options import PdfPipelineOptions
+            from docling.document_converter import DocumentConverter
 
             pipeline_options = PdfPipelineOptions()
             pipeline_options.do_ocr = self.ocr_enabled

@@ -3,7 +3,7 @@
 import base64
 import os
 import types
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import TYPE_CHECKING, TypeVar
 
 from papercutter.config.settings import get_settings

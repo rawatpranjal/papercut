@@ -1,129 +1,158 @@
 Quickstart
 ==========
 
-This guide will walk you through the basic workflow of using Papercutter to fetch academic papers and extract content from them.
+This guide walks you through the Papercutter Factory workflow for systematic literature reviews.
 
-Fetching a Paper
-----------------
+Prerequisites
+-------------
 
-Download a paper from arXiv using its paper ID:
-
-.. code-block:: bash
-
-   papercutter fetch arxiv 2301.00001 -o ./papers
-
-This downloads the paper and saves it to the ``./papers`` directory.
-
-You can also fetch papers using DOI:
+- Python 3.10+
+- An API key for OpenAI or Anthropic (for LLM features)
 
 .. code-block:: bash
 
-   papercutter fetch doi 10.1257/aer.20180779 -o ./papers
+   pip install papercutter[factory]
+   export OPENAI_API_KEY=sk-...  # or ANTHROPIC_API_KEY
 
-Extracting Text
+Step 1: Initialize Project
+--------------------------
+
+Create a new review project:
+
+.. code-block:: bash
+
+   papercutter init my_review
+   cd my_review
+
+This creates:
+
+.. code-block:: text
+
+   my_review/
+   ├── input/              # Place your PDFs here
+   └── .papercutter/       # Project state
+
+Step 2: Ingest PDFs
+-------------------
+
+Add your PDFs to the ``input/`` folder, then run:
+
+.. code-block:: bash
+
+   papercutter ingest
+
+With BibTeX matching:
+
+.. code-block:: bash
+
+   papercutter ingest --bib references.bib
+
+The ingest phase:
+
+- Converts PDFs to structured Markdown using Docling
+- Splits large volumes (500+ pages) into chapters
+- Matches papers to BibTeX entries
+- Tracks processing status
+
+Check progress:
+
+.. code-block:: bash
+
+   papercutter status
+
+Step 3: Configure Schema
+------------------------
+
+Define what data to extract:
+
+.. code-block:: bash
+
+   papercutter configure
+
+This analyzes sample papers and generates a schema. Edit ``config.yaml`` to customize:
+
+.. code-block:: yaml
+
+   columns:
+     - key: sample_size
+       description: "Total observations (N)"
+       type: integer
+     - key: estimation_method
+       description: "Statistical method (DiD, RDD, OLS)"
+       type: string
+     - key: treatment_effect
+       description: "Main treatment coefficient"
+       type: float
+
+Or use a template:
+
+.. code-block:: bash
+
+   papercutter configure --template economics
+
+Step 4: Extract Evidence
+------------------------
+
+Run pilot mode to validate:
+
+.. code-block:: bash
+
+   papercutter grind --pilot
+
+This processes 5 random papers and generates ``pilot_trace.csv`` with source quotes for verification.
+
+Once validated, run full extraction:
+
+.. code-block:: bash
+
+   papercutter grind --full
+
+Step 5: Generate Report
+-----------------------
+
+Create outputs:
+
+.. code-block:: bash
+
+   papercutter report
+
+This generates:
+
+- ``output/matrix.csv`` - Extracted data for R/Stata/Pandas
+- ``output/systematic_review.pdf`` - LaTeX document with summaries
+
+Common Options
+--------------
+
+.. code-block:: bash
+
+   # Verbose output
+   papercutter --verbose ingest
+
+   # Quiet mode
+   papercutter --quiet grind --full
+
+   # Check version
+   papercutter --version
+
+Troubleshooting
 ---------------
 
-Extract the full text content from a PDF:
+**No papers found after ingest:**
 
-.. code-block:: bash
+Check that PDFs are in the ``input/`` folder and run ``papercutter status``.
 
-   papercutter extract text paper.pdf
+**Docling errors:**
 
-To save the output to a file:
+Papercutter falls back to OCR extraction if Docling fails. Install Tesseract for better results.
 
-.. code-block:: bash
+**LLM errors:**
 
-   papercutter extract text paper.pdf -o output.txt
-
-Extract text from specific pages:
-
-.. code-block:: bash
-
-   papercutter extract text paper.pdf -p 1-5,10
-
-Chunking for LLM Processing
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-When preparing text for language models, you can chunk the output:
-
-.. code-block:: bash
-
-   papercutter extract text paper.pdf --chunk-size 1000 --overlap 200
-
-This outputs JSON with chunked text suitable for embedding or LLM processing.
-
-Extracting Tables
------------------
-
-Extract all tables from a PDF:
-
-.. code-block:: bash
-
-   papercutter extract tables paper.pdf -o ./tables/
-
-By default, tables are saved as CSV files. Use JSON format instead:
-
-.. code-block:: bash
-
-   papercutter extract tables paper.pdf -f json -o ./tables/
-
-Extract tables from specific pages:
-
-.. code-block:: bash
-
-   papercutter extract tables paper.pdf -p 5-10 -o ./tables/
-
-Extracting References
----------------------
-
-Extract bibliographic references as BibTeX:
-
-.. code-block:: bash
-
-   papercutter extract refs paper.pdf -o references.bib
-
-Or as JSON:
-
-.. code-block:: bash
-
-   papercutter extract refs paper.pdf -f json -o references.json
-
-Complete Workflow Example
--------------------------
-
-Here's a complete example workflow for processing an academic paper:
-
-.. code-block:: bash
-
-   # 1. Create a working directory
-   mkdir -p research/paper_analysis
-   cd research/paper_analysis
-
-   # 2. Download a paper from arXiv
-   papercutter fetch arxiv 2301.00001 -o .
-
-   # 3. Extract the full text
-   papercutter extract text 2301.00001.pdf -o text.txt
-
-   # 4. Extract tables to CSV files
-   papercutter extract tables 2301.00001.pdf -o tables/
-
-   # 5. Extract references
-   papercutter extract refs 2301.00001.pdf -o references.bib
-
-   # 6. View the results
-   ls -la
-   # Output:
-   # 2301.00001.pdf
-   # text.txt
-   # references.bib
-   # tables/
-   #   table_1.csv
-   #   table_2.csv
+Ensure your API key is set: ``export OPENAI_API_KEY=sk-...``
 
 Next Steps
 ----------
 
-- See :doc:`tutorial/fetching` for detailed information on fetching papers from different sources
-- See :doc:`tutorial/extracting` for advanced extraction options
-- See :doc:`api/index` for the complete API reference
+- Review ``config.yaml`` and customize the extraction schema
+- Check ``pilot_trace.csv`` to verify extraction accuracy
+- Edit summaries in the generated report as needed

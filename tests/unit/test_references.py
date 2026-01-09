@@ -2,7 +2,7 @@
 
 import pytest
 
-from papercutter.core.references import Reference, ReferenceExtractor
+from papercutter.legacy.core.references import Reference, ReferenceExtractor
 
 
 class TestReference:

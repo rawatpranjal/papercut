@@ -27,7 +27,7 @@ Advanced usage (for more control):
     >>> text = extractor.extract(doc.path)
 """
 
-__version__ = "1.1.0"
+__version__ = "2.0.0"
 
 # Exceptions
 # Convenience API
@@ -45,26 +45,8 @@ from papercutter.api import (
     fetch_url,
 )
 
-# Book chapter detection
-from papercutter.books.splitter import Chapter, ChapterSplitter
-
-# Cache
-from papercutter.cache import CacheStore, file_hash, get_cache
-
 # Configuration
 from papercutter.config.settings import Settings, get_settings
-
-# Core extraction
-from papercutter.core.equations import (
-    EquationExtractor,
-    EquationType,
-    ExtractedEquation,
-    LaTeXConversion,
-)
-from papercutter.core.figures import ExtractedFigure, FigureExtractor
-from papercutter.core.references import Reference, ReferenceExtractor
-from papercutter.core.tables import ExtractedTable, TableExtractor
-from papercutter.core.text import TextExtractor
 from papercutter.exceptions import (
     ConfigError,
     EquationConversionError,
@@ -87,16 +69,34 @@ from papercutter.exceptions import (
 from papercutter.extractors.base import Extractor
 from papercutter.extractors.pdfplumber import PdfPlumberExtractor
 
+# Book chapter detection
+from papercutter.legacy.books.splitter import Chapter, ChapterSplitter
+
+# Cache
+from papercutter.legacy.cache import CacheStore, file_hash, get_cache
+
+# Core extraction
+from papercutter.legacy.core.equations import (
+    EquationExtractor,
+    EquationType,
+    ExtractedEquation,
+    LaTeXConversion,
+)
+from papercutter.legacy.core.figures import ExtractedFigure, FigureExtractor
+from papercutter.legacy.core.references import Reference, ReferenceExtractor
+from papercutter.legacy.core.tables import ExtractedTable, TableExtractor
+from papercutter.legacy.core.text import TextExtractor
+
 # Fetchers
-from papercutter.fetchers.arxiv import ArxivFetcher
-from papercutter.fetchers.base import BaseFetcher, Document
-from papercutter.fetchers.doi import DOIFetcher
-from papercutter.fetchers.nber import NBERFetcher
-from papercutter.fetchers.ssrn import SSRNFetcher
-from papercutter.fetchers.url import URLFetcher
+from papercutter.legacy.fetchers.arxiv import ArxivFetcher
+from papercutter.legacy.fetchers.base import BaseFetcher, Document
+from papercutter.legacy.fetchers.doi import DOIFetcher
+from papercutter.legacy.fetchers.nber import NBERFetcher
+from papercutter.legacy.fetchers.ssrn import SSRNFetcher
+from papercutter.legacy.fetchers.url import URLFetcher
 
 # Document indexing
-from papercutter.index.indexer import (
+from papercutter.legacy.index.indexer import (
     DocumentIndex,
     DocumentIndexer,
     FigureInfo,
@@ -105,7 +105,7 @@ from papercutter.index.indexer import (
 )
 
 # Intelligence features (LLM-powered)
-from papercutter.intelligence import ReportGenerator, StudyAid, Summarizer
+from papercutter.legacy.intelligence import ReportGenerator, StudyAid, Summarizer
 
 # LLM integration
 from papercutter.llm import LLMClient

@@ -10,13 +10,14 @@ This module provides the main IngestPipeline class that orchestrates:
 from __future__ import annotations
 
 import logging
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
-from papercutter.ingest.docling_wrapper import DoclingResult, DoclingWrapper
-from papercutter.ingest.fetchers import FetcherRegistry, get_registry
+from papercutter.ingest.docling_wrapper import DoclingWrapper
+from papercutter.ingest.fetchers import get_registry
 from papercutter.ingest.matcher import (
     BibTeXMatcher,
     MatchedPaper,
@@ -24,14 +25,15 @@ from papercutter.ingest.matcher import (
     MatchType,
     parse_bibtex_file,
 )
-from papercutter.ingest.ocr_fallback import OCRFallback, OCRResult
-from papercutter.ingest.splitter import Chapter, Splitter, SplitResult
+from papercutter.ingest.ocr_fallback import OCRFallback
+from papercutter.ingest.splitter import SplitResult, Splitter
 from papercutter.project.inventory import (
     ExtractionMethod as InventoryExtractionMethod,
+)
+from papercutter.project.inventory import (
     PaperEntry,
     PaperStatus,
 )
-from papercutter.utils.bibtex import BibTeXEntry
 from papercutter.utils.hashing import compute_file_hash
 
 logger = logging.getLogger(__name__)

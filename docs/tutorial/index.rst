@@ -11,6 +11,9 @@ Learn to use Papercutter from the terminal:
 
    fetching
    extracting
+   equations
+   search
+   follow
    indexing
    caching
    llm
@@ -34,7 +37,10 @@ Overview
 **CLI Tutorials:**
 
 - :doc:`fetching` - Download papers from arXiv, DOI, SSRN, NBER, URLs
-- :doc:`extracting` - Extract text, tables, and references
+- :doc:`extracting` - Extract text, tables, sections, and references
+- :doc:`equations` - Extract equations with LaTeX conversion
+- :doc:`search` - Search arXiv for papers
+- :doc:`follow` - Download all cited references from a paper
 - :doc:`indexing` - Analyze document structure, detect chapters
 - :doc:`caching` - Manage extraction cache
 - :doc:`llm` - AI-powered summarization and reports

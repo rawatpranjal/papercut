@@ -9,9 +9,10 @@ from __future__ import annotations
 import csv
 import json
 import logging
+from collections.abc import Iterator
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Iterator
+from typing import Any
 
 from papercutter.grinding.schema import ExtractionSchema, FieldType
 

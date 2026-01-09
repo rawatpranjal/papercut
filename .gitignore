@@ -53,3 +53,12 @@ htmlcov/
 
 # Papercutter cache
 .papercutter/
+
+# Documentation build
+docs/_build/
+
+# Archive (preserved on archive branch)
+archive/
+
+# Sample PDFs
+*.pdf

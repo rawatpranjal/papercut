@@ -19,8 +19,8 @@ from papercutter.grinding.generator import (
     generate_schema,
 )
 from papercutter.grinding.matrix import (
-    ExtractionMatrix,
     ExtractedValue,
+    ExtractionMatrix,
     PaperExtraction,
 )
 from papercutter.grinding.schema import (

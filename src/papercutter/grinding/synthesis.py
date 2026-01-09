@@ -12,7 +12,6 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from papercutter.grinding.matrix import ExtractionMatrix, PaperExtraction
-from papercutter.grinding.schema import ExtractionSchema
 from papercutter.llm.client import LLMClient, get_client
 
 logger = logging.getLogger(__name__)

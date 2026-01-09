@@ -1,138 +1,100 @@
-Papercutter
-===========
+Papercutter Factory
+===================
 
-**Extract knowledge from academic papers** - A CLI-first Python package for researchers.
+**Automated Evidence Synthesis Pipeline for Research**
+
+Papercutter Factory transforms unstructured PDF collections into structured datasets
+and systematic review reports.
 
 .. code-block:: bash
 
    pip install papercutter
 
-.. note::
-
-   Papercutter replaces the former Papercut project. Existing users should review
-   :ref:`papercut-migration` for instructions on updating configs, caches, and
-   environment variables.
-
 .. grid:: 1 1 2 2
    :gutter: 2
    :class-container: hero-card-grid
 
-   .. grid-item-card:: 🚀 Fetch & Cache
+   .. grid-item-card:: 📥 Ingest
       :class-card: sd-bg-primary sd-text-white sd-shadow-sm sd-rounded-3
 
-      Pull PDFs from arXiv, DOI, SSRN, NBER, or any URL with smart identifier detection,
-      caching, and batch/parallel downloads for large reading lists.
+      Convert PDFs to structured Markdown using Docling. Automatically split
+      large volumes, match BibTeX entries, and track processing status.
 
-   .. grid-item-card:: 📑 Extract Everything
+   .. grid-item-card:: ⚙️ Configure
       :class-card: sd-bg-dark sd-text-white sd-shadow-sm sd-rounded-3
 
-      Clean text chunks, tables, figures, references, and structured document indexes
-      are only a single CLI command away and ready for downstream tooling.
+      Define extraction schemas with typed columns. Auto-generate schemas
+      from sample papers using LLM analysis.
 
-   .. grid-item-card:: 🧠 LLM-Ready Intelligence
+   .. grid-item-card:: 🔬 Grind
       :class-card: sd-bg-secondary sd-text-white sd-shadow-sm sd-rounded-3
 
-      Generate focused summaries, referee reports, study guides, flashcards, and more
-      with pluggable extractors and dependency-injected LLM clients.
+      Extract structured evidence from papers. Pilot mode validates accuracy
+      with source quotes before full execution.
 
-   .. grid-item-card:: 🧩 Python-first API
+   .. grid-item-card:: 📊 Report
       :class-card: sd-bg-light sd-shadow-sm sd-rounded-3
 
-      Compose fetchers, extractors, and cache utilities directly in Python to build
-      custom pipelines, automations, or notebook workflows around papers.
+      Generate CSV datasets and LaTeX/Markdown systematic review documents
+      with summaries, contribution grids, and more.
 
-Features
+Workflow
 --------
 
-Fetch Papers
-~~~~~~~~~~~~
+.. code-block:: bash
 
-Download from arXiv, DOI, SSRN, NBER, or any URL:
+   # 1. Initialize project
+   papercutter init my_review
+   cd my_review
+
+   # 2. Ingest PDFs (with optional BibTeX matching)
+   papercutter ingest ./papers/ --bib references.bib
+
+   # 3. Configure extraction schema
+   papercutter configure
+
+   # 4. Extract evidence
+   papercutter grind --pilot    # Validate on sample
+   papercutter grind --full     # Process all papers
+
+   # 5. Generate outputs
+   papercutter report
+
+   # Check status anytime
+   papercutter status
+
+Project Structure
+-----------------
+
+.. code-block:: text
+
+   my_review/
+   ├── input/                  # Raw PDF repository
+   ├── config.yaml             # Extraction schema
+   ├── .papercutter/           # Internal state (Markdown, inventory)
+   └── output/
+       ├── matrix.csv          # Extracted data for R/Stata/Pandas
+       └── systematic_review.pdf
+
+Installation
+------------
 
 .. code-block:: bash
 
-   papercutter fetch arxiv 2301.00001
-   papercutter fetch doi 10.1257/aer.20180779
-   papercutter fetch ssrn 3550274
-   papercutter fetch url https://example.com/paper.pdf
+   # Basic installation
+   pip install papercutter
 
-Extract Content
-~~~~~~~~~~~~~~~
+   # With Docling (recommended for PDF processing)
+   pip install papercutter[docling]
 
-Pull text, tables, and references from PDFs:
-
-.. code-block:: bash
-
-   # Extract text (with optional page selection)
-   papercutter extract text paper.pdf -p 1-10
-
-   # Extract tables as CSV or JSON
-   papercutter extract tables paper.pdf -f csv -o ./tables/
-
-   # Extract references as BibTeX
-   papercutter extract refs paper.pdf -o refs.bib
-
-Analyze Structure
-~~~~~~~~~~~~~~~~~
-
-Index documents, detect chapters, read by section:
-
-.. code-block:: bash
-
-   # Build document index
-   papercutter index paper.pdf
-
-   # Detect chapters in books
-   papercutter chapters textbook.pdf
-
-   # Read specific sections
-   papercutter read paper.pdf --section "Methods"
-
-AI-Powered Analysis
-~~~~~~~~~~~~~~~~~~~
-
-Summarize papers, generate reports, create study aids (requires ``pip install papercutter[llm]``):
-
-.. code-block:: bash
-
-   # Summarize with focus
-   papercutter summarize paper.pdf --focus methodology
-
-   # Generate referee report
-   papercutter report paper.pdf --template referee
-
-   # Create flashcards from chapter
-   papercutter study textbook.pdf --chapter 5 --mode flashcards
-
-Python API
-~~~~~~~~~~
-
-Full programmatic access for custom workflows:
-
-.. code-block:: python
-
-   from pathlib import Path
-   from papercutter.fetchers.arxiv import ArxivFetcher
-   from papercutter.core.text import TextExtractor
-   from papercutter.extractors.pdfplumber import PdfPlumberExtractor
-
-   # Fetch a paper
-   fetcher = ArxivFetcher()
-   doc = fetcher.fetch("2301.00001", Path("./papers"))
-
-   # Extract text
-   backend = PdfPlumberExtractor()
-   extractor = TextExtractor(backend)
-   text = extractor.extract(doc.path)
+   # With all Factory features
+   pip install papercutter[factory]
 
 Quick Links
 -----------
 
-- :doc:`installation` - Install Papercutter and optional dependencies
+- :doc:`installation` - Install Papercutter and dependencies
 - :doc:`quickstart` - Get started in 5 minutes
-- :doc:`tutorial/index` - CLI tutorials
-- :doc:`tutorial/python/index` - Python API guide
-- :doc:`api/index` - Full API reference
 
 .. toctree::
    :maxdepth: 1
@@ -141,13 +103,6 @@ Quick Links
 
    installation
    quickstart
-
-.. toctree::
-   :maxdepth: 1
-   :caption: Tutorials
-   :hidden:
-
-   tutorial/index
 
 .. toctree::
    :maxdepth: 1
