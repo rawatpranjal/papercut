@@ -165,6 +165,11 @@ pytest --cov=src/papercutter tests/
 - **Type checking**: mypy with Python 3.10 target
 - **Python**: Use `python3` not `python` (macOS compatibility)
 
+## Git Workflow
+
+- Always `git push` after commits
+- Keep local and remote in sync
+
 ## Publishing
 
 ```bash
