@@ -17,6 +17,7 @@
 \definecolor{headerblue}{HTML}{1E3A5F}
 \definecolor{rowgray}{HTML}{F8F9FA}
 \definecolor{textgray}{HTML}{374151}
+\definecolor{categoryblue}{HTML}{E8F4FD}
 
 \hypersetup{colorlinks=true, linkcolor=headerblue, urlcolor=headerblue}
 
@@ -62,7 +63,14 @@
 \hline
 \endfoot
 
+<% set current_category = namespace(value="") %>
 <% for paper in papers %>
+<% if paper.category is defined and paper.category != current_category.value %>
+<% set current_category.value = paper.category %>
+\rowcolor{categoryblue}
+\multicolumn{4}{|l|}{\textbf{\textcolor{headerblue}{<< paper.category | latex_escape >>}}} \\
+\hline
+<% endif %>
 <% if loop.index is odd %>
 \rowcolor{rowgray}
 <% endif %>

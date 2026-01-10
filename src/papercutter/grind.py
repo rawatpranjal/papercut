@@ -363,6 +363,92 @@ GUIDELINES (not rigid structure):
     return response.choices[0].message.content
 
 
+def _categorize_papers(completion_fn: Any, extractions: list[dict]) -> tuple[list[dict], list[dict]]:
+    """Fourth API call: categorize papers into themes for logical ordering.
+
+    This helps organize many papers into natural groupings for the condensed
+    appendix table view.
+
+    Returns:
+        tuple of (papers with category fields, list of category metadata)
+    """
+    if len(extractions) < 2:
+        # No point categorizing 1 paper
+        return extractions, []
+
+    # Build summary for LLM
+    paper_summaries = [
+        {
+            "paper_id": p["paper_id"],
+            "title": p.get("title", ""),
+            "year": p.get("year", ""),
+            "paper_type": p.get("paper_type", ""),
+            "contribution": p.get("contribution", "")[:200],
+            "method": p.get("method", "")[:200],
+        }
+        for p in extractions
+    ]
+
+    prompt = f"""Categorize these {len(extractions)} papers for a literature review.
+
+PAPERS:
+{json.dumps(paper_summaries, indent=2)}
+
+TASK:
+1. Identify 2-5 natural thematic categories (e.g., "Causal Inference", "Labor Economics", "Theory")
+2. Assign each paper to ONE primary category
+3. Order categories logically (foundational topics first, then applications)
+4. Order papers within each category (chronologically by year, oldest first)
+
+Return JSON:
+{{
+  "categories": [
+    {{"name": "Category Name", "description": "1-sentence description of papers in this category"}}
+  ],
+  "assignments": [
+    {{"paper_id": "exact_paper_id", "category": "Exact Category Name", "paper_order": 1}}
+  ]
+}}
+
+IMPORTANT: Use exact paper_id values from the input. Category names must match exactly between categories and assignments."""
+
+    response = completion_fn(
+        model="deepseek/deepseek-chat",
+        messages=[{"role": "user", "content": prompt}],
+        response_format={"type": "json_object"},
+        temperature=0.2,
+    )
+
+    # Parse response
+    import json_repair
+    raw = response.choices[0].message.content
+    result = json_repair.loads(raw)
+
+    categories = result.get("categories", [])
+    assignments = {a["paper_id"]: a for a in result.get("assignments", [])}
+
+    # Add category_order to categories
+    for i, cat in enumerate(categories):
+        cat["category_order"] = i + 1
+
+    # Add category fields to each paper
+    for paper in extractions:
+        assign = assignments.get(paper["paper_id"], {})
+        paper["category"] = assign.get("category", "Uncategorized")
+        paper["paper_order"] = assign.get("paper_order", 99)
+        # Find category_order from category name
+        cat_order = next(
+            (c["category_order"] for c in categories if c["name"] == paper["category"]),
+            99
+        )
+        paper["category_order"] = cat_order
+
+    # Sort papers by category_order, then paper_order
+    extractions.sort(key=lambda p: (p.get("category_order", 99), p.get("paper_order", 99)))
+
+    return extractions, categories
+
+
 def run_extraction() -> None:
     """Extract data fields from all ingested papers using two-step LLM approach."""
     if not _check_litellm():
@@ -607,10 +693,21 @@ def run_extraction() -> None:
         except Exception as e:
             console.print(f"[yellow]Warning:[/yellow] Could not generate executive summary: {e}")
 
-    # Save results with executive summary
+    # STEP 4: Categorize papers for logical ordering in condensed view (fourth API call)
+    categories = []
+    if len(results) >= 2:
+        console.print("Categorizing papers...")
+        try:
+            results, categories = _categorize_papers(completion, results)
+            console.print(f"[green]Organized into {len(categories)} categories[/green]")
+        except Exception as e:
+            console.print(f"[yellow]Warning:[/yellow] Could not categorize papers: {e}")
+
+    # Save results with executive summary and categories
     output_path = project_dir / "extractions.json"
     output = {
         "executive_summary": executive_summary,
+        "categories": categories,
         "papers": results,
     }
     output_path.write_text(json.dumps(output, indent=2, ensure_ascii=False), encoding="utf-8")
@@ -623,4 +720,6 @@ def run_extraction() -> None:
     console.print(f"[green]Extracted:[/green] {len(results)} papers")
     if executive_summary:
         console.print("[green]Executive summary:[/green] included")
+    if categories:
+        console.print(f"[green]Categories:[/green] {len(categories)}")
     console.print(f"[dim]Results saved to:[/dim] {output_path}")
