@@ -1,8 +1,0 @@
-Provide a brief summary of the following academic paper:
-
-{content}
-
-Summarize in 2-3 paragraphs covering:
-- What the paper is about
-- Key findings
-- Main takeaway

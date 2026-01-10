@@ -1,0 +1,129 @@
+\documentclass[10pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[margin=0.75in]{geometry}
+\usepackage{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{parskip}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{amsmath}
+\usepackage{pdflscape}
+\usepackage{tabularx}
+\usepackage{graphicx}
+
+% Colors
+\definecolor{accent}{HTML}{0891B2}
+\definecolor{lightgray}{HTML}{6B7280}
+
+% Configure hyperlinks
+\hypersetup{
+    colorlinks=true,
+    linkcolor=accent,
+    urlcolor=accent,
+}
+
+% Section formatting - compact
+\titleformat{\section}{\large\bfseries}{}{0em}{}
+\titlespacing*{\section}{0pt}{1.5ex}{0.5ex}
+
+% Header/footer
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\textcolor{lightgray}{Literature Review}}
+\fancyhead[R]{\small\textcolor{lightgray}{\today}}
+\fancyfoot[C]{\small\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\setlength{\parskip}{0.4em}
+\setlist[itemize]{nosep, leftmargin=1.5em}
+
+\title{\textbf{<< title | latex_escape >>}}
+\author{}
+\date{<< paper_count >> papers analyzed $\cdot$ \today}
+
+\begin{document}
+
+\maketitle
+\thispagestyle{empty}
+
+<% if executive_summary %>
+\section*{Executive Summary}
+\addcontentsline{toc}{section}{Executive Summary}
+
+<< executive_summary | markdown_to_latex >>
+
+\newpage
+<% endif %>
+
+\tableofcontents
+\newpage
+
+<% for paper in papers %>
+\section{<< paper.title | latex_escape | truncate(75) >>}
+\textit{<< paper.authors | latex_escape >>} (<< paper.year | latex_escape >>) \hfill \textsc{\small << paper.paper_type | latex_escape >>}
+
+\vspace{0.3em}
+\hrule
+\vspace{0.8em}
+
+\textbf{Context.} << paper.context | latex_escape >>
+
+<% if paper.golden_quote %>
+\begin{quote}
+\textit{``<< paper.golden_quote | latex_escape >>''}
+\end{quote}
+<% endif %>
+
+<% if paper.prior_work %>
+\textbf{Prior Work.} << paper.prior_work | latex_escape >>
+
+<% endif %>
+\textbf{Method.} << paper.method | preserve_latex_math >>
+
+<% if paper.key_equations %>
+\textbf{Key Equation.} << paper.key_equations >>
+<% if paper.notation %>
+\\\textit{where << paper.notation | preserve_latex_math >>}
+<% endif %>
+
+<% endif %>
+\textbf{Results.} << paper.results | preserve_latex_math >>
+
+<% if paper.key_visual_explanation %>
+\vspace{0.5em}
+\textbf{Key Visual} (<< paper.key_figure_ref | latex_escape >>). << paper.key_visual_explanation | latex_escape >>
+<% if paper.key_visual_path %>
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.5\textwidth]{<< paper.key_visual_path >>}
+\caption{<< paper.key_figure_description | latex_escape >>}
+\end{figure}
+<% endif %>
+<% endif %>
+
+<% if paper.data_description %>
+\textbf{Data.} << paper.data_description | latex_escape >>
+
+<% endif %>
+<% if paper.contribution %>
+\textbf{Contribution.} << paper.contribution | latex_escape >>
+
+<% endif %>
+<% if paper.applications %>
+\textbf{Applications.} << paper.applications | latex_escape >>
+
+<% endif %>
+<% if paper.limitations %>
+\textbf{Limitations.} << paper.limitations | latex_escape >>
+
+<% endif %>
+\newpage
+<% endfor %>
+
+\end{document}

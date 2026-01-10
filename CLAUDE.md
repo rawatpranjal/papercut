@@ -1,199 +1,79 @@
-# CLAUDE.md - Papercutter Factory
+# CLAUDE.md - Papercutter
 
 ## Overview
 
-**Papercutter Factory** is a CLI pipeline for automated evidence synthesis in systematic literature reviews. It transforms unstructured PDF collections into structured datasets and reports.
+PDF to Data Factory: Extract structured data from academic papers.
 
 **Entry point**: `papercutter` CLI (or `python3 -m papercutter`)
 
-**Version**: 2.0.2 (PyPI aligned)
+**Version**: 3.0.0
 
 ## Project Structure
 
 ```
 src/papercutter/
-├── cli/                    # Typer CLI commands
-│   ├── app.py              # Main CLI app
-│   ├── init_cmd.py         # papercutter init
-│   ├── ingest_cmd.py       # papercutter ingest
-│   ├── configure_cmd.py    # papercutter configure
-│   ├── grind_cmd.py        # papercutter grind
-│   ├── factory_report_cmd.py  # papercutter report
-│   ├── status_cmd.py       # papercutter status
-│   └── utils.py            # Shared CLI utilities
-├── ingest/                 # PDF processing pipeline
-│   ├── pipeline.py         # Main IngestPipeline orchestrator
-│   ├── splitter.py         # Sawmill - splits large PDFs into chapters
-│   ├── matcher.py          # BibTeX matching logic
-│   ├── docling_wrapper.py  # Docling PDF-to-Markdown conversion
-│   ├── ocr_fallback.py     # Fallback when Docling fails
-│   └── fetchers/           # Paper downloading (arXiv, DOI, etc.)
-├── grinding/               # LLM-based extraction
-│   ├── extractor.py        # Evidence extraction via LLM
-│   ├── schema.py           # ExtractionSchema definition
-│   ├── generator.py        # Auto-generate schemas from papers
-│   ├── matrix.py           # ExtractionMatrix results storage
-│   └── synthesis.py        # Summary generation
-├── project/                # Project state management
-│   ├── manager.py          # ProjectManager lifecycle
-│   ├── inventory.py        # ProjectInventory tracking
-│   └── state.py            # Config models (YAML-based)
-├── reporting/              # Output generation
-│   └── builder.py          # ReportBuilder (LaTeX/Markdown)
-├── llm/                    # LLM integration
-│   ├── client.py           # LiteLLM wrapper (multi-provider)
-│   ├── prompts.py          # Prompt templates
-│   └── schemas.py          # Response schemas
-├── config/                 # Configuration
-│   └── settings.py         # Pydantic settings
-├── extractors/             # PDF extraction (for OCR fallback)
-│   └── pdfplumber.py       # PdfPlumber implementation
-├── output/                 # Output formatting
-│   └── formatter.py        # JSON/pretty formatting
-├── utils/                  # Shared utilities
-├── legacy/                 # Old v1.x code (preserved, not active)
-├── __init__.py
-├── __main__.py
-├── api.py
-└── exceptions.py
+├── __init__.py      # Version and exports
+├── __main__.py      # Entry point
+├── cli.py           # Typer CLI (4 commands)
+├── project.py       # Inventory management
+├── ingest.py        # Docling PDF processing
+├── grind.py         # LLM extraction
+├── report.py        # CSV + PDF generation
+└── templates/
+    └── review.tex.j2
 ```
 
 ## CLI Commands
 
 ```bash
-# Initialize a new project
-papercutter init my_project
-
-# Process PDFs (split, match BibTeX, convert to Markdown)
-papercutter ingest ./pdfs/ --bib references.bib
-
-# Define extraction schema
-papercutter configure
-
-# Extract evidence (pilot or full)
-papercutter grind --pilot
-papercutter grind --full
-
-# Generate report
-papercutter report
-
-# Check project status
-papercutter status
+papercutter ingest ./pdfs/    # PDF → Markdown + Tables
+papercutter configure         # Generate columns.yaml schema
+papercutter grind             # Extract data via LLM
+papercutter report            # Generate matrix.csv + review.pdf
 ```
 
-## Development Workflow
+## Installation
 
 ```bash
-# Install in development mode
-pip3 install -e ".[dev]"
-
-# Install with Docling (PDF processing)
-pip3 install -e ".[docling]"
-
-# Install with Factory features
-pip3 install -e ".[factory]"
-
-# Install all
-pip3 install -e ".[dev,docling,factory,llm]"
+pip install papercutter[full]  # All features (docling + llm + reports)
 ```
 
-### Using the Makefile
+## Pipeline
 
-```bash
-make install-dev   # Install with dev dependencies
-make test          # Run tests
-make lint          # Run ruff linter
-make typecheck     # Run mypy
-make check         # Run lint + typecheck + test
-```
-
-## Pipeline Architecture
-
-### 1. Ingest Phase
-- `IngestPipeline` scans directories for PDFs
-- `Splitter` (Sawmill) detects and splits large volumes (500+ pages)
-- `BibTeXMatcher` links PDFs to citations via fuzzy title matching
-- `DoclingWrapper` converts PDFs to structured Markdown
-- `OCRFallback` uses PdfPlumber when Docling fails
-
-### 2. Configure Phase
-- `SchemaGenerator` analyzes paper abstracts
-- Proposes extraction schema via LLM
-- User refines `config.yaml` with typed columns
-
-### 3. Grind Phase
-- `Extractor` processes papers through LLM
-- Pilot mode: random sample with source quotes for validation
-- Full mode: process all papers idempotently
-- `ExtractionMatrix` stores results
-
-### 4. Report Phase
-- `ReportBuilder` generates LaTeX or Markdown
-- Outputs: `matrix.csv` (data) + `systematic_review.pdf` (document)
+1. **ingest**: Docling converts PDFs to Markdown + extracts tables as JSON
+2. **configure**: LLM samples papers and proposes extraction schema
+3. **grind**: LLM extracts fields from each paper → extractions.json
+4. **report**: Generates matrix.csv (for R/Stata) + review.pdf (Evidence Dossier)
 
 ## Configuration
 
-Project config: `config.yaml` in project root
-Global config: `~/.papercutter/config.yaml`
-
-Environment variables:
-```bash
-export OPENAI_API_KEY=sk-...
-export ANTHROPIC_API_KEY=sk-ant-...
-```
-
-## Testing
-
-```bash
-pytest tests/
-pytest --cov=src/papercutter tests/
-```
+- `columns.yaml`: Define fields to extract (generated by configure)
+- `inventory.json`: Tracks paper processing status
+- `OPENAI_API_KEY` env var for LLM features
 
 ## Dependencies
 
-**Core**: typer, pdfplumber, pypdf, httpx, pydantic, pyyaml, rich
+**Core**: typer, pypdf, pydantic, pyyaml, rich, json-repair
 
 **Optional**:
-- `docling` - IBM's PDF-to-Markdown converter
-- `litellm` - Multi-provider LLM support
-- `jinja2` - Report templating
+- `docling` - PDF processing
+- `litellm` - LLM provider abstraction
+- `jinja2` - PDF report templating
 
-## Code Style
+## Development
 
-- **Line length**: 100 characters
-- **Linter**: Ruff (E, W, F, I, B, UP, RUF rules)
-- **Type checking**: mypy with Python 3.10 target
-- **Python**: Use `python3` not `python` (macOS compatibility)
+```bash
+pip3 install -e ".[dev,full]"
+```
+
+Use `python3` not `python` (macOS compatibility)
 
 ## Git Workflow
 
-- Always `git push` after commits
-- Keep local and remote in sync
+Always `git push` after commits
 
 ## Publishing
 
 ```bash
-# Build
-python3 -m build
-
-# Upload to PyPI (token saved in ~/.pypirc)
-python3 -m twine upload dist/*
+python3 -m build && python3 -m twine upload dist/*
 ```
-
-Versioning policy:
-- PATCH (2.0.x): Bug fixes, minor improvements
-- MINOR (2.x.0): New features
-- MAJOR (x.0.0): Breaking changes
-
-## File Locations Reference
-
-| Purpose | Location |
-|---------|----------|
-| Main CLI app | `src/papercutter/cli/app.py` |
-| Ingest pipeline | `src/papercutter/ingest/pipeline.py` |
-| Evidence extractor | `src/papercutter/grinding/extractor.py` |
-| Project manager | `src/papercutter/project/manager.py` |
-| Report builder | `src/papercutter/reporting/builder.py` |
-| LLM client | `src/papercutter/llm/client.py` |
-| Settings | `src/papercutter/config/settings.py` |
-| Exceptions | `src/papercutter/exceptions.py` |

@@ -4,8 +4,8 @@ build-backend = "hatchling.build"
 
 [project]
 name = "papercutter"
-version = "2.0.2"
-description = "Automated evidence synthesis pipeline for systematic literature reviews"
+version = "3.0.0"
+description = "PDF to Data Factory: Extract structured data from academic papers"
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.10"
@@ -14,7 +14,7 @@ authors = [
 ]
 keywords = ["pdf", "systematic-review", "evidence-synthesis", "research", "llm", "docling"]
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 4 - Beta",
     "Environment :: Console",
     "Intended Audience :: Science/Research",
     "License :: OSI Approved :: MIT License",
@@ -28,58 +28,27 @@ classifiers = [
 
 dependencies = [
     "typer[all]>=0.12.0",
-    "pdfplumber>=0.11.0",
     "pypdf>=4.0.0",
-    "arxiv>=2.1.0",
-    "httpx>=0.27.0",
     "pydantic>=2.5.0",
-    "pydantic-settings>=2.1.0",
     "pyyaml>=6.0",
     "rich>=13.0.0",
-    "bibtexparser>=1.4.0",
-    "certifi>=2023.0.0",
+    "json-repair>=0.30.0",
 ]
 
 [project.optional-dependencies]
-fast = [
-    "pymupdf>=1.24.0",
-]
-llm = [
-    "litellm>=1.30.0",
-    "instructor>=1.0.0",
-]
-docling = [
-    "docling>=2.0.0",
-]
-factory = [
-    "jinja2>=3.0.0",
-    "thefuzz>=0.22.0",
-    "papercutter[docling,llm]",
-]
-equations = [
-    "pymupdf>=1.24.0",
-    "pillow>=10.0.0",
-]
-equations-nougat = [
-    "papercutter[equations]",
-    "transformers>=4.30.0",
-    "torch>=2.0.0",
-]
-equations-pix2tex = [
-    "papercutter[equations]",
-    "pix2tex>=0.1.0",
-]
+docling = ["docling>=2.0.0"]
+llm = ["litellm>=1.30.0"]
+report = ["jinja2>=3.0.0"]
+full = ["papercutter[docling,llm,report]"]
 dev = [
     "pytest>=8.0.0",
     "pytest-cov>=4.0.0",
-    "pytest-timeout>=2.0.0",
     "ruff>=0.3.0",
     "mypy>=1.8.0",
 ]
-all = ["papercutter[fast,llm,equations,factory,dev]"]
 
 [project.scripts]
-papercutter = "papercutter.cli.app:app"
+papercutter = "papercutter.cli:app"
 
 [project.urls]
 Homepage = "https://github.com/rawatpranjal/papercutter"
@@ -93,7 +62,7 @@ exclude = [
     "archive/",
     "docs/",
     "input/",
-    "tests/downloads/",
+    "tests/",
     "*.pdf",
 ]
 
@@ -114,13 +83,9 @@ warn_return_any = true
 warn_unused_ignores = true
 
 [[tool.mypy.overrides]]
-module = ["pdfplumber.*", "arxiv.*", "bibtexparser.*", "fitz.*", "transformers.*", "torch.*", "pix2tex.*", "docling.*", "jinja2.*"]
+module = ["docling.*", "docling_core.*", "litellm.*", "jinja2.*"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["src"]
-
-[tool.coverage.run]
-source = ["src/papercutter"]
-branch = true
