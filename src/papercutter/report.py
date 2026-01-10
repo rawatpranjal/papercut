@@ -350,7 +350,9 @@ BUILTIN_TEMPLATE = r"""\documentclass[10pt]{article}
 
 \textbf{Context.} << paper.context | latex_escape >>
 
-<% if paper.golden_quote %>
+<% if paper.core_mechanism %>\textbf{Core Mechanism.} << paper.core_mechanism | latex_escape >>
+
+<% endif %><% if paper.golden_quote %>
 \begin{quote}
 \textit{``<< paper.golden_quote | latex_escape >>''}
 \end{quote}
@@ -391,3 +393,127 @@ BUILTIN_TEMPLATE = r"""\documentclass[10pt]{article}
 
 \end{document}
 """
+
+
+def build_condensed() -> None:
+    """Generate condensed appendix table from extractions."""
+    project_dir = Path.cwd()
+
+    # Load extractions
+    extractions_path = project_dir / "extractions.json"
+    if not extractions_path.exists():
+        console.print("[red]Error:[/red] No extractions.json found. Run 'papercutter grind' first.")
+        return
+
+    data = json.loads(extractions_path.read_text(encoding="utf-8"))
+
+    # Handle both old format (list) and new format (dict with executive_summary)
+    if isinstance(data, list):
+        extractions = data
+    else:
+        extractions = data.get("papers", [])
+
+    if not extractions:
+        console.print("[yellow]Warning:[/yellow] No extractions to report")
+        return
+
+    # Create output directory
+    output_dir = project_dir / "output"
+    output_dir.mkdir(exist_ok=True)
+
+    # Build condensed CSV
+    csv_path = output_dir / "appendix.csv"
+    build_condensed_csv(extractions, csv_path)
+
+    # Build condensed PDF
+    pdf_path = output_dir / "appendix.pdf"
+    build_condensed_pdf(extractions, pdf_path)
+
+    console.print()
+    console.print("[bold green]Condensed appendix complete![/bold green]")
+    console.print(f"  CSV:  {csv_path}")
+    console.print(f"  PDF:  {pdf_path}")
+
+
+def build_condensed_csv(extractions: list[dict], output_path: Path) -> None:
+    """Export condensed 4-column CSV."""
+    fieldnames = ["paper", "rq_context", "methods_data", "results", "contribution"]
+
+    with open(output_path, "w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer.writeheader()
+
+        for e in extractions:
+            row = {
+                "paper": f"{e.get('authors', 'Unknown')} ({e.get('year', 'n.d.')})",
+                "rq_context": e.get("condensed_rq", e.get("context", "")[:100]),
+                "methods_data": e.get("condensed_method", e.get("method", "")[:150]),
+                "results": e.get("condensed_result", e.get("results", "")[:100]),
+                "contribution": e.get("condensed_contribution", e.get("contribution", "")[:100]),
+            }
+            writer.writerow(row)
+
+    console.print(f"[green]CSV saved:[/green] {output_path}")
+
+
+def build_condensed_pdf(extractions: list[dict], output_path: Path) -> None:
+    """Generate condensed LaTeX table and compile to PDF."""
+    if not _check_jinja2():
+        console.print("[yellow]Warning:[/yellow] Jinja2 not installed. Skipping PDF generation.")
+        return
+
+    from jinja2 import Environment, FileSystemLoader
+
+    template_dir = Path(__file__).parent / "templates"
+
+    env = Environment(
+        loader=FileSystemLoader(str(template_dir)),
+        block_start_string="<%",
+        block_end_string="%>",
+        variable_start_string="<<",
+        variable_end_string=">>",
+    )
+    env.filters["latex_escape"] = latex_escape
+
+    try:
+        template = env.get_template("appendix.tex.j2")
+    except Exception:
+        console.print("[red]Error:[/red] appendix.tex.j2 template not found")
+        return
+
+    rendered = template.render(
+        paper_count=len(extractions),
+        papers=extractions,
+    )
+
+    tex_path = output_path.with_suffix(".tex")
+    tex_path.write_text(rendered, encoding="utf-8")
+    console.print(f"[dim]LaTeX saved:[/dim] {tex_path}")
+
+    # Compile PDF
+    try:
+        for _ in range(2):
+            subprocess.run(
+                ["pdflatex", "-interaction=nonstopmode", "-halt-on-error", tex_path.name],
+                cwd=output_path.parent,
+                capture_output=True,
+                timeout=120,
+            )
+
+        if output_path.exists():
+            console.print(f"[green]PDF saved:[/green] {output_path}")
+        else:
+            console.print("[yellow]Warning:[/yellow] PDF compilation may have failed")
+
+        # Clean up auxiliary files
+        for ext in [".aux", ".log", ".out"]:
+            aux_file = output_path.with_suffix(ext)
+            if aux_file.exists():
+                aux_file.unlink()
+
+    except FileNotFoundError:
+        console.print("[yellow]Warning:[/yellow] pdflatex not found. PDF not compiled.")
+    except subprocess.TimeoutExpired:
+        console.print("[yellow]Warning:[/yellow] PDF compilation timed out")
+    except Exception as e:
+        console.print(f"[yellow]Warning:[/yellow] PDF compilation failed: {e}")

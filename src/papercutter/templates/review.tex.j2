@@ -74,6 +74,10 @@
 
 \textbf{Context.} << paper.context | latex_escape >>
 
+<% if paper.core_mechanism %>
+\textbf{Core Mechanism.} << paper.core_mechanism | preserve_latex_math >>
+
+<% endif %>
 <% if paper.golden_quote %>
 \begin{quote}
 \textit{``<< paper.golden_quote | latex_escape >>''}

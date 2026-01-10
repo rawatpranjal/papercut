@@ -167,6 +167,18 @@ SECTION_INSTRUCTIONS = {
     "context": """Research question and headline finding. ~80 words.
 What problem? What approach? What's the punchline?""",
 
+    "core_mechanism": """What is the key mechanism/insight? ~100 words.
+Explain the core idea as if to a colleague over coffee.
+- What's the main causal channel or theoretical mechanism?
+- Why does X lead to Y? What's the intuition?
+- What makes this paper's approach clever or novel?
+
+Example: "The paper exploits the fact that minimum wage increases
+create a natural experiment. NJ raised wages while PA didn't, so
+comparing employment changes across the border identifies the causal
+effect. The key insight is using within-chain variation to control
+for demand shocks." """,
+
     "prior_work": """What gap does this fill? ~60 words of prose.
 What did prior work establish? What was missing? How does this paper address it?""",
 
@@ -221,6 +233,19 @@ When should you trust/not trust these findings?""",
 What does it show? Key numbers from it?
 DO NOT mention page numbers. Match the figure/table ref from metadata.
 Return null if key_figure_ref was not identified.""",
+
+    # Condensed fields for appendix table view
+    "condensed_rq": """Research question in 1 sentence. What problem does this solve?
+Example: "Do minimum wage increases reduce employment?" """,
+
+    "condensed_method": """Method + data in 2 sentences max. How do they identify the effect?
+Example: "DiD comparing NJ vs PA fast-food restaurants before/after NJ minimum wage increase. N=410 stores." """,
+
+    "condensed_result": """Key result with numbers in 1 sentence.
+Example: "Employment increased by 2.76 FTE (13%) in NJ vs PA, SE=1.19." """,
+
+    "condensed_contribution": """Main contribution in 1 sentence.
+Example: "First natural experiment evidence on minimum wage using establishment-level data." """,
 }
 
 
@@ -392,7 +417,12 @@ def run_extraction() -> None:
 
             # Ensure mandatory sections are always included (Morning Paper style)
             sections_to_extract = plan.get("sections_to_extract", [])
-            mandatory = ["context", "method", "results", "contribution", "golden_quote", "limitations"]
+            mandatory = [
+                "context", "core_mechanism", "method", "results",
+                "contribution", "golden_quote", "limitations",
+                # Condensed fields for appendix view
+                "condensed_rq", "condensed_method", "condensed_result", "condensed_contribution"
+            ]
             for m in mandatory:
                 if m not in sections_to_extract:
                     sections_to_extract.append(m)
@@ -443,6 +473,9 @@ def run_extraction() -> None:
             }
 
             # Add optional sections only if present and meaningful
+            if sections.get("core_mechanism"):
+                result["core_mechanism"] = sections["core_mechanism"]
+
             if sections.get("prior_work"):
                 result["prior_work"] = sections["prior_work"]
 
@@ -451,6 +484,16 @@ def run_extraction() -> None:
 
             if sections.get("contribution"):
                 result["contribution"] = sections["contribution"]
+
+            # Add condensed fields for appendix view
+            if sections.get("condensed_rq"):
+                result["condensed_rq"] = sections["condensed_rq"]
+            if sections.get("condensed_method"):
+                result["condensed_method"] = sections["condensed_method"]
+            if sections.get("condensed_result"):
+                result["condensed_result"] = sections["condensed_result"]
+            if sections.get("condensed_contribution"):
+                result["condensed_contribution"] = sections["condensed_contribution"]
 
             # Add golden quote (Morning Paper style)
             if sections.get("golden_quote"):

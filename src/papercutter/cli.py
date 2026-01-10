@@ -50,11 +50,19 @@ def grind() -> None:
 
 
 @app.command()
-def report() -> None:
+def report(
+    condensed: Annotated[
+        bool,
+        typer.Option("--condensed", "-c", help="Generate condensed table for appendix")
+    ] = False,
+) -> None:
     """Generate matrix.csv and review.pdf from extractions."""
-    from papercutter.report import build_report
+    from papercutter.report import build_report, build_condensed
 
-    build_report()
+    if condensed:
+        build_condensed()
+    else:
+        build_report()
 
 
 if __name__ == "__main__":

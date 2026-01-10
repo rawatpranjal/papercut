@@ -1,0 +1,62 @@
+\documentclass[10pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[margin=0.5in, landscape]{geometry}
+\usepackage{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+
+\definecolor{accent}{HTML}{0891B2}
+\definecolor{lightgray}{HTML}{6B7280}
+
+\hypersetup{colorlinks=true, linkcolor=accent, urlcolor=accent}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\textcolor{lightgray}{Literature Review - Appendix}}
+\fancyhead[R]{\small\textcolor{lightgray}{\today}}
+\fancyfoot[C]{\small\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\title{\textbf{Literature Summary Table}}
+\author{}
+\date{<< paper_count >> papers $\cdot$ \today}
+
+\begin{document}
+
+\maketitle
+\thispagestyle{empty}
+
+\vspace{-1em}
+
+\begin{longtable}{|p{4cm}|p{5.5cm}|p{5.5cm}|p{5cm}|}
+\hline
+\textbf{Paper / Research Question} & \textbf{Methods \& Data} & \textbf{Results} & \textbf{Contribution} \\
+\hline
+\endfirsthead
+
+\hline
+\textbf{Paper / Research Question} & \textbf{Methods \& Data} & \textbf{Results} & \textbf{Contribution} \\
+\hline
+\endhead
+
+\hline
+\endfoot
+
+<% for paper in papers %>
+\textbf{<< paper.authors | latex_escape >>} (<< paper.year | latex_escape >>) \newline
+\textit{<< paper.condensed_rq | latex_escape >>} &
+<< paper.condensed_method | latex_escape >> &
+<< paper.condensed_result | latex_escape >> &
+<< paper.condensed_contribution | latex_escape >> \\
+\hline
+<% endfor %>
+
+\end{longtable}
+
+\end{document}
