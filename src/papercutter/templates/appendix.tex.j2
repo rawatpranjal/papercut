@@ -1,29 +1,33 @@
-\documentclass[10pt]{article}
+\documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
-\usepackage[margin=0.5in, landscape]{geometry}
+\usepackage[margin=0.4in, landscape]{geometry}
 \usepackage{helvet}
 \renewcommand{\familydefault}{\sfdefault}
 \usepackage{longtable}
 \usepackage{booktabs}
 \usepackage{array}
+\usepackage{colortbl}
 \usepackage{hyperref}
 \usepackage{xcolor}
 \usepackage{fancyhdr}
+\usepackage{amsmath}
 
-\definecolor{accent}{HTML}{0891B2}
-\definecolor{lightgray}{HTML}{6B7280}
+% Colors
+\definecolor{headerblue}{HTML}{1E3A5F}
+\definecolor{rowgray}{HTML}{F8F9FA}
+\definecolor{textgray}{HTML}{374151}
 
-\hypersetup{colorlinks=true, linkcolor=accent, urlcolor=accent}
+\hypersetup{colorlinks=true, linkcolor=headerblue, urlcolor=headerblue}
 
 \pagestyle{fancy}
 \fancyhf{}
-\fancyhead[L]{\small\textcolor{lightgray}{Literature Review - Appendix}}
-\fancyhead[R]{\small\textcolor{lightgray}{\today}}
+\fancyhead[L]{\small\textcolor{textgray}{Literature Summary}}
+\fancyhead[R]{\small\textcolor{textgray}{\today}}
 \fancyfoot[C]{\small\thepage}
 \renewcommand{\headrulewidth}{0.4pt}
 
-\title{\textbf{Literature Summary Table}}
+\title{\textbf{\color{headerblue}Literature Summary}}
 \author{}
 \date{<< paper_count >> papers $\cdot$ \today}
 
@@ -32,16 +36,26 @@
 \maketitle
 \thispagestyle{empty}
 
-\vspace{-1em}
+\vspace{-0.5em}
 
-\begin{longtable}{|p{4cm}|p{5.5cm}|p{5.5cm}|p{5cm}|}
+\renewcommand{\arraystretch}{1.4}
+\begin{longtable}{|p{5.5cm}|p{5cm}|p{5cm}|p{4.5cm}|}
+
 \hline
-\textbf{Paper / Research Question} & \textbf{Methods \& Data} & \textbf{Results} & \textbf{Contribution} \\
+\rowcolor{headerblue}
+\textcolor{white}{\textbf{Paper}} &
+\textcolor{white}{\textbf{Theory \& Data}} &
+\textcolor{white}{\textbf{Estimation}} &
+\textcolor{white}{\textbf{Results}} \\
 \hline
 \endfirsthead
 
 \hline
-\textbf{Paper / Research Question} & \textbf{Methods \& Data} & \textbf{Results} & \textbf{Contribution} \\
+\rowcolor{headerblue}
+\textcolor{white}{\textbf{Paper}} &
+\textcolor{white}{\textbf{Theory \& Data}} &
+\textcolor{white}{\textbf{Estimation}} &
+\textcolor{white}{\textbf{Results}} \\
 \hline
 \endhead
 
@@ -49,11 +63,13 @@
 \endfoot
 
 <% for paper in papers %>
-\textbf{<< paper.authors | latex_escape >>} (<< paper.year | latex_escape >>) \newline
-\textit{<< paper.condensed_rq | latex_escape >>} &
-<< paper.condensed_method | latex_escape >> &
-<< paper.condensed_result | latex_escape >> &
-<< paper.condensed_contribution | latex_escape >> \\
+<% if loop.index is odd %>
+\rowcolor{rowgray}
+<% endif %>
+\textbf{<< paper.authors | latex_escape >>} (<< paper.year | latex_escape >>) says << paper.condensed_says | latex_escape >> &
+<< paper.condensed_theory_data | latex_escape >> &
+<< paper.condensed_estimation | preserve_latex_math >> &
+<< paper.condensed_result | preserve_latex_math >> \\
 \hline
 <% endfor %>
 

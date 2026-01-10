@@ -284,10 +284,10 @@ def build_pdf(
         console.print(f"[yellow]Warning:[/yellow] PDF compilation failed: {e}")
 
 
-BUILTIN_TEMPLATE = r"""\documentclass[10pt]{article}
+BUILTIN_TEMPLATE = r"""\documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
-\usepackage[margin=0.75in]{geometry}
+\usepackage[margin=0.6in]{geometry}
 \usepackage{helvet}
 \renewcommand{\familydefault}{\sfdefault}
 \usepackage{longtable}
@@ -303,14 +303,22 @@ BUILTIN_TEMPLATE = r"""\documentclass[10pt]{article}
 \usepackage{tabularx}
 \usepackage{graphicx}
 
-\definecolor{accent}{HTML}{0891B2}
+% Colors
+\definecolor{accent}{HTML}{1E3A5F}
 \definecolor{lightgray}{HTML}{6B7280}
 
-\hypersetup{colorlinks=true, linkcolor=accent, urlcolor=accent}
+% Configure hyperlinks
+\hypersetup{
+    colorlinks=true,
+    linkcolor=accent,
+    urlcolor=accent,
+}
 
-\titleformat{\section}{\large\bfseries}{}{0em}{}
-\titlespacing*{\section}{0pt}{1.5ex}{0.5ex}
+% Section formatting - colored, compact
+\titleformat{\section}{\large\bfseries\color{accent}}{}{0em}{}
+\titlespacing*{\section}{0pt}{1ex}{0.3ex}
 
+% Header/footer
 \pagestyle{fancy}
 \fancyhf{}
 \fancyhead[L]{\small\textcolor{lightgray}{Literature Review}}
@@ -318,10 +326,10 @@ BUILTIN_TEMPLATE = r"""\documentclass[10pt]{article}
 \fancyfoot[C]{\small\thepage}
 \renewcommand{\headrulewidth}{0.4pt}
 
-\setlength{\parskip}{0.4em}
+\setlength{\parskip}{0.3em}
 \setlist[itemize]{nosep, leftmargin=1.5em}
 
-\title{\textbf{<< title | latex_escape >>}}
+\title{\textbf{\color{accent}<< title | latex_escape >>}}
 \author{}
 \date{<< paper_count >> papers analyzed $\cdot$ \today}
 
@@ -334,7 +342,7 @@ BUILTIN_TEMPLATE = r"""\documentclass[10pt]{article}
 \section*{Executive Summary}
 \addcontentsline{toc}{section}{Executive Summary}
 
-<< executive_summary | latex_escape >>
+<< executive_summary | markdown_to_latex >>
 
 \newpage
 <% endif %>
@@ -346,49 +354,67 @@ BUILTIN_TEMPLATE = r"""\documentclass[10pt]{article}
 \section{<< paper.title | latex_escape | truncate(75) >>}
 \textit{<< paper.authors | latex_escape >>} (<< paper.year | latex_escape >>) \hfill \textsc{\small << paper.paper_type | latex_escape >>}
 
-\vspace{0.3em}\hrule\vspace{0.8em}
+\vspace{0.2em}
+\hrule
+\vspace{0.5em}
 
 \textbf{Context.} << paper.context | latex_escape >>
 
-<% if paper.core_mechanism %>\textbf{Core Mechanism.} << paper.core_mechanism | latex_escape >>
+<% if paper.core_mechanism %>
+\textbf{Core Mechanism.} << paper.core_mechanism | preserve_latex_math >>
 
-<% endif %><% if paper.golden_quote %>
+<% endif %>
+<% if paper.golden_quote %>
 \begin{quote}
 \textit{``<< paper.golden_quote | latex_escape >>''}
 \end{quote}
 <% endif %>
 
-<% if paper.prior_work %>\textbf{Prior Work.} << paper.prior_work | latex_escape >>
+<% if paper.prior_work %>
+\textbf{Prior Work.} << paper.prior_work | latex_escape >>
 
-<% endif %>\textbf{Method.} << paper.method | latex_escape >>
+<% endif %>
+\textbf{Method.} << paper.method | preserve_latex_math >>
 
-<% if paper.key_equations %>\textbf{Key Equation.} << paper.key_equations >>
-<% if paper.notation %>\\textit{where << paper.notation | latex_escape >>}
+<% if paper.key_equations %>
+\textbf{Key Equation.} << paper.key_equations >>
+<% if paper.notation %>
+
+\textit{where << paper.notation | preserve_latex_math >>}
 <% endif %>
 
-<% endif %>\textbf{Results.} << paper.results | latex_escape >>
+<% endif %>
+\textbf{Results.} << paper.results | preserve_latex_math >>
 
 <% if paper.key_visual_explanation %>
-\vspace{0.5em}
+\vspace{0.3em}
 \textbf{Key Visual} (<< paper.key_figure_ref | latex_escape >>). << paper.key_visual_explanation | latex_escape >>
 <% if paper.key_visual_path %>
 \begin{figure}[h]
 \centering
-\includegraphics[width=0.7\textwidth]{<< paper.key_visual_path >>}
+\includegraphics[width=0.5\textwidth]{<< paper.key_visual_path >>}
 \caption{<< paper.key_figure_description | latex_escape >>}
 \end{figure}
 <% endif %>
 <% endif %>
 
-<% if paper.data_description %>\textbf{Data.} << paper.data_description | latex_escape >>
+<% if paper.data_description %>
+\textbf{Data.} << paper.data_description | latex_escape >>
 
-<% endif %><% if paper.contribution %>\textbf{Contribution.} << paper.contribution | latex_escape >>
+<% endif %>
+<% if paper.contribution %>
+\textbf{Contribution.} << paper.contribution | latex_escape >>
 
-<% endif %><% if paper.applications %>\textbf{Applications.} << paper.applications | latex_escape >>
+<% endif %>
+<% if paper.applications %>
+\textbf{Applications.} << paper.applications | latex_escape >>
 
-<% endif %><% if paper.limitations %>\textbf{Limitations.} << paper.limitations | latex_escape >>
+<% endif %>
+<% if paper.limitations %>
+\textbf{Limitations.} << paper.limitations | latex_escape >>
 
-<% endif %>\newpage
+<% endif %>
+\newpage
 <% endfor %>
 
 \end{document}
@@ -436,20 +462,25 @@ def build_condensed() -> None:
 
 
 def build_condensed_csv(extractions: list[dict], output_path: Path) -> None:
-    """Export condensed 4-column CSV."""
-    fieldnames = ["paper", "rq_context", "methods_data", "results", "contribution"]
+    """Export condensed 4-column CSV matching appendix table format."""
+    fieldnames = ["paper", "theory_data", "estimation", "results"]
 
     with open(output_path, "w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         writer.writeheader()
 
         for e in extractions:
+            # Build "Author (Year) says..." column
+            authors = e.get("authors", "Unknown")
+            year = e.get("year", "n.d.")
+            says = e.get("condensed_says", e.get("contribution", "")[:150])
+            paper_col = f"{authors} ({year}) says {says}"
+
             row = {
-                "paper": f"{e.get('authors', 'Unknown')} ({e.get('year', 'n.d.')})",
-                "rq_context": e.get("condensed_rq", e.get("context", "")[:100]),
-                "methods_data": e.get("condensed_method", e.get("method", "")[:150]),
+                "paper": paper_col,
+                "theory_data": e.get("condensed_theory_data", e.get("context", "")[:100]),
+                "estimation": e.get("condensed_estimation", e.get("method", "")[:150]),
                 "results": e.get("condensed_result", e.get("results", "")[:100]),
-                "contribution": e.get("condensed_contribution", e.get("contribution", "")[:100]),
             }
             writer.writerow(row)
 
@@ -474,6 +505,7 @@ def build_condensed_pdf(extractions: list[dict], output_path: Path) -> None:
         variable_end_string=">>",
     )
     env.filters["latex_escape"] = latex_escape
+    env.filters["preserve_latex_math"] = preserve_latex_math
 
     try:
         template = env.get_template("appendix.tex.j2")

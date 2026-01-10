@@ -235,17 +235,22 @@ DO NOT mention page numbers. Match the figure/table ref from metadata.
 Return null if key_figure_ref was not identified.""",
 
     # Condensed fields for appendix table view
-    "condensed_rq": """Research question in 1 sentence. What problem does this solve?
-Example: "Do minimum wage increases reduce employment?" """,
+    "condensed_says": """What does this paper say? 2-3 sentences max.
+Format: "[Key claim]. [What's novel - can be methodological or empirical]."
+Example: "Minimum wage increases don't reduce employment. First natural experiment using establishment-level data with a contiguous control state."
+Do NOT repeat author/year (that's in metadata). Focus on the punch line + contribution.""",
 
-    "condensed_method": """Method + data in 2 sentences max. How do they identify the effect?
-Example: "DiD comparing NJ vs PA fast-food restaurants before/after NJ minimum wage increase. N=410 stores." """,
+    "condensed_theory_data": """Theory framework + data in 2 sentences.
+If theory paper: model setup and assumptions.
+If empirical: data source, N, key variables.
+Example: "Fast-food restaurants in NJ and PA. N=410 stores, surveyed before/after NJ wage increase." """,
+
+    "condensed_estimation": """Estimation approach in 1-2 sentences. Include equation if meaningful.
+Example: "DiD comparing NJ vs PA. $\\Delta E_i = \\alpha + \\beta \\text{GAP}_i + \\varepsilon_i$"
+Use LaTeX for math.""",
 
     "condensed_result": """Key result with numbers in 1 sentence.
-Example: "Employment increased by 2.76 FTE (13%) in NJ vs PA, SE=1.19." """,
-
-    "condensed_contribution": """Main contribution in 1 sentence.
-Example: "First natural experiment evidence on minimum wage using establishment-level data." """,
+Example: "Employment +2.76 FTE (13%), t=2.03." """,
 }
 
 
@@ -421,7 +426,7 @@ def run_extraction() -> None:
                 "context", "core_mechanism", "method", "results",
                 "contribution", "golden_quote", "limitations",
                 # Condensed fields for appendix view
-                "condensed_rq", "condensed_method", "condensed_result", "condensed_contribution"
+                "condensed_says", "condensed_theory_data", "condensed_estimation", "condensed_result"
             ]
             for m in mandatory:
                 if m not in sections_to_extract:
@@ -486,14 +491,14 @@ def run_extraction() -> None:
                 result["contribution"] = sections["contribution"]
 
             # Add condensed fields for appendix view
-            if sections.get("condensed_rq"):
-                result["condensed_rq"] = sections["condensed_rq"]
-            if sections.get("condensed_method"):
-                result["condensed_method"] = sections["condensed_method"]
+            if sections.get("condensed_says"):
+                result["condensed_says"] = sections["condensed_says"]
+            if sections.get("condensed_theory_data"):
+                result["condensed_theory_data"] = sections["condensed_theory_data"]
+            if sections.get("condensed_estimation"):
+                result["condensed_estimation"] = sections["condensed_estimation"]
             if sections.get("condensed_result"):
                 result["condensed_result"] = sections["condensed_result"]
-            if sections.get("condensed_contribution"):
-                result["condensed_contribution"] = sections["condensed_contribution"]
 
             # Add golden quote (Morning Paper style)
             if sections.get("golden_quote"):

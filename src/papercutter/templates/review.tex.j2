@@ -1,7 +1,7 @@
-\documentclass[10pt]{article}
+\documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
-\usepackage[margin=0.75in]{geometry}
+\usepackage[margin=0.6in]{geometry}
 \usepackage{helvet}
 \renewcommand{\familydefault}{\sfdefault}
 \usepackage{longtable}
@@ -18,7 +18,7 @@
 \usepackage{graphicx}
 
 % Colors
-\definecolor{accent}{HTML}{0891B2}
+\definecolor{accent}{HTML}{1E3A5F}
 \definecolor{lightgray}{HTML}{6B7280}
 
 % Configure hyperlinks
@@ -28,9 +28,9 @@
     urlcolor=accent,
 }
 
-% Section formatting - compact
-\titleformat{\section}{\large\bfseries}{}{0em}{}
-\titlespacing*{\section}{0pt}{1.5ex}{0.5ex}
+% Section formatting - colored, compact
+\titleformat{\section}{\large\bfseries\color{accent}}{}{0em}{}
+\titlespacing*{\section}{0pt}{1ex}{0.3ex}
 
 % Header/footer
 \pagestyle{fancy}
@@ -40,10 +40,10 @@
 \fancyfoot[C]{\small\thepage}
 \renewcommand{\headrulewidth}{0.4pt}
 
-\setlength{\parskip}{0.4em}
+\setlength{\parskip}{0.3em}
 \setlist[itemize]{nosep, leftmargin=1.5em}
 
-\title{\textbf{<< title | latex_escape >>}}
+\title{\textbf{\color{accent}<< title | latex_escape >>}}
 \author{}
 \date{<< paper_count >> papers analyzed $\cdot$ \today}
 
@@ -68,9 +68,9 @@
 \section{<< paper.title | latex_escape | truncate(75) >>}
 \textit{<< paper.authors | latex_escape >>} (<< paper.year | latex_escape >>) \hfill \textsc{\small << paper.paper_type | latex_escape >>}
 
-\vspace{0.3em}
+\vspace{0.2em}
 \hrule
-\vspace{0.8em}
+\vspace{0.5em}
 
 \textbf{Context.} << paper.context | latex_escape >>
 
@@ -93,14 +93,15 @@
 <% if paper.key_equations %>
 \textbf{Key Equation.} << paper.key_equations >>
 <% if paper.notation %>
-\\\textit{where << paper.notation | preserve_latex_math >>}
+
+\textit{where << paper.notation | preserve_latex_math >>}
 <% endif %>
 
 <% endif %>
 \textbf{Results.} << paper.results | preserve_latex_math >>
 
 <% if paper.key_visual_explanation %>
-\vspace{0.5em}
+\vspace{0.3em}
 \textbf{Key Visual} (<< paper.key_figure_ref | latex_escape >>). << paper.key_visual_explanation | latex_escape >>
 <% if paper.key_visual_path %>
 \begin{figure}[h]
