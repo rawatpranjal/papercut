@@ -202,12 +202,13 @@ $y_{it} = \\alpha_i + \\gamma_t + \\beta D_{it} + X'_{it}\\delta + \\varepsilon_
 ML (loss function, architecture):
 $\\mathcal{L} = -\\sum_i y_i \\log \\hat{y}_i + \\lambda ||\\theta||^2$
 
-Keep notation inline: "$\\beta$ = treatment effect, $\\alpha_i$ = firm FE"
+CRITICAL: Define EVERY variable. Example:
+"$y_{it}$ = outcome for unit $i$ at time $t$; $D_{it}$ = treatment indicator; $\\beta$ = causal effect of interest"
 Skip if no meaningful math. Don't write placeholders.""",
 
-    "notation": """Define key variables inline with the equations.
-Keep concise: "$Y$ = output; $K$ = capital; $\\alpha \\approx 0.33$ = capital share"
-Only for variables not obvious from context.""",
+    "notation": """Define ALL variables from key_equations. EVERY symbol must be explained.
+Format: "$Y$ = outcome; $D$ = treatment; $\\beta$ = treatment effect; $\\alpha_i$ = unit fixed effect"
+Be complete - a reader should understand every symbol without looking at the paper.""",
 
     "applications": """Practical implications. ~60 words.
 Policy, industry, or research applications.""",
