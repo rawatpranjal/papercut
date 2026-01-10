@@ -160,48 +160,58 @@ PAPER TEXT:
     return response.choices[0].message.content
 
 
-# Section extraction instructions - PhD-level, concise, technical
-# Target: Researchers who want to quickly get up to speed
-# Philosophy: Give hints, not commands. Trust the model's judgment.
+# Section extraction instructions - PhD-level, explanatory, technical
+# Target: Researchers who want to UNDERSTAND this paper deeply
+# Philosophy: Explain ideas, don't just list them. Dense but clear.
 SECTION_INSTRUCTIONS = {
-    "context": """Research question and headline finding. ~80 words.
-What problem? What approach? What's the punchline?""",
+    "context": """Research question, approach, and headline finding. ~120 words.
+What's the economic/scientific PROBLEM this addresses? Why does it matter?
+What's the paper's APPROACH to solving it? (high-level)
+What's the PUNCHLINE - the surprising or important finding?
+Write as connected prose, not bullet points.""",
 
-    "core_mechanism": """What is the key mechanism/insight? ~100 words.
-Explain the core idea as if to a colleague over coffee.
+    "core_mechanism": """Explain the key mechanism/insight. ~150 words.
+This is the most important section - explain the IDEA like teaching a PhD student.
 - What's the main causal channel or theoretical mechanism?
-- Why does X lead to Y? What's the intuition?
-- What makes this paper's approach clever or novel?
+- WHY does X lead to Y? Walk through the logic step by step.
+- What makes this paper's approach clever, novel, or surprising?
+- If empirical: what's the identification trick?
+- If theoretical: what's the key modeling insight?
 
-Example: "The paper exploits the fact that minimum wage increases
-create a natural experiment. NJ raised wages while PA didn't, so
-comparing employment changes across the border identifies the causal
-effect. The key insight is using within-chain variation to control
-for demand shocks." """,
+Write as prose. Make the reader UNDERSTAND the idea, not just know it exists.""",
 
-    "prior_work": """What gap does this fill? ~60 words of prose.
-What did prior work establish? What was missing? How does this paper address it?""",
+    "prior_work": """What gap does this fill? ~80 words of prose.
+What did prior work establish? What question remained unanswered?
+How does this paper advance beyond prior work? Be specific about the contribution.""",
 
-    "method": """Model and identification. ~120 words. PROSE DESCRIPTION.
-- What is the model/approach? (name it, don't write equations here)
-- Identification strategy: what variation? what controls?
-- Key assumptions and their plausibility
+    "method": """Model and identification strategy. ~150 words. PROSE DESCRIPTION.
+- What is the model/approach? (name it, describe key features)
+- For empirics: what variation identifies the effect? What are the controls?
+- For theory: what are the key assumptions and environment?
+- Discuss PLAUSIBILITY of identifying assumptions or model assumptions
+- Why should we believe this identifies the causal effect / captures the mechanism?
 
-Equations go in key_equations. Here: describe the approach in words.
-Example: "Uses a task-based production model where output aggregates task-level production. Identifies AI impact via Hulten's theorem: aggregate TFP = cost-share-weighted sum of task improvements. Assumes 20% of tasks are AI-exposed with 27% average cost savings." """,
+Equations go in key_equations. Here: explain the approach conceptually.
+Example: "Uses difference-in-differences comparing NJ vs PA fast food stores before/after NJ's minimum wage hike. Identification assumes parallel trends - that PA stores are a valid counterfactual for NJ stores absent treatment. Tests this by showing high-wage NJ stores (unaffected by the minimum wage) track PA stores." """,
 
-    "results": """Main findings with numbers. ~120 words.
-Point estimates, standard errors, magnitudes, sample sizes.
-What do the numbers mean? Compare to benchmarks if relevant.""",
+    "results": """Main findings with numbers and interpretation. ~150 words.
+Report key estimates: point estimates, standard errors, confidence intervals.
+Interpret MAGNITUDES - what do these numbers mean economically?
+Compare to benchmarks, prior estimates, or theoretical predictions.
+Discuss robustness and heterogeneity if important.""",
 
     "golden_quote": """One memorable sentence from the paper that captures the key insight.
 Copy exactly as written. Return null if none stands out.""",
 
-    "data_description": """Dataset details. ~60 words.
-Source, N, time period, key variables, sample restrictions.""",
+    "data_description": """Dataset details with context. ~80 words.
+Source and how data was collected. Sample size and composition.
+Time period and frequency. Key variables measured.
+Sample restrictions and why. Any data limitations.""",
 
-    "contribution": """What's new? ~50 words.
-Be specific and technical, not vague ("contributes to literature").""",
+    "contribution": """What's new and why it matters? ~80 words.
+Be specific: is it a new method, new data, new theoretical result?
+How does it change our understanding or what we can do?
+Avoid vague phrases like "contributes to the literature." """,
 
     "key_equations": """Core mathematical content in LaTeX. Include BOTH if present:
 
@@ -222,35 +232,43 @@ Skip if no meaningful math. Don't write placeholders.""",
 Format: "$Y$ = outcome; $D$ = treatment; $\\beta$ = treatment effect; $\\alpha_i$ = unit fixed effect"
 Be complete - a reader should understand every symbol without looking at the paper.""",
 
-    "applications": """Practical implications. ~60 words.
-Policy, industry, or research applications.""",
+    "applications": """Practical implications. ~80 words.
+Policy implications: what should policymakers do differently?
+Industry applications: how can practitioners use this?
+Research applications: what new questions does this open?""",
 
-    "limitations": """Caveats and boundary conditions. ~80 words.
-Identification concerns, external validity, data limitations, restrictive assumptions.
-When should you trust/not trust these findings?""",
+    "limitations": """Caveats and boundary conditions. ~100 words.
+Identification concerns: what could bias the estimates?
+External validity: when do these findings apply and when not?
+Data limitations: measurement error, sample selection, etc.
+Restrictive assumptions: which assumptions are questionable?
+Be specific - help the reader calibrate how much to trust these results.""",
 
-    "key_visual": """Explain the main result figure/table. ~50 words.
-What does it show? Key numbers from it?
+    "key_visual": """Explain the main result figure/table. ~80 words.
+What does it show? How to read it?
+Key numbers from it and what they mean.
+Why is this figure/table the most important one?
 DO NOT mention page numbers. Match the figure/table ref from metadata.
 Return null if key_figure_ref was not identified.""",
 
     # Condensed fields for appendix table view
-    "condensed_says": """What does this paper say? 2-3 sentences max.
-Format: "[Key claim]. [What's novel - can be methodological or empirical]."
-Example: "Minimum wage increases don't reduce employment. First natural experiment using establishment-level data with a contiguous control state."
-Do NOT repeat author/year (that's in metadata). Focus on the punch line + contribution.""",
+    "condensed_says": """What does this paper say? 3-4 sentences.
+Format: "[Key claim with context]. [Why it matters]. [What's novel - method or finding]."
+Example: "Minimum wage increases don't reduce employment in low-wage industries, contradicting standard theory. Uses NJ vs PA natural experiment. First study with establishment-level data and clean identification."
+Explain the idea, not just state it.""",
 
-    "condensed_theory_data": """Theory framework + data in 2 sentences.
-If theory paper: model setup and assumptions.
-If empirical: data source, N, key variables.
-Example: "Fast-food restaurants in NJ and PA. N=410 stores, surveyed before/after NJ wage increase." """,
+    "condensed_theory_data": """Theory framework + data. 2-3 sentences.
+If theory: what is the model structure and key assumptions?
+If empirical: data source, N, key variables, time period.
+Example: "Fast-food restaurants in NJ and eastern PA. N=410 stores surveyed before/after NJ's wage hike from $4.25 to $5.05." """,
 
-    "condensed_estimation": """Estimation approach in 1-2 sentences. Include equation if meaningful.
-Example: "DiD comparing NJ vs PA. $\\Delta E_i = \\alpha + \\beta \\text{GAP}_i + \\varepsilon_i$"
+    "condensed_estimation": """Estimation approach with intuition. 2-3 sentences. Include equation if meaningful.
+Not just "DiD" but explain WHY this identifies the effect.
+Example: "DiD comparing employment changes in NJ vs PA. Assumes PA stores are valid counterfactual for NJ absent treatment. $\\Delta E_i = \\alpha + \\beta \\text{NJ}_i + \\varepsilon_i$"
 Use LaTeX for math.""",
 
-    "condensed_result": """Key result with numbers in 1 sentence.
-Example: "Employment +2.76 FTE (13%), t=2.03." """,
+    "condensed_result": """Key result with numbers and interpretation. 2 sentences.
+Example: "Employment increased by 2.76 FTE (13%) in NJ relative to PA, t=2.03. No evidence of adverse employment effects from minimum wage increase." """,
 }
 
 
