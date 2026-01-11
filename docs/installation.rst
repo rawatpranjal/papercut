@@ -4,136 +4,47 @@ Installation
 Requirements
 ------------
 
-Papercutter requires Python 3.10 or later.
+- Python 3.10 or higher
+- ``OPENAI_API_KEY`` environment variable (for LLM features)
 
-Basic Installation
-------------------
-
-Install Papercutter using pip:
+Basic Install
+-------------
 
 .. code-block:: bash
 
-   pip3 install papercutter
+   pip install papercutter
+
+This installs core dependencies only (typer, pypdf, pydantic, pyyaml, rich, json-repair).
+
+Full Install
+------------
+
+.. code-block:: bash
+
+   pip install papercutter[full]
+
+Includes all optional features: PDF processing, LLM extraction, and report generation.
 
 Optional Dependencies
 ---------------------
 
-Papercutter provides optional dependency groups for additional functionality:
-
-**Factory Pipeline (Recommended)**
-
-For the full systematic review pipeline with Docling and LLM features:
+Install only what you need:
 
 .. code-block:: bash
 
-   pip3 install papercutter[factory]
+   pip install papercutter[docling]   # PDF to Markdown (Docling)
+   pip install papercutter[llm]       # LLM extraction (LiteLLM)
+   pip install papercutter[report]    # PDF reports (Jinja2 + LaTeX)
 
-**LLM Support**
-
-For LLM-powered features only:
-
-.. code-block:: bash
-
-   pip3 install papercutter[llm]
-
-This installs ``litellm`` for multi-provider LLM support.
-
-**Fast PDF Processing**
-
-For faster PDF processing using PyMuPDF:
+For PDF report generation, you also need LaTeX installed:
 
 .. code-block:: bash
 
-   pip3 install papercutter[fast]
+   # macOS
+   brew install --cask mactex
 
-**All Extras**
+   # Ubuntu/Debian
+   sudo apt-get install texlive-full
 
-Install all optional dependencies:
-
-.. code-block:: bash
-
-   pip3 install papercutter[all]
-
-Development Installation
-------------------------
-
-To install Papercutter for development:
-
-.. code-block:: bash
-
-   # Clone the repository
-   git clone https://github.com/rawatpranjal/papercutter.git
-   cd papercutter
-
-   # Create a virtual environment
-   python3 -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-
-   # Install in development mode with dev dependencies
-   pip3 install -e ".[dev]"
-
-Configuration
--------------
-
-Papercutter can be configured via environment variables with the ``PAPERCUTTER_`` prefix.
-
-**Common Environment Variables:**
-
-.. list-table::
-   :header-rows: 1
-   :widths: 40 60
-
-   * - Variable
-     - Description
-   * - ``PAPERCUTTER_OUTPUT__DIRECTORY``
-     - Default output directory for downloaded papers
-   * - ``PAPERCUTTER_EXTRACTION__BACKEND``
-     - PDF extraction backend (default: ``pdfplumber``)
-   * - ``PAPERCUTTER_LLM__DEFAULT_MODEL``
-     - Default LLM model for AI features
-   * - ``ANTHROPIC_API_KEY``
-     - API key for Anthropic Claude models
-   * - ``OPENAI_API_KEY``
-     - API key for OpenAI models
-
-Example:
-
-.. code-block:: bash
-
-   export PAPERCUTTER_OUTPUT__DIRECTORY="$HOME/research/papers"
-   export PAPERCUTTER_EXTRACTION__BACKEND="pdfplumber"
-
-Verifying Installation
-----------------------
-
-After installation, verify that Papercutter is working:
-
-.. code-block:: bash
-
-   # Check version
-   papercutter --version
-
-   # View help
-   papercutter --help
-
-.. _papercut-migration:
-
-Migrating from Papercut
------------------------
-
-Papercutter is the renamed successor to Papercut. If you are upgrading an existing environment:
-
-1. Uninstall the old package and install the new one::
-
-      pip3 uninstall papercut
-      pip3 install papercutter
-
-2. Update shell aliases, scripts, and documentation to call ``papercutter`` instead of ``papercut``.
-3. Rename existing config and cache directories if you want to keep previous settings::
-
-      mv ~/.papercut ~/.papercutter
-      mv ~/.cache/papercut ~/.cache/papercutter
-
-4. Update any ``PAPERCUT_*`` environment variables to the new ``PAPERCUTTER_*`` prefix (for example ``PAPERCUTTER_ANTHROPIC_API_KEY``).
-
-Once these steps are complete, the CLI, environment variables, and config paths will all align with the new package name.
+   # Windows
+   # Install MiKTeX from https://miktex.org/

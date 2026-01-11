@@ -65,5 +65,61 @@ def report(
         build_report()
 
 
+# --- Book Subcommands ---
+
+
+book_app = typer.Typer(
+    name="book",
+    help="Process book-length PDFs: detect chapters, summarize, synthesize.",
+    no_args_is_help=True,
+)
+
+
+@book_app.command("index")
+def book_index(
+    pdf_path: Annotated[Path, typer.Argument(help="Path to book PDF")],
+) -> None:
+    """Detect chapter boundaries in a book PDF."""
+    from papercutter.book import run_book_index
+
+    if not pdf_path.exists():
+        console.print(f"[red]Error:[/red] PDF not found: {pdf_path}")
+        raise typer.Exit(1)
+
+    run_book_index(pdf_path)
+
+
+@book_app.command("extract")
+def book_extract(
+    docling: Annotated[
+        bool,
+        typer.Option("--docling", "-d", help="Use Docling for rich markdown extraction")
+    ] = False,
+) -> None:
+    """Extract chapter text from indexed book."""
+    from papercutter.book import run_book_extract
+
+    run_book_extract(use_docling=docling)
+
+
+@book_app.command("grind")
+def book_grind() -> None:
+    """Summarize each chapter with cross-chapter context."""
+    from papercutter.book import run_book_grind
+
+    run_book_grind()
+
+
+@book_app.command("report")
+def book_report() -> None:
+    """Generate book summary PDF (1 page per chapter)."""
+    from papercutter.book import run_book_report
+
+    run_book_report()
+
+
+app.add_typer(book_app, name="book")
+
+
 if __name__ == "__main__":
     app()

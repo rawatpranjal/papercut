@@ -1,112 +1,47 @@
-Papercutter Factory
-===================
+Papercutter
+===========
 
-**Automated Evidence Synthesis Pipeline for Research**
-
-Papercutter Factory transforms unstructured PDF collections into structured datasets
-and systematic review reports.
+Extract structured data from academic papers.
 
 .. code-block:: bash
 
-   pip install papercutter
+   pip install papercutter[full]
 
-.. grid:: 1 1 2 2
+.. grid:: 2 2 2 2
    :gutter: 2
-   :class-container: hero-card-grid
 
-   .. grid-item-card:: 📥 Ingest
-      :class-card: sd-bg-primary sd-text-white sd-shadow-sm sd-rounded-3
+   .. grid-item-card:: 1. Ingest
+      :class-card: sd-bg-primary sd-text-white
 
-      Convert PDFs to structured Markdown using Docling. Automatically split
-      large volumes, match BibTeX entries, and track processing status.
+      ``papercutter ingest ./pdfs/``
 
-   .. grid-item-card:: ⚙️ Configure
-      :class-card: sd-bg-dark sd-text-white sd-shadow-sm sd-rounded-3
+      PDF -> Markdown + Tables (Docling)
 
-      Define extraction schemas with typed columns. Auto-generate schemas
-      from sample papers using LLM analysis.
+   .. grid-item-card:: 2. Configure
+      :class-card: sd-bg-secondary sd-text-white
 
-   .. grid-item-card:: 🔬 Grind
-      :class-card: sd-bg-secondary sd-text-white sd-shadow-sm sd-rounded-3
+      ``papercutter configure``
 
-      Extract structured evidence from papers. Pilot mode validates accuracy
-      with source quotes before full execution.
+      Generate columns.yaml schema
 
-   .. grid-item-card:: 📊 Report
-      :class-card: sd-bg-light sd-shadow-sm sd-rounded-3
+   .. grid-item-card:: 3. Grind
+      :class-card: sd-bg-info sd-text-white
 
-      Generate CSV datasets and LaTeX/Markdown systematic review documents
-      with summaries, contribution grids, and more.
+      ``papercutter grind``
 
-Workflow
---------
+      Extract data via LLM
 
-.. code-block:: bash
+   .. grid-item-card:: 4. Report
+      :class-card: sd-bg-success sd-text-white
 
-   # 1. Initialize project
-   papercutter init my_review
-   cd my_review
+      ``papercutter report [-c]``
 
-   # 2. Ingest PDFs (with optional BibTeX matching)
-   papercutter ingest ./papers/ --bib references.bib
-
-   # 3. Configure extraction schema
-   papercutter configure
-
-   # 4. Extract evidence
-   papercutter grind --pilot    # Validate on sample
-   papercutter grind --full     # Process all papers
-
-   # 5. Generate outputs
-   papercutter report
-
-   # Check status anytime
-   papercutter status
-
-Project Structure
------------------
-
-.. code-block:: text
-
-   my_review/
-   ├── input/                  # Raw PDF repository
-   ├── config.yaml             # Extraction schema
-   ├── .papercutter/           # Internal state (Markdown, inventory)
-   └── output/
-       ├── matrix.csv          # Extracted data for R/Stata/Pandas
-       └── systematic_review.pdf
-
-Installation
-------------
-
-.. code-block:: bash
-
-   # Basic installation
-   pip install papercutter
-
-   # With Docling (recommended for PDF processing)
-   pip install papercutter[docling]
-
-   # With all Factory features
-   pip install papercutter[factory]
-
-Quick Links
------------
-
-- :doc:`installation` - Install Papercutter and dependencies
-- :doc:`quickstart` - Get started in 5 minutes
+      Generate matrix.csv + review.pdf
 
 .. toctree::
-   :maxdepth: 1
-   :caption: Guide
    :hidden:
 
    installation
    quickstart
-
-.. toctree::
-   :maxdepth: 1
-   :caption: API
-   :hidden:
-
-   api/index
+   tutorial
+   reference

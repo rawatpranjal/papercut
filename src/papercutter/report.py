@@ -60,6 +60,7 @@ def markdown_to_latex(text: Any) -> str:
     # Now escape remaining special chars (but not the LaTeX we just created)
     # Only escape chars that aren't part of our LaTeX commands
     replacements = [
+        ("$", r"\$"),
         ("&", r"\&"),
         ("%", r"\%"),
         ("#", r"\#"),

@@ -1,0 +1,141 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[margin=1in]{geometry}
+\usepackage{ebgaramond}
+\usepackage{parskip}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{enumitem}
+
+% Colors
+\definecolor{accent}{HTML}{2C3E50}
+\definecolor{lightgray}{HTML}{7F8C8D}
+\definecolor{quotecolor}{HTML}{34495E}
+
+% Configure hyperlinks
+\hypersetup{
+    colorlinks=true,
+    linkcolor=accent,
+    urlcolor=accent,
+}
+
+% Section formatting
+\titleformat{\section}{\Large\bfseries\color{accent}}{}{0em}{}
+\titlespacing*{\section}{0pt}{0pt}{0.5em}
+
+% Header/footer
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\textcolor{lightgray}{<< book_title | latex_escape | truncate(50) >>}}
+\fancyhead[R]{\small\textcolor{lightgray}{\thepage}}
+\renewcommand{\headrulewidth}{0pt}
+\setlength{\headheight}{14pt}
+
+\setlength{\parskip}{1em}
+\setlength{\parindent}{0pt}
+
+\begin{document}
+
+% ═══════════════════════════════════════════════════════════════════════════
+% TITLE PAGE
+% ═══════════════════════════════════════════════════════════════════════════
+
+\begin{center}
+\vspace*{2cm}
+
+{\Huge\bfseries\color{accent}<< book_title | latex_escape >>}
+
+\vspace{1cm}
+
+{\large A Chapter-by-Chapter Summary}
+
+\vspace{0.5cm}
+
+{\small << chapter_count >> chapters $\cdot$ \today}
+
+\vspace{2cm}
+
+\hrule
+\vspace{1.5cm}
+
+\begin{minipage}{0.85\textwidth}
+\large\itshape
+<< synthesis.one_paragraph_summary | latex_escape >>
+\end{minipage}
+
+\vspace{1.5cm}
+
+{\normalsize\textsc{Key Themes}}\\[0.5em]
+<% for theme in synthesis.key_themes %><< theme | latex_escape >><% if not loop.last %> \,$\cdot$\, <% endif %><% endfor %>
+
+\end{center}
+
+\newpage
+
+% ═══════════════════════════════════════════════════════════════════════════
+% TABLE OF CONTENTS
+% ═══════════════════════════════════════════════════════════════════════════
+
+\section*{Contents}
+
+<% for chapter in chapters %>
+\noindent\textbf{<< chapter.number >>. << chapter.title | latex_escape >>} \hfill \textit{p.\,<< loop.index + 2 >>}\\
+{\small << chapter.main_thesis | latex_escape | truncate(200) >>}
+
+\vspace{0.5em}
+<% endfor %>
+
+\newpage
+
+% ═══════════════════════════════════════════════════════════════════════════
+% CHAPTER SUMMARIES
+% ═══════════════════════════════════════════════════════════════════════════
+
+<% for chapter in chapters %>
+\section{<< chapter.title | latex_escape >>}
+
+<% if chapter.golden_quote %>
+\begin{center}
+\begin{minipage}{0.8\textwidth}
+\large\itshape\color{quotecolor}
+``<< chapter.golden_quote | latex_escape >>''
+\end{minipage}
+\end{center}
+\vspace{0.5em}
+<% endif %>
+
+<< chapter.main_thesis | markdown_to_latex >>
+
+<< chapter.unique_insight | markdown_to_latex >>
+
+<% if chapter.how_to %>
+<< chapter.how_to | markdown_to_latex >>
+<% endif %>
+
+<< chapter.key_evidence | markdown_to_latex >>
+
+<% if chapter.counterexample %>
+<< chapter.counterexample | markdown_to_latex >>
+<% endif %>
+
+<% if chapter.practical_implications %>
+<< chapter.practical_implications | markdown_to_latex >>
+<% endif %>
+
+\vspace{1em}
+\noindent\rule{\textwidth}{0.3pt}
+\vspace{0.5em}
+
+<% if chapter.key_terms %>
+{\small\textsc{Key Concepts:} << chapter.key_terms | join(", ") | latex_escape >>}
+<% endif %>
+
+\hfill{\small\textit{pp.\,<< chapter.start_page >>--<< chapter.end_page >>}}
+
+\newpage
+<% endfor %>
+
+\end{document}

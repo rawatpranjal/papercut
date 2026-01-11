@@ -20,6 +20,7 @@
 % Colors
 \definecolor{accent}{HTML}{1E3A5F}
 \definecolor{lightgray}{HTML}{6B7280}
+\definecolor{quotecolor}{HTML}{34495E}
 
 % Configure hyperlinks
 \hypersetup{
@@ -68,6 +69,17 @@
 \section{<< paper.title | latex_escape | truncate(75) >>}
 \textit{<< paper.authors | latex_escape >>} (<< paper.year | latex_escape >>) \hfill \textsc{\small << paper.paper_type | latex_escape >>}
 
+<% if paper.golden_quote %>
+\vspace{0.5em}
+\begin{center}
+\begin{minipage}{0.9\textwidth}
+\large\itshape\color{quotecolor}
+``<< paper.golden_quote | latex_escape >>''
+\end{minipage}
+\end{center}
+\vspace{0.3em}
+<% endif %>
+
 \vspace{0.2em}
 \hrule
 \vspace{0.5em}
@@ -77,11 +89,6 @@
 <% if paper.core_mechanism %>
 \textbf{Core Mechanism.} << paper.core_mechanism | preserve_latex_math >>
 
-<% endif %>
-<% if paper.golden_quote %>
-\begin{quote}
-\textit{``<< paper.golden_quote | latex_escape >>''}
-\end{quote}
 <% endif %>
 
 <% if paper.prior_work %>

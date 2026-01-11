@@ -168,7 +168,12 @@ SECTION_INSTRUCTIONS = {
 What's the economic/scientific PROBLEM this addresses? Why does it matter?
 What's the paper's APPROACH to solving it? (high-level)
 What's the PUNCHLINE - the surprising or important finding?
-Write as connected prose, not bullet points.""",
+Write as connected prose, not bullet points.
+
+IMPORTANT: Lead with the finding, not meta-commentary.
+BAD: "This paper provides a comprehensive analysis of minimum wage effects..."
+GOOD: "Minimum wage increases of 10% reduce teen employment by 1-2%, using NJ-PA natural experiment..."
+Start with WHAT the paper found, then explain HOW.""",
 
     "core_mechanism": """Explain the key mechanism/insight. ~150 words.
 This is the most important section - explain the IDEA like teaching a PhD student.
@@ -211,6 +216,10 @@ Sample restrictions and why. Any data limitations.""",
     "contribution": """What's new and why it matters? ~80 words.
 Be specific: is it a new method, new data, new theoretical result?
 How does it change our understanding or what we can do?
+
+Lead with the contribution itself, not meta-commentary.
+BAD: "This paper makes an important contribution by developing..."
+GOOD: "First causal estimate of X using Y method. Resolves prior conflicting findings by..."
 Avoid vague phrases like "contributes to the literature." """,
 
     "key_equations": """Core mathematical content in LaTeX. Include BOTH if present:
@@ -350,10 +359,16 @@ GUIDELINES (not rigid structure):
 - Start with research landscape: what questions do these address?
 - Summarize each paper's key finding with specific numbers
 - Note tensions or agreements between papers (if natural - don't force connections)
-- End with actionable takeaway
 - Use **bold** for section headers if helpful
 - Reference authors by name
-- Be honest if papers address distinct questions"""
+- Be honest if papers address distinct questions
+
+END WITH exactly this format:
+**Key themes:** (1) [3-5 word theme]; (2) [3-5 word theme]; (3) [3-5 word theme]
+
+Keep themes punchy and substantive, no parenthetical explanations.
+GOOD: "Causal identification via natural experiments"
+BAD: "Identification strategies (e.g., DiD, RDD, IV)" """
 
     response = completion_fn(
         model="deepseek/deepseek-chat",
