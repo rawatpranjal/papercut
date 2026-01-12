@@ -35,14 +35,14 @@ Generate extraction schema from paper abstracts.
 
 Samples up to 3 papers and uses LLM to propose extraction fields. Creates ``columns.yaml``.
 
-grind
-^^^^^
+extract
+^^^^^^^
 
-Extract data fields and write summaries using LLM.
+Extract data fields from papers using LLM.
 
 .. code-block:: bash
 
-   papercutter grind
+   papercutter extract
 
 Requires ``columns.yaml`` and ingested papers. Generates ``extractions.json``.
 
@@ -91,13 +91,13 @@ Process entire books with chapter detection and summarization.
 
    papercutter book extract
 
-``papercutter book grind``
+``papercutter book summarize``
    Summarize each chapter with LLM, generate book synthesis.
    Creates ``book_extractions.json``.
 
 .. code-block:: bash
 
-   papercutter book grind
+   papercutter book summarize
 
 ``papercutter book report``
    Generate ``output/book_summary.pdf`` with one page per chapter.

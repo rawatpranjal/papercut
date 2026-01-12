@@ -3,7 +3,7 @@
 project = "Papercutter"
 copyright = "2025, Pranjal Rawat"
 author = "Pranjal Rawat"
-release = "3.0.2"
+release = "3.1.0"
 
 extensions = [
     "sphinx_design",

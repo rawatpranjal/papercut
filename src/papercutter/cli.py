@@ -9,7 +9,7 @@ from rich.console import Console
 
 app = typer.Typer(
     name="papercutter",
-    help="PDF to Data Factory: Extract structured data from academic papers.",
+    help="Extract structured data from academic papers.",
     no_args_is_help=True,
 )
 console = Console()
@@ -42,8 +42,8 @@ def configure() -> None:
 
 
 @app.command()
-def grind() -> None:
-    """Extract data fields and write summaries using LLM."""
+def extract() -> None:
+    """Extract data fields from papers using LLM."""
     from papercutter.grind import run_extraction
 
     run_extraction()
@@ -102,9 +102,9 @@ def book_extract(
     run_book_extract(use_docling=docling)
 
 
-@book_app.command("grind")
-def book_grind() -> None:
-    """Summarize each chapter with cross-chapter context."""
+@book_app.command("summarize")
+def book_summarize() -> None:
+    """Summarize each chapter with LLM."""
     from papercutter.book import run_book_grind
 
     run_book_grind()

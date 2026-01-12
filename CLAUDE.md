@@ -6,7 +6,7 @@ Extract structured data from academic papers.
 
 **Entry point**: `papercutter` CLI (or `python3 -m papercutter`)
 
-**Version**: 3.0.2
+**Version**: 3.1.0
 
 ## Project Structure
 
@@ -17,7 +17,7 @@ src/papercutter/
 ├── cli.py           # Typer CLI (4 commands)
 ├── project.py       # Inventory management
 ├── ingest.py        # Docling PDF processing
-├── grind.py         # LLM extraction
+├── grind.py         # LLM extraction (internal)
 ├── report.py        # CSV + PDF generation
 └── templates/
     └── review.tex.j2
@@ -28,7 +28,7 @@ src/papercutter/
 ```bash
 papercutter ingest ./pdfs/    # PDF → Markdown + Tables
 papercutter configure         # Generate columns.yaml schema
-papercutter grind             # Extract data via LLM
+papercutter extract           # Extract data via LLM
 papercutter report            # Generate matrix.csv + review.pdf
 ```
 
@@ -42,8 +42,8 @@ pip install papercutter[full]  # All features (docling + llm + reports)
 
 1. **ingest**: Docling converts PDFs to Markdown + extracts tables as JSON
 2. **configure**: LLM samples papers and proposes extraction schema
-3. **grind**: LLM extracts fields from each paper → extractions.json
-4. **report**: Generates matrix.csv (for R/Stata) + review.pdf (Evidence Dossier)
+3. **extract**: LLM extracts fields from each paper → extractions.json
+4. **report**: Generates matrix.csv (for R/Stata) + review.pdf
 
 ## Configuration
 

@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "papercutter"
-version = "3.0.2"
+version = "3.1.0"
 description = "Extract structured data from academic papers into analysis-ready datasets"
 readme = "README.md"
 license = "MIT"

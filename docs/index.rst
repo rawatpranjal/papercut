@@ -1,7 +1,7 @@
 Papercutter
 ===========
 
-Extract structured data from academic papers.
+Turn your PDF collection into a dataset you can actually use.
 
 .. code-block:: bash
 
@@ -20,7 +20,7 @@ Pipeline
 
       ``papercutter ingest ./pdfs/``
 
-      Convert PDFs to Markdown using Docling. Extracts tables and figures.
+      Convert PDFs to Markdown. Extract tables and figures.
 
    .. grid-item-card:: 2. Configure
       :link: quickstart.html#configure
@@ -29,10 +29,10 @@ Pipeline
 
       Generate ``columns.yaml`` schema from paper abstracts.
 
-   .. grid-item-card:: 3. Grind
-      :link: quickstart.html#grind
+   .. grid-item-card:: 3. Extract
+      :link: quickstart.html#extract
 
-      ``papercutter grind``
+      ``papercutter extract``
 
       Extract structured data from each paper using LLM.
 
@@ -45,6 +45,16 @@ Pipeline
 
 ----
 
+Use Cases
+---------
+
+- **Systematic reviews** - Extract study characteristics from 50+ papers
+- **Meta-analysis** - Pull effect sizes and standard errors into a dataset
+- **Literature surveys** - Summarize key findings across a research area
+- **Book notes** - Distill handbooks into chapter-by-chapter summaries
+
+----
+
 Example
 -------
 
@@ -54,7 +64,7 @@ Example
 
    papercutter ingest ./papers/
    papercutter configure
-   papercutter grind
+   papercutter extract
    papercutter report
 
 Outputs ``matrix.csv`` (for R/Stata) and ``review.pdf`` (LaTeX report).

@@ -29,6 +29,8 @@ Setup
 The Pipeline
 ------------
 
+.. _ingest:
+
 **Step 1: Ingest PDFs**
 
 Convert PDFs to Markdown and extract tables:
@@ -43,6 +45,8 @@ This creates:
 - ``tables/`` - Extracted tables as JSON
 - ``figures/`` - Extracted figures
 - ``inventory.json`` - Tracks processing status
+
+.. _configure:
 
 **Step 2: Configure Schema**
 
@@ -64,15 +68,19 @@ The LLM samples your papers and proposes fields to extract. Edit ``columns.yaml`
        description: "Estimation method"
        type: string
 
+.. _extract:
+
 **Step 3: Extract Data**
 
 Run LLM extraction on all papers:
 
 .. code-block:: bash
 
-   papercutter grind
+   papercutter extract
 
 This generates ``extractions.json`` with structured data from each paper.
+
+.. _report:
 
 **Step 4: Generate Reports**
 

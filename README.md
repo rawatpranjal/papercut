@@ -1,16 +1,16 @@
 # Papercutter
 
-Extract structured data from academic papers into analysis-ready datasets.
+Turn your PDF collection into a dataset you can actually use.
 
-Papercutter converts PDF collections into structured Markdown using [Docling](https://github.com/DS4SD/docling), then applies LLM-based extraction to produce CSV datasets and LaTeX reports suitable for systematic reviews and meta-analyses.
+For researchers doing systematic reviews, meta-analyses, or literature surveys who have PDFs piling up but need structured data for analysis.
+
+Requires Python 3.10+ and an OpenAI or Anthropic API key.
 
 ## Installation
 
 ```bash
 pip install papercutter[full]
 ```
-
-Requires Python 3.10+ and an OpenAI or Anthropic API key.
 
 Optional extras:
 ```bash
@@ -54,12 +54,12 @@ columns:
     type: float
 ```
 
-### 3. Grind
+### 3. Extract
 
-Extract data from all papers.
+Extract data from all papers using LLM.
 
 ```bash
-papercutter grind
+papercutter extract
 ```
 
 Output: `extractions.json`
@@ -75,12 +75,12 @@ papercutter report --condensed  # appendix format
 
 ## Book Pipeline
 
-Process books or handbooks with chapter-level extraction.
+Process books or handbooks with chapter-level summaries.
 
 ```bash
 papercutter book index ./book.pdf   # Detect chapters
 papercutter book extract            # Extract text
-papercutter book grind              # Summarize chapters
+papercutter book summarize          # Summarize chapters
 papercutter book report             # Generate PDF
 ```
 

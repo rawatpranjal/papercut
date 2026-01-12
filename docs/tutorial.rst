@@ -67,7 +67,7 @@ Run LLM extraction on all papers:
 
 .. code-block:: bash
 
-   papercutter grind
+   papercutter extract
 
 For each paper, the LLM extracts:
 
@@ -141,7 +141,7 @@ Run LLM extraction on each chapter:
 
 .. code-block:: bash
 
-   papercutter book grind
+   papercutter book summarize
 
 For each chapter, the LLM extracts:
 
