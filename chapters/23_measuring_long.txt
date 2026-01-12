@@ -1,0 +1,1898 @@
+23
+Measuring Long-Term Treatment Effects
+We tend to overestimate the effect of a technology in the short run and
+underestimate the effect in the long run
+– Roy Amara
+Why you care: Sometimes the effect that you care to measure can take months
+or even years to accumulate– a long-term effect. In an online world where
+products and services are developed quickly and iteratively in an agile fash-
+ion, trying to measure a long-term effect is challenging. While an active area
+of research, understanding the key challenges and current methodology is
+useful if you are tackling a problem of this nature.
+What Are Long-Term Effects?
+In most scenarios discussed in this book, we recommend running experiments
+for one to two weeks. The Treatment effect measured in this short timeframe is
+called the short-term effect. For most experiments, understanding this short-
+term effect is all we need, as it is stable and generalizes to thelong-term
+Treatment effect, which is usually what we care about. However, there are
+scenarios where the long-term effect is different from the short-term effect. For
+example, raising prices is likely to increase short-term revenue but reduce long-
+term revenue as users abandon the product or service. Showing poor search
+results on a search engine will cause users to search again (Kohavi et al.2012);
+the query share increases in the short-term but decreases in the long-term as
+users switch to a better search engine. Similarly, showing more ads– including
+more low-quality ads– can increase ad clicks and revenue in the short-term but
+decreases revenue via decreased ad clicks, and even searches, in the long-term
+(Hohnhold, O’Brien and Tang 2015, Dmitriev, Frasca, et al. 2016).
+235
+
+The long-term effect is deﬁned as the asymptotic effect of a Treatment,
+which, in theory, can be years out. Practically, it is common to consider long-
+term to be 3+ months, or based on the number of exposures (e.g., the
+Treatment effect for users exposed to the new feature at least 10 times).
+We explicitly exclude from discussion changes that have a short life span.
+For example, you may run an experiment on news headlines picked by editors
+that have a life span of only a few hours. However, the question of whether
+headlines should be“catchy” or “funny” is a good long-term hypothesis, as an
+initial increase in short-term engagement may also be associated with long-
+term increased abandonment. Except when you are speciﬁcally running experi-
+ments on such short life-span changes, when testing a new Treatment, you
+would really like to know how it would perform in the long term.
+In this chapter, we cover the reasons that long-term effects can be different
+from short-term effects and discuss measurement methods. We only focus on
+scenarios where short-term and long-term Treatment effects differ. We are not
+considering other important differences between short-term and long-term,
+such as sample size difference, which may cause theestimated Treatment
+effects and variance to differ.
+One key challenge in determining the OEC (seeChapter 7) is that it must be
+measurable in the short term but believed to causally impact long-term object-
+ives. Measuring long-term effects discussed in this chapter can provide
+insights to improve and devise short-term metrics that impact the long-
+term goals.
+Reasons the Treatment Effect May Differ between
+Short-Term and Long-Term
+There are several reasons why short-term and long-term Treatment effects may
+differ. We have discussed some in the context of trustworthiness inChapter 3.
+● User-learned effects. As users learn and adapt to a change, their behavior
+changes. For example, product crashes are a terrible user experience that
+may not turn users away with theﬁrst occurrence. However, if crashes are
+frequent, users learn and may decide to leave the product. Users may adjust
+the rate they click on ads if they realize the ads’ quality is poor. The
+behavior change may also be due to discoverability, maybe a new feature
+that may take time for users to notice, but once they discover its usefulness,
+they engage heavily. Users may also need time to adapt to a new feature
+because they are primed in the old feature, or they explore a new change
+236 23 Measuring Long-Term Treatment Effects
+
+more when it isﬁrst introduced (seeChapter 3). In such cases, a long-term
+effect may differ from a short-term effect because users eventually reach an
+equilibrium point (Huang, Reiley and Raibov2018, Hohnhold, O’Brien and
+Tang 2015, Chen, Liu and Xu2019, Kohavi, Longbotham et al.2009).
+● Network effects. When users see friends using the Live Video feature on a
+communication app such as Facebook Messenger, WhatsApp, or Skype, it is
+more likely that they will use it too. User behavior tends to be inﬂuenced by
+people in their network though it may take a while for a feature to reach its full
+effect as it propagates through their network (seeChapter 22, which discusses
+interference in marketplaces with limited or shared resources, focusing on
+biased estimation in theshort-term due to leakage between variants). The
+limited resources introduce additional challenges as we measure long-term
+impact. For example, in two-sided marketplaces, such as Airbnb, eBay, and
+Uber, a new feature can be very effective at driving demand for an item, such
+as a house to rent, computer keyboard, or ride, but the supply may take longer
+to catch up. As a result, the impact on revenue may take longer to realize as
+supply is unavailable. Similar examples exist for other areas, such as hiring
+marketplaces (job seekers and jobs), ad marketplaces (advertisers and pub-
+lishers), recommendation systems for content (news feeds), or connections
+(LinkedIn’s People You May Know). Because there are a limited number of
+people one person knows (“supply”), a new algorithm may perform better at
+the beginning but may reach a lower equilibrium long term because of supply
+constraints (an analogous effect can be seen in recommendation algorithms
+more generally, where a new algorithm may perform better initially due to
+diversity, or simply showing new recommendations).
+● Delayed experience and measurement.There can be a time gap before a
+user experiences the entirety of the Treatment effect. For example, for
+companies like Airbnb and Booking.com, there can be months between a
+user’s online experience and when the user physically arrives at the destin-
+ation. The metrics that matter, such as user retention, can be affected by the
+user’s delayed ofﬂine experience. Another example is annual contracts:
+Users who sign up have a decision point when the year ends and their
+cumulative experience over that year determines whether they renew.
+● Ecosystem change.Many things in your ecosystem change over time and
+can impact how users react to the Treatment, including:
+◦ Launching other new features. For example, if more teams embed the
+Live Video feature in their product, Live Video becomes more valuable.
+◦ Seasonality. For example, experiments on gift cards that perform well
+during the Christmas season may not have the same performance during
+the non-holiday season due to users having different purchasing intent.
+Treatment Effect between Short-Term and Long-Term 237
+
+◦ Competitive landscape. For example, if your competition launches the
+same feature, the value of the feature may decline.
+◦ Government policies. For example, the European Union General Data
+Protection Regulation (GDPR) changes how users control their online data,
+and hence what data you can use for online ad targeting (European Commis-
+sion 2016, Basin, Debois and Hildebrandt 2018, Google, Helping advertisers
+comply with the GDPR 2019).
+◦ Concept drift. The performance of machine learning models trained on
+data that is not refreshed may degrade over time as distributions change.
+◦ Software rot. After features ship, unless they are maintained, they tend to
+degrade with respect to the environment around them. This can be caused,
+for example, by system assumptions made by code that becomes invalid
+over time.
+Why Measure Long-Term Effects?
+While the long-term effect can certainly differ from short-term effect for various
+reasons, not all such differences are worth measuring. What you want to achieve
+with the long-term effect plays a critical role in determining what you should
+measure and how you should measure it. We summarize the top reasons.
+● Attribution. Companies with strong data-driven culture use experiment
+results to track team goals and performance, potentially incorporating
+experiment gains into long-termﬁnancial forecasting. In these scenarios,
+proper measurement and attribution of the long-term impact of an experi-
+ment is needed. What would the world look like in the long term with vs.
+without introducing the new feature now? This type of attribution is chal-
+lenging because we need to consider both endogenous reasons such as user-
+learned effects, and exogenous reasons such as competitive landscape
+changes. In practice, because future product changes are usually built on
+top of past launches, it may be hard to attribute such compounding impacts.
+● Institutional learning. What is the difference between short term and long
+term? If the difference is sizable, what is causing it? If there is a strong
+novelty effect, this may indicate a suboptimal user experience. For example,
+if it takes a user too long to discover a new feature they like, you may
+expedite uptake by using in-product education. On the other hand, if many
+users are attracted to the new feature but only try it once, it may indicate low
+quality or click-bait. Learning about the difference can offer insights into an
+improved subsequent iteration.
+238 23 Measuring Long-Term Treatment Effects
+
+● Generalization. In many cases, we measure the long-term effect on some
+experiments so we can extrapolate to other experiments. How much long-
+term impact does a similar change have? Can we derive a general principle
+for certain product areas (e.g., search ads in Hohnhold et. al. (2015)? Can
+we create a short-term metric that is predictive of long term (see the last
+section of this chapter)? If we can generalize or predict the long-term effect,
+we can take that generalization into account in the decision-making process.
+For this purpose, you may want to isolate the long-term impact from
+exogenous factors, especially big shocks that are unlikely to repeat
+over time.
+Long-Running Experiments
+The simplest and most popular approach for measuring long-term effects is to
+keep an experiment running for a long time. You can measure the Treatment
+effect at the beginning of the experiment (in theﬁrst week) and at the end of
+the experiment (in the last week). Note that this analysis approach differs from
+a typical experiment analysis that would measure the average effect over the
+entire Treatment period. Theﬁrst percent-delta measurementpΔ
+1 is considered
+the short-term effect and the last measurementpΔT is the long-term effect as
+shown inFigure 23.1.
+While this is a viable solution, there are several challenges and limitations in
+this type of long-term experiment design. We focus on a few that are relevant
+Time (t)
+T-1 T123
+Short-term 
+effect
+Long-term
+effect      
+Percent 
+delta 
+between 
+Treatment 
+& Control 
+pΔ1
+pΔT
+0
+Figure 23.1 Measuring long-term effect based on a long-running experiment
+Long-Running Experiments 239
+
+to measuring long-term effects, organized around the purpose of attribution
+and institutional learning.
+● For attribution: The measurement from the last week of the long-running
+experiment (pΔT) may not represent the true long-term Treatment effect for
+the following reasons:
+◦ Treatment effect dilution.
+◦ The user may use multiple devices or entry points (e.g., web and app),
+while the experiment is only capturing a subset. The longer the experi-
+ment runs, the more likely a user will have used multiple devices during
+the experiment period. For users who visit during the last week, only a
+fraction of their experience during the entire time periodT is actually in
+Treatment. Therefore, if users are learning, what is measured inpΔ
+T is not
+the long-term impact of what users learned after being exposed to Treat-
+ment for timeT, but a diluted version. Note that this dilution may not
+matter for all features, but rather the subset where the dosage matters.
+◦ If you randomize the experiment units based on cookies, cookies can
+churn due to user behavior or get clobbered due to browser issues
+(Dmitriev et al.2016). A user who was in Treatment could get random-
+ized into Control with a new cookie. As in the two previous bullet points,
+the longer the experiment runs, the more likely that a user will have
+experienced both Treatment and Control.
+◦ If network effects are present, unless you have perfect isolation between
+the variants, the Treatment effect can“leak” from Treatment to Control
+(see Chapter 22). The longer the experiment runs, it is likely that the
+effect will cascade more broadly through the network, creating larger
+leakage.
+● Survivorship bias. Not all users at the beginning of the experiment will
+survive to the end of the experiment. If the survival rate is different between
+Treatment and Control, pΔ
+T would suffer from survivorship bias, which
+should also trigger an SRM alert (seeChapters 3 and 21). For example, if
+those Treatment users who dislike the new feature end up abandoning over
+time, pΔ
+T would only capture a biased view of those who remain (and the
+new users admitted to the experiment). Similar bias can also exist if the
+Treatment introduces a bug or side-effect that causes a different cookie
+churn rate.
+● Interaction with other new features. There can be many other features
+launched while the long-term experiment is running, and they may interact
+with the speciﬁc feature being tested. These new features can erode the wins
+of the experiment over time. For example, aﬁrst experiment that sends push
+240 23 Measuring Long-Term Treatment Effects
+
+notiﬁcations to users can be hugely effective at driving sessions, but as other
+teams start sending noti ﬁcations, the effect of the ﬁrst noti ﬁcation
+diminishes.
+● For measuring a time-extrapolated effect: Without further study– includ-
+ing more experiments– we need to be cautious to not interpret the differ-
+ence between pΔ0 and pΔT as a meaningful difference caused by the
+Treatment itself. Besides the attribution challenges discussed above that
+complicate the interpretation ofpΔT itself, the difference may be purely due
+to exogenous factors, such as seasonality. In general, if the underlying
+population or external environment has changed between the two time
+periods, we can no longer directly compare short-term and long-term
+experiment results.
+Of course, challenges around attribution and measuring time-extrapolated
+effects also make it hard to generalize the results from speciﬁc long-running
+experiments to more extensible principles and techniques. There are also
+challenges around how to know that the long-term result is stabilized and
+when to stop the experiment. The next section explores experiment design and
+analysis methodologies that partially address these challenges.
+Alternative Methods for Long-Running Experiments
+Different methods have been proposed to improve measurements from long-
+running experiments (Hohnhold, O’Brien and Tang 2015, Dmitriev, Frasca,
+et al. 2016). Each method discussed in this section offers some improvements,
+but none fully address the limitations under all scenarios. We highly recom-
+mend that you always evaluate whether these limitations apply, and if so, how
+much they impact your results or your interpretation of the results.
+Method #1: Cohort Analysis
+You can construct a stable cohort of users before starting the experiment and
+only analyze the short-term and long-term effects on this cohort of users. One
+method is to select the cohort based on a stable ID, for example, logged-in user
+IDs. This method can be effective at addressing dilution and survivorship bias,
+especially if the cohort can be tracked and measured in a stable way. There are
+two important considerations to keep in mind:
+● You need to evaluate how stable the cohort is, as it is crucial for the
+effectiveness of the method. For example, if the ID is based on cookies
+Alternative Methods for Long-Running Experiments 241
+
+and when cookie churn rate is high, this method does not work well for
+correcting bias (Dmitriev et al.2016).
+● If the cohort is not representative of the overall population, there may be
+external validity concerns because the analysis results may not be general-
+izable to the full population. For example, analyzing logged-in users only
+may introduce bias because they differ from non-logged-in users. You can
+use additional methods to improve the generalizability, such as a weighting
+adjustment based on stratiﬁcation (Park, Gelman and Bafumi2004, Gelman
+1997, Lax and Phillips2009). In this approach, youﬁrst stratify users into
+subgroups (e.g., based on pre-experiment high/medium/low engagement
+levels), and then compute a weighted average of the Treatment effects from
+each subgroup, with the weights reﬂecting the population distribution. This
+approach has similar limitations as observational studies discussed exten-
+sively inChapter 11.
+Method #2: Post-Period Analysis
+In this method, you turn off the experiment after it has been running for a while
+(time T) and then measure the difference between the users in Treatment and
+those in Control during timeT and T + 1, as shown inFigure 23.2. In the event
+where you cannot ramp down the new Treatment due to user experience
+concerns, you can still apply this method by“ramping up” the Treatment for
+all users. A key aspect of this method is that during the measurement period,
+users in the Treatment and Control groups are both exposed to the exact same
+1230
+pΔL
+Time (t)
+T-1 T+1T
+Short-term 
+effect
+      
+Percent 
+delta 
+between 
+Treatment 
+& Control 
+pΔ1
+pΔT
+Figure 23.2 Measuring long-term effect based on post-period A/A measurement
+242 23 Measuring Long-Term Treatment Effects
+
+features. The difference between the groups, however, is that in theﬁrst case,
+the Treatment group was exposed to a set of features that the Control group
+was not exposed to, or in the second“ramping up” case, the Treatment group
+was exposed to the features for a longer time than the Control group.
+Hohnhold et al. (2015) calls the effect measured during the post-period the
+learning effect. To properly interpret it, you need to understand the speciﬁc
+change tested in the experiment. There are two types of learned effect:
+1. User-learned effect. Users have learned and adapted to the change over
+time. Hohnhold et al. (2015) studies the impact of increasing ad-load on
+users’ ad clicking behavior. In their case study, user learning is considered
+the key reason behind the post-period effect.
+2. System-learned effect. The system may have“remembered” information
+from the Treatment period. For example, the Treatment may encourage
+more users to update their proﬁle and this updated information stays in the
+system even after the experiment ends. Or, if more Treatment users are
+annoyed by emails and opt out during the experiment, they will not receive
+emails during the post-period. Another common example is personalization
+through machine learning models, such as models that show more ads to
+users who click more on ads. After a Treatment that causes users to click
+more on ads, the system that uses a sufﬁciently long time period for
+personalization may learn about the user and thus show them more ads
+even after they are back to experiencing the Control Treatment.
+Given enough experiments, the method can estimate a learned effect based on
+the system parameters and subsequently extrapolate from new short-term
+experiments to estimate the anticipated long-term effect (Gupta et al.2019).
+This extrapolation is reasonable when the system-learned effects are zero, that
+is, in the A/A post-period, both Treatment and Control users are exposed to the
+exact same set of features. Examples of where this system-learned effect is
+non-zero might include permanent user state changes, such as more time-
+persistent personalization, opt-outs, unsubscribes, hitting impression limits,
+and so on.
+That said, this approach is effective at isolating impact from exogenous
+factors that change over time and from potential interactions with other newly
+launched features. Because the learned effect is measured separately, it offers
+more insights on why the effects are different short term vs. long term. This
+method suffers from potential dilution and survivorship bias (Dmitriev et al.
+2016). However, because the learned effect is measured separately in the post-
+period, you could attempt to apply an adjustment to the learned effect to account
+for dilution or by combining with the cohort analysis method discussed earlier.
+Alternative Methods for Long-Running Experiments 243
+
+Method #3: Time-Staggered Treatments
+The methods discussed so far simply require experimenters to wait“enough”
+time before taking the long-term measurement. But how long is “long
+enough?” A poor man’s approach is to observe the Treatment effect trend line
+and decide that enough time has passed when the curve stabilizes. This does
+not work well in practice because Treatment effect is rarely stable over time.
+With big events or even day-of-week effect, the volatility over time tends to
+overwhelm the long-term trend.
+To determine the measurement time, you can have two versions of the same
+Treatment running with staggered start times. One version (T
+0) starts at time
+t = 0, while the other (T1) starts at timet = 1. At any given time,t >1, you can
+measure the difference between the two versions of Treatment. Note that at
+time t, T0 and T1 are effectively an A/A test with the only difference being the
+duration their users are exposed to Treatment. We can conduct a two-sample
+t-test to check whether the difference betweenT
+1(t) and T0(t) is statistically
+signiﬁcant, and conclude that the two Treatments have converged if the
+difference is small, as shown in Figure 23.3. Note that it is important to
+determine the practically signiﬁcant delta and ensure that the comparison has
+enough statistical power to detect it. At this point, we can apply the post-period
+1230
+pΔL
+Time (t)
+T-1
+T1 (t)-T0 (t)
+T+1T
+Short-term 
+effect
+The two treatments 
+have converged
+      
+Percent 
+delta 
+between 
+Treatment 
+& Control 
+pΔ1
+pΔT
+T1 
+starts
+T0 
+starts
+Figure 23.3 Measuring long-term effect after we observe the two time-staggered
+Treatments have converged
+244 23 Measuring Long-Term Treatment Effects
+
+method after time t to measure the long-term effect (Gupta, Kohavi et al.
+2019). While testing the difference between the two Treatments, it may be
+more important to control for a lower type II error rate than the typical 20%,
+even at the cost of increasing the Type I error rate to be higher than 5%.
+This method assumes that the difference between the two Treatments grows
+smaller over time. In other words,T1(t) – T0(t) is a decreasing function oft.
+While this is a plausible assumption, in practice, you also need to ensure that
+there is enough time gap between the two staggered Treatments. If the learned
+effect takes some time to manifest, and the two Treatments start right after one
+another, there may not be enough time for the two Treatments to have a
+difference at the start ofT
+1.
+Method #4: Holdback and Reverse Experiment
+Long-term experiments may not be feasible if there is time pressure to launch a
+Treatment to all users. Control groups can be expensive: they have an oppor-
+tunity cost as they don’t receive the Treatment (Varian2007). An alternative is
+to conduct aholdback: keeping 10% of users in Control for several weeks (or
+months) after launching the Treatment to 90% users (Xu, Duan and Huang
+2018). Holdback experiments are a typical type of long-running experiment.
+Because they have a small Control variant, they tend to have less power than
+may be optimal. It is important to make sure that the reduced sensitivity does
+not impact what you want to learn from the holdout. See more discussion in
+Chapter 15.
+There is an alternative version called reverse experiments. In a reverse
+experiment, we ramp 10% of users back into the Control several weeks (or
+months) after launching the Treatment to 100% of users. The beneﬁt of this
+approach is that everyone has received the Treatment for a while. If the
+Treatment introduces a new feature where network effect plays a role in user
+adoption, or if supply is constrained in the marketplace, the reverse experiment
+allows the network or the marketplace time to reach the new equilibrium. The
+disadvantage is that if the Treatment may introduce a visible change, ramping
+the users back into the Control may confuse them.
+Alternative Methods for Long-Running Experiments 245
+
+References
+Abadi, Martin, Andy Chu, Ian Goodfellow, H. Brendan Mironov, Ilya Mcmahan, Kunal
+Talwar, and Li Zhang. 2016.“Deep Learning with Differential Privacy.” Proceedings
+of the 2016 ACM SIGSAC Conference on Computer and Communications Security.
+Abrahamse, Peter. 2016.“How 8 Different A/B Testing Tools Affect Site Speed.” CXL:
+All Things Data-Driven Marketing . May 16. https://conversionxl.com/blog/
+testing-tools-site-speed/.
+ACM. 2018.ACM Code of Ethics and Professional Conduct.June 22.www.acm.org/
+code-of-ethics.
+Alvarez, Cindy. 2017.Lean Customer Development: Building Products Your Custom-
+ers Will Buy.O ’Reilly.
+Angrist, Joshua D., and Jörn-Steffen Pischke. 2014.Mastering ‘Metrics: The Path from
+Cause to Effect. Princeton University Press.
+Angrist, Joshua D., and Jörn-Steffen Pischke. 2009.Mostly Harmless Econometrics: An
+Empiricist’s Companion. Princeton University Press.
+Apple, Inc. 2017. “Phased Release for Automatic Updates Now Available.” June 5.
+https://developer.apple.com/app-store-connect/whats-new/?id=31070842.
+Apple, Inc. 2018.“Use Low Power Mode to Save Battery Life on Your iPhone.” Apple.
+September 25.https://support.apple.com/en-us/HT205234.
+Athey, Susan, and Guido Imbens. 2016.“Recursive Partitioning for Heterogeneous
+Causal Effects.” PNAS: Proceedings of the National Academy of Sciences.
+7353–7360. doi:https://doi.org/10.1073/pnas.1510489113.
+Azevedo, Eduardo M., Alex Deng, Jose Montiel Olea, Justin M. Rao, and E. Glen
+Weyl. 2019. “A/B Testing with Fat Tails.” February 26. Available at SSRN:
+https://ssrn.com/abstract=3171224 or http://dx.doi.org/10.2139/ssrn.3171224.
+Backstrom, Lars, and Jon Kleinberg. 2011. “Network Bucket Testing.” WWW ‘11
+Proceedings of the 20th International Conference on World Wide Web. Hydera-
+bad, India: ACM. 615–624.
+Bailar, John C. 1983.“Introduction.” In Clinical Trials: Issues and Approaches,b y
+Stuart Shapiro and Thomas Louis. Marcel Dekker.
+Bakshy, Eytan, Max Balandat, and Kostya Kashin. 2019. “Open-sourcing Ax and
+BoTorch: New AI tools for adaptive experimentation.” Facebook Artiﬁcial Intelli-
+gence. May 1. https://ai.facebook.com/blog/open-sourcing-ax-and-botorch-new-
+ai-tools-for-adaptive-experimentation/.
+246
+
+Bakshy, Eytan, and Eitan Frachtenberg. 2015.“Design and Analysis of Benchmarking
+Experiments for Distributed Internet Services.” WWW ‘15: Proceedings of the
+24th International Conference on World Wide Web . Florence, Italy: ACM.
+108–118. doi:https://doi.org/10.1145/2736277.2741082.
+Bakshy, Eytan, Dean Eckles, and Michael Bernstein. 2014.“Designing and Deploying
+Online Field Experiments.” International World Wide Web Conference (WWW
+2014). https://facebook.com//download/255785951270811/planout.pdf.
+Barajas, Joel, Ram Akella, Marius Hotan, and Aaron Flores. 2016.“Experimental
+Designs and Estimation for Online Display Advertising Attribution in Market-
+places.” Marketing Science: the Marketing Journal of the Institute for Operations
+Research and the Management Sciences35: 465–483.
+Barrilleaux, Bonnie, and Dylan Wang. 2018.“Spreading the Love in the LinkedIn Feed
+with Creator-Side Optimization. ” LinkedIn Engineering. October 16. https://
+engineering.linkedin.com/blog/2018/10/linkedin-feed-with-creator-side-optimization.
+Basin, David, Soren Debois, and Thomas Hildebrandt. 2018.“On Purpose and by
+Necessity: Compliance under the GDPR.” Financial Cryptography and Data
+Security 2018. IFCA. Preproceedings 21.
+Benbunan-Fich, Raquel. 2017. “The Ethics of Online Research with Unsuspecting
+Users: From A/B Testing to C/D Experimentation.” Research Ethics 13 (3–4):
+200–218. doi:https://doi.org/10.1177/1747016116680664.
+Benjamin, Daniel J., James O. Berger, Magnus Johannesson, Brian A. Nosek, E.-J.
+Wagenmakers, Richard Berk, Kenneth A. Bollen, et al. 2017.“Redeﬁne Statistical
+Signiﬁcance.” Nature Human Behaviour 2 (1): 6–10. https://www.nature.com/
+articles/s41562-017-0189-z.
+Beshears, John, James J. Choi, David Laibson, Brigitte C. Madrian, and Katherine L.
+Milkman. 2011.The Effect of Providing Peer Information on Retirement Savings
+Decisions. NBER Working Paper Series, National Bureau of Economic Research.
+www.nber.org/papers/w17345.
+Billingsly, Patrick. 1995.Probability and Measure. Wiley.
+Blake, Thomas, and Dominic Coey. 2014. “Why Marketplace Experimentation is
+Harder Than it Seems: The Role of Test-Control Interference.” EC ’14 Proceed-
+ings of the Fifteenth ACM Conference on Economics and Computation. Palo Alto,
+CA: ACM. 567/C0582.
+Blank, Steven Gary. 2005.The Four Steps to the Epiphany: Successful Strategies for
+Products that Win. Cafepress.com.
+Blocker, Craig, John Conway, Luc Demortier, Joel Heinrich, Tom Junk, Louis Lyons,
+and Giovanni Punzi. 2006. “Simple Facts about P-Values.” The Rockefeller
+University. January 5. http://physics.rockefeller.edu/luc/technical_reports/cdf8023_
+facts_about_p_values.pdf.
+Bodlewski, Mike. 2017.“When Slower UX is Better UX.” Web Designer Depot. Sep 25.
+https://www.webdesignerdepot.com/2017/09/when-slower-ux-is-better-ux/.
+Bojinov, Iavor, and Neil Shephard. 2017. “Time Series Experiments and Causal
+Estimands: Exact Randomization Tests and Trading.” arXiv of Cornell University.
+July 18. arXiv:1706.07840.
+Borden, Peter. 2014. “How Optimizely (Almost) Got Me Fired.” The SumAll Blog:
+Where E-commerce and Social Media Meet. June 18. https://blog.sumall.com/
+journal/optimizely-got-me-ﬁred.html.
+References 247
+
+Bowman, Douglas. 2009. “Goodbye, Google.” stopdesign. March 20. https://stop
+design.com/archive/2009/03/20/goodbye-google.html.
+Box, George E.P., J. Stuart Hunter, and William G. Hunter. 2005.Statistics for Experi-
+menters: Design, Innovation, and Discovery. 2nd edition. John Wiley & Sons, Inc.
+Brooks Bell. 2015. “Click Summit 2015 Keynote Presentation. ” Brooks Bell .
+www.brooksbell.com/wp-content/uploads/2015/05/BrooksBell_ClickSummit15_
+Keynote1.pdf.
+Brown, Morton B. 1975. “A Method for Combining Non-Independent, One-Sided
+Tests of Signﬁcance.” Biometrics 31 (4) 987–992. www.jstor.org/stable/2529826.
+Brutlag, Jake, Zoe Abrams, and Pat Meenan. 2011.“Above the Fold Time: Measuring
+Web Page Performance Visually.” Velocity: Web Performance and Operations
+Conference.
+Buhrmester, Michael, Tracy Kwang, and Samuel Gosling. 2011.“Amazon’s Mechan-
+ical Turk: A New Source of Inexpensive, Yet High-Quality Data?” Perspectives
+on Psychological Science, Feb 3.
+Campbell, Donald T. 1979.“Assessing the Impact of Planned Social Change.” Evalu-
+ation and Program Planning 2: 67–90. https://doi.org/10.1016/0149-7189(79)
+90048-X.
+Campbell’s law. 2018.Wikipedia. https://en.wikipedia.org/wiki/Campbell%27s_law.
+Card, David, and Alan B Krueger. 1994.“Minimum Wages and Employment: A Case
+Study of the Fast-Food Industry in New Jersey and Pennsylvania.” The American
+Economic Review84 (4): 772/C0793. https://www.jstor.org/stable/2118030.
+Casella, George, and Roger L. Berger. 2001.Statistical Inference. 2nd edition. Cengage
+Learning.
+CDC. 2015. The Tuskegee Timeline . December. https://www.cdc.gov/tuskegee/
+timeline.htm.
+Chamandy, Nicholas. 2016. “Experimentation in a Ridesharing Marketplace.” Lyft
+Engineering. September 2.https:/eng.lyft.com/experimentation-in-a-risharing-mar
+ketplace-b39db027a66e.
+Chan, David, Rong Ge, Ori Gershony, Tim Hesterberg, and Diane Lambert. 2010.
+“Evaluating Online Ad Campaigns in a Pipeline: Causal Models at Scale.” Pro-
+ceedings of ACM SIGKDD.
+Chapelle, Olivier, Thorsten Joachims, Filip Radlinski, and Yisong Yue. 2012.“Large-
+Scale Validation and Analysis of Interleaved Search Evaluation.” ACM Transac-
+tions on Information Systems, February.
+Chaplin, Charlie. 1964.My Autobiography. Simon Schuster.
+Charles, Reichardt S., and Mark M. Melvin. 2004.“Quasi Experimentation.” In Hand-
+book of Practical Program Evaluation, by Joseph S. Wholey, Harry P. Hatry and
+Kathryn E. Newcomer. Jossey-Bass.
+Chatham, Bob, Bruce D. Temkin, and Michelle Amato. 2004.A Primer on A/B Testing.
+Forrester Research.
+Chen, Nanyu, Min Liu, and Ya Xu. 2019. “How A/B Tests Could Go Wrong:
+Automatic Diagnosis of Invalid Online Experiments.” WSDM ‘19 Proceedings
+of the Twelfth ACM International Conference on Web Search and Data Mining.
+Melbourne, VIC, Australia: ACM. 501–509. https://dl.acm.org/citation.cfm?id=
+3291000.
+248 References
+
+Chrystal, K. Alec, and Paul D. Mizen. 2001.Goodhart’s Law: Its Origins, Meaning and
+Implications for Monetary Policy.Prepared for the Festschrift in honor of Charles
+Goodhart held on 15 –16 November 2001 at the Bank of England. http://
+cyberlibris.typepad.com/blog/ﬁles/Goodharts_Law.pdf.
+Coey, Dominic, and Tom Cunningham. 2019.“Improving Treatment Effect Estimators
+Through Experiment Splitting.” WWW ’19: The Web Conference. San Francisco,
+CA, USA: ACM. 285 –295. doi: https://dl.acm.org/citation.cfm?doid=
+3308558.3313452.
+Collis, David. 2016.“Lean Strategy.” Harvard Business Review62–68. https://hbr.org/
+2016/03/lean-strategy.
+Concato, John, Nirav Shah, and Ralph I Horwitz. 2000.“Randomized, Controlled
+Trials, Observational Studies, and the Hierarchy of Research Designs.” The New
+England Journal of Medicine 342 (25): 1887–1892. doi:https://www.nejm.org/
+doi/10.1056/NEJM200006223422507.
+Cox, David Roxbee. 1958.Planning of Experiments. New York: John Wiley.
+Croll, Alistair, and Benjamin Yoskovitz. 2013.Lean Analytics: Use Data to Build a
+Better Startup Faster.O ’Reilly Media.
+Crook, Thomas, Brian Frasca, Ron Kohavi, and Roger Longbotham. 2009.“Seven
+Pitfalls to Avoid when Running Controlled Experiments on the Web.” KDD ’09:
+Proceedings of the 15th ACM SIGKDD international conference on Knowledge
+discovery and data mining, 1105–1114.
+Cross, Robert G., and Ashutosh Dixit. 2005.“Customer-centric Pricing: The Surprising
+Secret for Proﬁtability.” Business Horizons, 488.
+Deb, Anirban, Suman Bhattacharya, Jeremey Gu, Tianxia Zhuo, Eva Feng, and Mandie
+Liu. 2018. “Under the Hood of Uber’s Experimentation Platform.” Uber Engin-
+eering. August 28.https://eng.uber.com/xp.
+Deng, Alex. 2015. “Objective Bayesian Two Sample Hypothesis Testing for Online
+Controlled Experiments.” Florence, IT: ACM. 923–928.
+Deng, Alex, and Victor Hu. 2015.“Diluted Treatment Effect Estimation for Trigger
+Analysis in Online Controlled Experiments.” WSDM ’15: Proceedings of the
+Eighth ACM International Conference on Web Search and Data Mining. Shang-
+hai, China: ACM. 349–358. doi:https://doi.org/10.1145/2684822.2685307.
+Deng, Alex, Jiannan Lu, and Shouyuan Chen. 2016.“Continuous Monitoring of A/B
+Tests without Pain: Optional Stopping in Bayesian Testing.” 2016 IEEE Inter-
+national Conference on Data Science and Advanced Analytics (DSAA). Montreal,
+QC, Canada: IEEE. doi:https://doi.org/10.1109/DSAA.2016.33.
+Deng, Alex, Ulf Knoblich, and Jiannan Lu. 2018.“Applying the Delta Method in
+Metric Analytics: A Practical Guide with Novel Ideas.” 24th ACM SIGKDD
+Conference on Knowledge Discovery and Data Mining.
+Deng, Alex, Jiannan Lu, and Jonathan Litz. 2017.“Trustworthy Analysis of Online A/B
+Tests: Pitfalls, Challenges and Solutions.” WSDM: The Tenth International Con-
+ference on Web Search and Data Mining. Cambridge, UK.
+Deng, Alex, Ya Xu, Ron Kohavi, and Toby Walker. 2013. “Improving the
+Sensitivity of Online Controlled Experiments by Utilizing Pre-Experiment Data.”
+WSDM 2013: Sixth ACM International Conference on Web Search and Data
+Mining.
+References 249
+
+Deng, Shaojie, Roger Longbotham, Toby Walker, and Ya Xu. 2011. “Choice of
+Randomization Unit in Online Controlled Experiments.” Joint Statistical Meetings
+Proceedings. 4866–4877.
+Denrell, Jerker. 2005. “Selection Bias and the Perils of Benchmarking.” (Harvard
+Business Review)83 (4): 114–119.
+Dickhaus, Thorsten. 2014.Simultaneous Statistical Inference: With Applications in the
+Life Sciences . Springer. https://www.springer.com/cda/content/document/cda_
+downloaddocument/9783642451812-c2.pdf.
+Dickson, Paul. 1999. The Ofﬁcial Rules and Explanations: The Original Guide to
+Surviving the Electronic Age With Wit, Wisdom, and Laughter. Federal Street Pr.
+Djulbegovic, Benjamin, and Iztok Hozo. 2002. “At What Degree of Belief in a
+Research Hypothesis Is a Trial in Humans Justiﬁed?” Journal of Evaluation in
+Clinical Practice, June 13.
+Dmitriev, Pavel, and Xian Wu. 2016.“Measuring Metrics.” CIKM: Conference on
+Information and Knowledge Management. Indianapolis, In. http://bit.ly/
+measuringMetrics.
+Dmitriev, Pavel, Somit Gupta, Dong Woo Kim, and Garnet Vaz. 2017.“A Dirty Dozen:
+Twelve Common Metric Interpretation Pitfalls in Online Controlled Experiments.”
+Proceedings of the 23rd ACM SIGKDD International Conference on Knowledge
+Discovery and Data Mining (KDD 2017) . Halifax, NS, Canada: ACM.
+1427–1436. http://doi.acm.org/10.1145/3097983.3098024.
+Dmitriev, Pavel, Brian Frasca, Somit Gupta, Ron Kohavi, and Garnet Vaz. 2016.
+“Pitfalls of Long-Term Online Controlled Experiments.” 2016 IEEE International
+Conference on Big Data (Big Data). Washington DC. 1367–1376. http://bit.ly/
+expLongTerm.
+Doerr, John. 2018.Measure What Matters: How Google, Bono, and the Gates Foun-
+dation Rock the World with OKRs. Portfolio.
+Doll, Richard. 1998.“Controlled Trials: the 1948 Watershed.” BMJ. doi:https://doi.org/
+10.1136/bmj.317.7167.1217.
+Dutta, Kaushik, and Debra Vadermeer. 2018.“Caching to Reduce Mobile App Energy
+Consumption.” ACM Transactions on the Web (TWEB), February 12(1): Article
+No. 5.
+Dwork, Cynthia, and Aaron Roth. 2014.“The Algorithmic Foundations of Differential
+Privacy.” Foundations and Trends in Computer Science211–407.
+Eckles, Dean, Brian Karrer, and Johan Ugander. 2017. “Design and Analysis of
+Experiments in Networks: Reducing Bias from Interference.” Journal of Causal
+Inference 5(1). www.deaneckles.com/misc/Eckles_Karrer_Ugander_Reducing_
+Bias_from_Interference.pdf.
+Edgington, Eugene S. 1972, “An Additive Method for Combining Probablilty
+Values from Independent Experiments. ” The Journal of Psychology 80 (2):
+351–363.
+Edmonds, Andy, Ryan W. White, Dan Morris, and Steven M. Drucker. 2007.“Instru-
+menting the Dynamic Web. ” Journal of Web Engineering . (3): 244 –260.
+www.microsoft.com/en-us/research/wp-content/uploads/2016/02/edmondsjwe
+2007.pdf .
+Efron, Bradley, and Robert J. Tibshriani. 1994. An Introduction to the Bootstrap.
+Chapman & Hall/CRC.
+250 References
+
+EGAP. 2018. “10 Things to Know About Heterogeneous Treatment Effects.” EGAP:
+Evidence in Government and Politics.egap.org/methods-guides/10-things-hetero
+geneous-treatment-effects.
+Ehrenberg, A.S.C. 1975. “The Teaching of Statistics: Corrections and Comments.”
+Journal of the Royal Statistical Society. Series A138 (4): 543–545. https://www
+.jstor.org/stable/2345216.
+Eisenberg, Bryan 2005. “How to Improve A/B Testing.” ClickZ Network. April 29.
+www.clickz.com/clickz/column/1717234/how-improve-a-b-testing.
+Eisenberg, Bryan. 2004.A/B Testing for the Mathematically Disinclined.May 7.http://
+www.clickz.com/showPage.html?page=3349901.
+Eisenberg, Bryan, and John Quarto-vonTivadar. 2008.Always Be Testing: The Com-
+plete Guide to Google Website Optimizer. Sybex.
+eMarketer. 2016. “Microsoft Ad Revenues Continue to Rebound.” April 20. https://
+www.emarketer.com/Article/Microsoft-Ad-Revenues-Continue-Rebound/1013854.
+European Commission. 2018. https://ec.europa.eu/commission/priorities/justice-and-
+fundamental-rights/data-protection/2018-reform-eu-data-protection-rules_en.
+European Commission. 2016. EU GDPR.ORG.https://eugdpr.org/.
+Fabijan, Aleksander, Pavel Dmitriev, Helena Holmstrom Olsson, and Jan Bosch. 2018.
+“Online Controlled Experimentation at Scale: An Empirical Survey on the Current
+State of A/B Testing.” Euromicro Conference on Software Engineering and
+Advanced Applications (SEAA). Prague, Czechia. doi:10.1109/SEAA.2018.00021.
+Fabijan, Aleksander, Pavel Dmitriev, Helena Holmstrom Olsson, and Jan Bosch.
+2017. “The Evolution of Continuous Experimentation in Software Product
+Development: from Data to a Data-Driven Organization at Scale.” ICSE ’17
+Proceedings of the 39th International Conference on Software Engineering .
+Buenos Aires, Argentina: IEEE Press. 770 –780. doi: https://doi.org/10.1109/
+ICSE.2017.76.
+Fabijan, Aleksander, Jayant Gupchup, Somit Gupta, Jeff Omhover, Wen Qin, Lukas
+Vermeer, and Pavel Dmitriev. 2019. “Diagnosing Sample Ratio Mismatch in
+Online Controlled Experiments: A Taxonomy and Rules of Thumb for Practition-
+ers.” KDD ‘19: The 25th SIGKDD International Conference on Knowledge
+Discovery and Data Mining. Anchorage, Alaska, USA: ACM.
+Fabijan, Aleksander, Pavel Dmitriev, Colin McFarland, Lukas Vermeer, Helena Holm-
+ström Olsson, and Jan Bosch. 2018.“Experimentation Growth: Evolving Trust-
+worthy A/B Testing Capabilities in Online Software Companies.” Journal of
+Software: Evolution and Process 30 (12:e2113). doi: https://doi.org/10.1002/
+smr.2113.
+FAT/ML. 2019. Fairness, Accountability, and Transparency in Machine Learning.
+http://www.fatml.org/.
+Fisher, Ronald Aylmer. 1925.Statistical Methods for Research Workers. Oliver and
+Boyd. http://psychclassics.yorku.ca/Fisher/Methods/.
+Forte, Michael. 2019. “Misadventures in experiments for growth.” The Unofﬁcial
+Google Data Science Blog. April 16. www.unofﬁcialgoogledatascience.com/
+2019/04/misadventures-in-experiments-for-growth.html.
+Freedman, Benjamin. 1987.“Equipoise and the Ethics of Clinical Research.” The New
+England Journal of Medicine 317 (3): 141–145. doi:https://www.nejm.org/doi/
+full/10.1056/NEJM198707163170304.
+References 251
+
+Gelman, Andrew, and John Carlin. 2014.“Beyond Power Calculations: Assessing Type
+S (Sign) and Type M (Magnitude) Errors.” Perspectives on Psychological Science
+9 (6): 641–651. doi:10.1177/1745691614551642.
+Gelman, Andrew, and Thomas C. Little. 1997.“Poststratiﬁcation into Many Categories
+Using Hierarchical Logistic Regression.” Survey Methdology 23 (2): 127–135.
+www150.statcan.gc.ca/n1/en/pub/12-001-x/1997002/article/3616-eng.pdf.
+Georgiev, Georgi Zdravkov. 2019. Statistical Methods in Online A/B Testing: Statistics
+for Data-Driven Business Decisions and Risk Management in e-Commerce. Inde-
+pendently published.www.abtestingstats.com
+Georgiev, Georgi Zdravkov. 2018.“Analysis of 115 A/B Tests: Average Lift is 4%,
+Most Lack Statistical Power.” Analytics Toolkit. June 26. http://blog.analytics-
+toolkit.com/2018/analysis-of-115-a-b-tests-average-lift-statistical-power/.
+Gerber, Alan S., and Donald P. Green. 2012.Field Experiments: Design, Analysis, and
+Interpretation. W. W. Norton & Company.https://www.amazon.com/Field-Experi
+ments-Design-Analysis-Interpretation/dp/0393979954.
+Goldratt, Eliyahu M. 1990.The Haystack Syndrome. North River Press.
+Goldstein, Noah J., Steve J. Martin, and Robert B. Cialdini. 2008.Yes!: 50 Scientiﬁcally
+Proven Ways to Be Persuasive. Free Press.
+Goodhart, Charles A. E. 1975.Problems of Monetary Management: The UK Experi-
+ence. Vol. 1, inPapers in Monetary Economics, by Reserve Bank of Australia.
+Goodhart’s law. 2018.Wikipedia. https://en.wikipedia.org/wiki/Goodhart%27s_law.
+Goodman, Steven. 2008.“A Dirty Dozen: Twelve P-Value Misconceptions.” Seminars
+in Hematology. doi:https://doi.org/10.1053/j.seminhematol.2008.04.003.
+Google. 2019. Processing Logs at Scale Using Cloud Dataﬂow. March 19. https://
+cloud.google.com/solutions/processing-logs-at-scale-using-dataﬂow.
+Google. 2018.Google Surveys.https://marketingplatform.google.com/about/surveys/.
+Google. 2011. “Ads Quality Improvements Rolling Out Globally.” Google Inside
+AdWords. October 3.https://adwords.googleblog.com/2011/10/ads-quality-improve
+ments-rolling-out.html.
+Google Console. 2019.“Release App Updates with Staged Rollouts.” Google Console
+Help. https://support.google.com/googleplay/android-developer/answer/6346149?
+hl=en.
+Google Developers. 2019.Reduce Your App Size.https://developer.andriod.com/topic/
+performance/reduce-apk-size.
+Google, Helping Advertisers Comply with the GDPR. 2019.Google Ads Help.https://
+support.google.com/google-ads/answer/9028179?hl=en.
+Google Website Optimizer. 2008.http://services.google.com/websiteoptimizer.
+Gordon, Brett R., Florian Zettelmeyer, Neha Bhargava, and Dan Chapsky. 2018.
+“A Comparison of Approaches to Advertising Measurement: Evidence from Big
+Field Experiments at Facebook (forthcoming at Marketing Science).” https://
+papers.ssrn.com/sol3/papers.cfm?abstract_id=3033144.
+Goward, Chris. 2015.“Delivering Proﬁtable ‘A-ha!’ Moments Everyday.” Conversion
+Hotel. Texel, The Netherlands. www.slideshare.net/webanalisten/chris-goward-
+strategy-conversion-hotel-2015.
+Goward, Chris. 2012.You Should Test That: Conversion Optimization for More Leads,
+Sales and Proﬁt or The Art and Science of Optimized Marketing. Sybex.
+252 References
+
+Greenhalgh, Trisha. 2014. How to Read a Paper: The Basics of Evidence-Based
+Medicine. BMJ Books.https://www.amazon.com/gp/product/B00IPG7GLC.
+Greenhalgh, Trisha. 1997.“How to Read a Paper : Getting Your Bearings (deciding what
+the paper is about).” BMJ 315 (7102): 243–246. doi:10.1136/bmj.315.7102.243.
+Greenland, Sander, Stephen J. Senn, Kenneth J. Rothman, John B. Carlin, Charles Poole,
+Steven N. Goodman, and Douglas G. Altman. 2016.“Statistical Tests, P Values,
+Conﬁdence Intervals, and Power: a Guide to Misinterpretations.” European Journal
+of Epidemiology31 (4): 337–350. https://dx.doi.org/10.1007%2Fs10654–016-0149-3.
+Grimes, Carrie, Diane Tang, and Daniel M. Russell. 2007.“Query Logs Alone are not
+Enough.” International Conference of the World Wide Web, May.
+Grove, Andrew S. 1995.High Output Management. 2nd edition. Vintage.
+Groves, Robert M., Floyd J. Fowler Jr, Mick P. Couper, James M. Lepkowski, Singer
+Eleanor, and Roger Tourangeau. 2009.Survey Methodology, 2nd edition.Wiley.
+Gui, Han, Ya Xu, Anmol Bhasin, and Jiawei Han. 2015.“Network A/B Testing From
+Sampling to Estimation.” WWW ’15 Proceedings of the 24th International Con-
+ference on World Wide Web. Florence, IT: ACM. 399–409.
+Gupta, Somit, Lucy Ulanova, Sumit Bhardwaj, Pavel Dmitriev, Paul Raff, and Alek-
+sander Fabijan. 2018. “The Anatomy of a Large-Scale Online Experimentation
+Platform.” IEEE International Conference on Software Architecture.
+Gupta, Somit, Ronny Kohavi, Diane Tang, Ya Xu, and etal. 2019.“Top Challenges
+from the ﬁrst Practical Online Controlled Experiments Summit.” Edited by Xin
+Luna Dong, Ankur Teredesai and Reza Zafarani.SIGKDD Explorations (ACM)
+21 (1).https://bit.ly/OCESummit1.
+Guyatt, Gordon H., David L. Sackett, John C. Sinclair, Robert Hayward, Deborah J.
+Cook, and Richard J. Cook. 1995.“Users’ Guides to the Medical Literature: IX.
+A method for Grading Health Care Recommendations.” Journal of the American
+Medical Association (JAMA)274 (22): 1800–1804. doi:https://doi.org/10.1001%
+2Fjama.1995.03530220066035.
+Harden, K. Paige, Jane Mendle, Jennifer E. Hill, Eric Turkheimer, and Robert E. Emery.
+2008. “Rethinking Timing of First Sex and Delinquency.” Journal of Youth and
+Adolescence 37 (4): 373–385. doi:https://doi.org/10.1007/s10964-007-9228-9.
+Harford, Tim. 2014.The Undercover Economist Strikes Back: How to Run– or Ruin–
+an Economy. Riverhead Books.
+Hauser, John R., and Gerry Katz. 1998. “Metrics: You Are What You Measure!”
+European Management Journal 16 (5): 516–528. http://www.mit.edu/~hauser/
+Papers/metrics%20you%20are%20what%20you%20measure.pdf.
+Health and Human Services. 2018a.Guidance Regarding Methods for De-identiﬁcation
+of Protected Health Information in Accordance with the Health Insurance Port-
+ability and Accountability Act (HIPAA) Privacy Rule.https://www.hhs.gov/hipaa/
+for-professionals/privacy/special-topics/de-identiﬁcation/index.html.
+Health and Human Services. 2018b.Health Information Privacy.https://www.hhs.gov/
+hipaa/index.html.
+Health and Human Services. 2018c. Summary of the HIPAA Privacy Rule. https://
+www.hhs.gov/hipaa/for-professionals/privacy/laws-regulations/index.html.
+Hedges, Larry, and Ingram Olkin. 2014.Statistical Methods for Meta-Analysis. Aca-
+demic Press.
+References 253
+
+Hemkens, Lars, Despina Contopoulos-Ioannidis, and John Ioannidis. 2016.“Routinely
+Collected Data and Comparative Effectiveness Evidence: Promises and Limita-
+tions.” CMAJ, May 17.
+HIPAA Journal. 2018. What is Considered Protected Health Information Under
+HIPAA. April 2. https://www.hipaajournal.com/what-is-considered-protected-
+health-information-under-hipaa/.
+Hochberg, Yosef, and Yoav Benjamini. 1995.“Controlling the False Discovery Rate: a
+Practical and Powerful Approach to Multiple Testing Series B.” Journal of the
+Royal Statistical Society57 (1): 289–300.
+Hodge, Victoria, and Jim Austin. 2004.“A Survey of Outlier Detection Methodolo-
+gies.” Journal of Artiﬁcial Intelligence Review.85–126.
+Hohnhold, Henning, Deirdre O’Brien, and Diane Tang. 2015.“Focus on the Long-
+Term: It’s better for Users and Business. ” Proceedings 21st Conference on
+Knowledge Discovery and Data Mining (KDD 2015). Sydney, Australia: ACM.
+http://dl.acm.org/citation.cfm?doid=2783258.2788583.
+Holson, Laura M. 2009.“Putting a Bolder Face on Google.” NY Times. February 28.
+https://www.nytimes.com/2009/03/01/business/01marissa.html.
+Holtz, David Michael. 2018.“Limiting Bias from Test-Control Interference In Online
+Marketplace Experiments.” DSpace@MIT. http://hdl.handle.net/1721.1/117999.
+Hoover, Kevin D. 2008.“Phillips Curve.” In R. David Henderson,Concise Encyclo-
+pedia of Economics. http://www.econlib.org/library/Enc/PhillipsCurve.html.
+Huang, Jason, David Reiley, and Nickolai M. Raibov. 2018. “David Reiley, Jr.”
+Measuring Consumer Sensitivity to Audio Advertising: A Field Experiment on
+Pandora Internet Radio.April 21. http://davidreiley.com/papers/PandoraListener
+DemandCurve.pdf.
+Huang, Jeff, Ryen W. White, and Susan Dumais. 2012.“No Clicks, No Problem: Using
+Cursor Movements to Understand and Improve Search.” Proceedings of SIGCHI.
+Huang, Yanping, Jane You, Iris Wang, Feng Cao, and Ian Gao. 2015.Data Science
+Interviews Exposed. CreateSpace.
+Hubbard, Douglas W. 2014.How to Measure Anything: Finding the Value of Intan-
+gibles in Business. 3rd edition. Wiley.
+Huffman, Scott. 2008.Search Evaluation at Google.September 15.https://googleblog
+.blogspot.com/2008/09/search-evaluation-at-google.html.
+Imbens, Guido W., and Donald B. Rubin. 2015.Causal Inference for Statistics, Social,
+and Biomedical Sciences: An Introduction. Cambridge University Press.
+Ioannidis, John P. 2005.“Contradicted and Initially Stronger Effects in Highly Cited
+Clinical Research.” (The Journal of the American Medical Association) 294 (2).
+Jackson, Simon. 2018.“How Booking.com increases the power of online experiments
+with CUPED.” Booking.ai. January 22. https://booking.ai/how-booking-com-
+increases-the-power-of-online-experiments-with-cuped-995d186fff1d.
+Joachims, Thorsten, Laura Granka, Bing Pan, Helene Hembrooke, and Geri Gay. 2005.
+“Accurately Interpreting Clickthrough Data as Implicit Feedback.” SIGIR, August.
+Johari, Ramesh, Leonid Pekelis, Pete Koomen, and David Walsh. 2017.“Peeking at
+A/B Tests.” KDD ’17: Proceedings of the 23rd ACM SIGKDD International
+Conference on Knowledge Discovery and Data Mining. Halifax, NS, Canada:
+ACM. 1517– 1525. doi:https://doi.org/10.1145/3097983.3097992.
+254 References
+
+Kaplan, Robert S., and David P. Norton. 1996.The Balanced Scorecard: Translating
+Strategy into Action. Harvard Business School Press.
+Katzir, Liran, Edo Liberty, and Oren Somekh. 2012.“Framework and Algorithms for
+Network Bucket Testing.” Proceedings of the 21st International Conference on
+World Wide Web1029–1036.
+Kaushik, Avinash. 2006. “Experimentation and Testing: A Primer. ” Occam’s
+Razor. May 22. www.kaushik.net/avinash/2006/05/experimentation-and-testing-
+a-primer.html.
+Keppel, Geoffrey, William H. Sauﬂey, and Howard Tokunaga. 1992.Introduction to
+Design and Analysis. 2nd edition. W.H. Freeman and Company.
+Kesar, Alhan. 2018. 11 Ways to Stop FOOC ’ing up your A/B tests. August 9.
+www.widerfunnel.com/stop-fooc-ab-tests/.
+King, Gary, and Richard Nielsen. 2018.Why Propensity Scores Should Not Be Used for
+Matching. Working paper.https://gking.harvard.edu/publications/why-propensity-
+scores-should-not-be-used-formatching.
+King, Rochelle, Elizabeth F. Churchill, and Caitlin Tan. 2017.Designing with Data:
+Improving the User Experience with A/B Testing.O ’Reilly Media.
+Kingston, Robert. 2015.Does Optimizely Slow Down a Site’s Performance.January 18.
+https://www.quora.com/Does-Optimizely-slow-down-a-sites-performance/answer/
+Robert-Kingston.
+Knapp, Michael S., Juli A. Swinnerton, Michael A. Copland, and Jack Monpas-Huber.
+2006. Data-Informed Leadership in Education . Center for the Study of
+Teaching and Policy, University of Washington, Seattle, WA: Wallace Founda-
+tion. https://www.wallacefoundation.org/knowledge-center/Documents/1-Data-
+Informed-Leadership.pdf .
+Kohavi, Ron. 2019.“HiPPO FAQ.” ExP Experimentation Platform. http://bitly.com/
+HIPPOExplained.
+Kohavi, Ron. 2016.“Pitfalls in Online Controlled Experiments.” CODE ’16: Confer-
+ence on Digital Experimentation.MIT. https://bit.ly/Code2016Kohavi.
+Kohavi, Ron. 2014.“Customer Review of A/B Testing: The Most Powerful Way to
+Turn Clicks Into Customers.” Amazon.com. May 27. www.amazon.com/gp/cus
+tomer-reviews/R44BH2HO30T18.
+Kohavi, Ron. 2010.“Online Controlled Experiments: Listening to the Customers, not to
+the HiPPO.” Keynote at EC10: the 11th ACM Conference on Electronic Com-
+merce. www.exp-platform.com/Documents/2010-06%20EC10.pptx.
+Kohavi, Ron. 2003.Real-world Insights from Mining Retail E-Commerce Data. Stan-
+ford, CA, May 22.http://ai.stanford.edu/~ronnyk/realInsights.ppt.
+Kohavi, Ron, and Roger Longbotham. 2017.“Online Controlled Experiments and A/B
+Tests.” In Encyclopedia of Machine Learning and Data Mining , by Claude
+Sammut and Geoffrey I Webb. Springer. www.springer.com/us/book/
+9781489976857.
+Kohavi, Ron, and Roger Longbotham. 2010.“Unexpected Results in Online Controlled
+Experiments.” SIGKDD Explorations, December.http://bit.ly/expUnexpected.
+Kohavi, Ron and Parekh, Rajesh. 2003.“Ten Supplementary Analyses to Improve
+E-commerce Web Sites.” WebKDD. http://ai.stanford.edu/~ronnyk/supplementary
+Analyses.pdf.
+References 255
+
+Kohavi, Ron, and Stefan Thomke. 2017.“The Surprising Power of Online Experiments.”
+Harvard Business Review (September–October): 74–92. http://exp-platform.com/
+hbr-the-surprising-power-of-online-experiments/.
+Kohavi, Ron, Thomas Crook, and Roger Longbotham. 2009.“Online Experimentation
+at Microsoft.” Third Workshop on Data Mining Case Studies and Practice Prize.
+http://bit.ly/expMicrosoft.
+Kohavi, Ron, Roger Longbotham, and Toby Walker. 2010. “Online Experiments:
+Practical Lessons. ” IEEE Computer , September: 82 –85. http://bit.ly/
+expPracticalLessons.
+Kohavi, Ron, Diane Tang, and Ya Xu. 2019.“History of Controlled Experiments.”
+Practical Guide to Trustworthy Online Controlled Experiments. https://bit.ly/
+experimentGuideHistory.
+Kohavi, Ron, Alex Deng, Roger Longbotham, and Ya Xu. 2014.“Seven Rules of
+Thumb for Web Site.” Proceedings of the 20th ACM SIGKDD International
+Conference on Knowledge Discovery and Data Mining (KDD’14). http://bit.ly/
+expRulesOfThumb.
+Kohavi, Ron, Roger Longbotham, Dan Sommerﬁeld, and Randal M. Henne. 2009.
+“Controlled Experiments on the Web: Survey and Practical Guide.” Data Mining
+and Knowledge Discovery18: 140–181. http://bit.ly/expSurvey.
+Kohavi, Ron, Alex Deng, Brian Frasca, Roger Longbotham, Toby Walker, and Ya Xu.
+2012. “Trustworthy Online Controlled Experiments: Five Puzzling Outcomes
+Explained.” Proceedings of the 18th Conference on Knowledge Discovery and
+Data Mining.http://bit.ly/expPuzzling.
+Kohavi, Ron, Alex Deng, Brian Frasca, Toby Walker, Ya Xu, and Nils Pohlmann.
+2013. “Online Controlled Experiments at Large Scale.” KDD 2013: Proceedings
+of the 19th ACM SIGKDD International Conference on Knowledge Discovery and
+Data Mining.
+Kohavi, Ron, David Messner, Seth Eliot, Juan Lavista Ferres, Randy Henne, Vignesh
+Kannappan, and Justin Wang. 2010.“Tracking Users’ Clicks and Submits: Trade-
+offs between User Experience and Data Loss. ” Experimentation Platform .
+September 28.www.exp-platform.com/Documents/TrackingUserClicksSubmits.pdf
+Kramer, Adam, Jamie Guillory, and Jeffrey Hancock. 2014.“Experimental evidence of
+massive-scale emotional contagion through social networks.” PNAS, June 17.
+Kuhn, Thomas. 1996.The Structure of Scientiﬁc Revolutions. 3rd edition. University of
+Chicago Press.
+Laja, Peep. 2019.“How to Avoid a Website Redesign FAIL.” CXL. March 8.https://
+conversionxl.com/show/avoid-redesign-fail/.
+Lax, Jeffrey R., and Justin H. Phillips. 2009.“How Should We Estimate Public Opinion
+in The States? ” American Journal of Political Science 53 (1): 107 –121.
+www.columbia.edu/~jhp2121/publications/HowShouldWeEstimateOpinion.pdf.
+Lee, Jess. 2013.Fake Door.April 10.www.jessyoko.com/blog/2013/04/10/fake-doors/.
+Lee, Minyong R, and Milan Shen. 2018.“Winner’s Curse: Bias Estimation for Total
+Effects of Features in Online Controlled Experiments.” KDD 2018: The 24th ACM
+Conference on Knowledge Discovery and Data Mining. London: ACM.
+Lehmann, Erich, L., and Joseph P. Romano. 2005. Testing Statistical Hypothesis.
+Springer.
+256 References
+
+Levy, Steven. 2014.“Why The New Obamacare Website is Going to Work This Time.”
+www.wired.com/2014/06/healthcare-gov-revamp/.
+Lewis, Randall A, Justin M Rao, and David Reiley. 2011.“Here, There, and Every-
+where: Correlated Online Behaviors Can Lead to Overestimates of the Effects of
+Advertising.” Proceedings of the 20th ACM International World Wide Web
+Conference (WWW). 157–166. https://ssrn.com/abstract=2080235.
+Li, Lihong, Wei Chu, John Langford, and Robert E. Schapire. 2010.“A Contextual-
+Bandit Approach to Personalized News Article Recommendation.” WWW 2010:
+Proceedings of the 19th International Conference on World Wide Web. Raleigh,
+North Carolina.https://arxiv.org/pdf/1003.0146.pdf.
+Linden, Greg. 2006.Early Amazon: Shopping Cart Recommendations.April 25.http://
+glinden.blogspot.com/2006/04/early-amazon-shopping-cart.html.
+Linden, Greg. 2006.“Make Data Useful.” December. http://sites.google.com/site/glin
+den/Home/StanfordDataMining.2006-11-28.ppt.
+Linden, Greg. 2006.“Marissa Mayer at Web 2.0 .” Geeking with Greg .November 9.
+http://glinden.blogspot.com/2006/11/marissa-mayer-at-web-20.html.
+Linowski, Jakub. 2018a.Good UI: Learn from What We Try and Test.https://goodui .org/.
+Linowski, Jakub. 2018b.No Coupon.https://goodui.org/patterns/1/.
+Liu, Min, Xiaohui Sun, Maneesh Varshney, and Ya Xu. 2018.“Large-Scale Online
+Experimentation with Quantile Metrics.” Joint Statistical Meeting, Statistical Con-
+sulting Section. Alexandria, VA: American Statistical Association. 2849–2860.
+Loukides, Michael, Hilary Mason, and D.J. Patil. 2018. Ethics and Data Science.
+O’Reilly Media.
+Lu, Luo, and Chuang Liu. 2014. “Separation Strategies for Three Pitfalls in A/B
+Testing.” KDD User Engagement Optimization Workshop . New York.
+www.ueo-workshop.com/wp-content/uploads/2014/04/Separation-strategies-for-
+three-pitfalls-in-AB-testing_withacknowledgments.pdf .
+Lucas critique. 2018.Wikipedia. https://en.wikipedia.org/wiki/Lucas_critique.
+Lucas, Robert E. 1976. Econometric Policy Evaluation: A Critique. Vol. 1. In The
+Phillips Curve and Labor Markets , by K. Brunner and A. Meltzer, 19 –46.
+Carnegie-Rochester Conference on Public Policy.
+Malinas, Gary, and John Bigelow. 2004.“Simpson’s Paradox.” Stanford Encyclopedia
+of Philosophy. February 2.http://plato.stanford.edu/entries/paradox-simpson/.
+Manzi, Jim. 2012.Uncontrolled: The Surprising Payoff of Trial-and-Error for Busi-
+ness, Politics, and Society. Basic Books.
+Marks, Harry M. 1997.The Progress of Experiment: Science and Therapeutic Reform
+in the United States, 1900– 1990. Cambridge University Press.
+Marsden, Peter V., and James D. Wright. 2010.Handbook of Survey Research, 2nd
+Edition. Emerald Publishing Group Limited.
+Marsh, Catherine, and Jane Elliott. 2009.Exploring Data: An Introduction to Data
+Analysis for Social Scientists. 2nd edition. Polity.
+Martin, Robert C. 2008.Clean Code: A Handbook of Agile Software Craftsmanship.
+Prentice Hall.
+Mason, Robert L., Richard F. Gunst, and James L. Hess. 1989.Statistical Design and
+Analysis of Experiments With Applications to Engineering and Science. John
+Wiley & Sons.
+References 257
+
+McChesney, Chris, Sean Covey, and Jim Huling. 2012.The 4 Disciplines of Execution:
+Achieving Your Wildly Important Goals. Free Press.
+McClure, Dave. 2007. Startup Metrics for Pirates: AARRR!!!August 8. www.slide
+share.net/dmc500hats/startup-metrics-for-pirates-long-version.
+McClure, Dave. 2007. Startup Metrics for Pirates: AARRR!!!August 8. www.slide
+share.net/dmc500hats/startup-metrics-for-pirates-long-version.
+McCrary, Justin. 2008. “Manipulation of the Running Variable in the Regression
+Discontinuity Design: A Density Test.” Journal of Econometrics(142): 698–714.
+McCullagh, Declan. 2006. AOL’s Disturbing Glimpse into Users’ Lives. August 9.
+www.cnet.com/news/aols-disturbing-glimpse-into-users-lives/.
+McFarland, Colin. 2012.Experiment!: Website Conversion Rate Optimization with A/B
+and Multivariate Testing. New Riders.
+McGue, Matt. 2014. Introduction to Human Behavioral Genetics, Unit 2: Twins:
+A Natural Experiment . Coursera. https://www.coursera.org/learn/behavioralge
+netics/lecture/u8Zgt/2a-twins-a-natural-experiment.
+McKinley, Dan. 2013.Testing to Cull the Living Flower. January.http://mcfunley.com/
+testing-to-cull-the-living-ﬂower.
+McKinley, Dan. 2012. Design for Continuous Experimentation: Talk and Slides.
+December 22.http://mcfunley.com/design-for-continuous-experimentation.
+Mechanical Turk. 2019.Amazon Mechanical Turk.http://www.mturk.com.
+Meenan, Patrick. 2012.“Speed Index.” WebPagetest. April.https://sites.google.com/a/
+webpagetest.org/docs/using-webpagetest/metrics/speed-index.
+Meenan, Patrick, Chao (Ray) Feng, and Mike Petrovich. 2013. “Going Beyond
+Onload – How Fast Does It Feel?” Velocity: Web Performance and Operations
+conference, October 14– 16. http://velocityconf.com/velocityny2013/public/sched
+ule/detail/31344.
+Meyer, Michelle N. 2018.“Ethical Considerations When Companies Study– and Fail
+to Study– Their Customers.” In The Cambridge Handbook of Consumer Privacy,
+by Evan Selinger, Jules Polonetsky and Omer Tene. Cambridge University Press.
+Meyer, Michelle N. 2015. “Two Cheers for Corporate Experimentation: The A/B
+Illusion and the Virtues of Data-Driven Innovation.” 13 Colo. Tech. L.J. 273.
+https://ssrn.com/abstract=2605132.
+Meyer, Michelle N. 2012.Regulating the Production of Knowledge: Research Risk–
+Beneﬁt Analysis and the Heterogeneity Problem.65 Administrative Law Review
+237; Harvard Public Law Working Paper. doi: http://dx.doi.org/10.2139/
+ssrn.2138624.
+Meyer, Michelle N., Patrick R. Heck, Geoffrey S. Holtzman, Stephen M. Anderson,
+William Cai, Duncan J. Watts, and Christopher F. Chabris. 2019.“Objecting to
+Experiments that Compare Two Unobjectionable Policies or Treatments.” PNAS:
+Proceedings of the National Academy of Sciences(National Academy of Sci-
+ences). doi:https://doi.org/10.1073/pnas.1820701116.
+Milgram, Stanley. 2009. Obedience to Authority: An Experimental View . Harper
+Perennial Modern Thought.
+Mitchell, Carl, Jonathan Litz, Garnet Vaz, and Andy Drake. 2018.“Metrics Health
+Detection and AA Simulator.” Microsoft ExP (internal). August 13. https://aka
+.ms/exp/wiki/AASimulator.
+258 References
+
+Moran, Mike. 2008.Multivariate Testing in Action: Quicken Loan’s Regis Hadiaris on
+multivariate testing . December. www.biznology.com/2008/12/multivariate_
+testing_in_action/.
+Moran, Mike. 2007.Do It Wrong Quickly: How the Web Changes the Old Marketing
+Rules . IBM Press.
+Mosavat, Fareed. 2019.Twitter. Jan 29. https://twitter.com/far33d/status/1090400421
+842018304.
+Mosteller, Frederick, John P. Gilbert, and Bucknam McPeek. 1983.“Controversies in
+Design and Analysis of Clinical Trials.” In Clinical Trials, by Stanley H. Shapiro
+and Thomas A. Louis. New York, NY: Marcel Dekker, Inc.
+MR Web. 2014. “Obituary: Audience Measurement Veteran Tony Twyman. ”
+Daily Research News Online . November 12. www.mrweb.com/drno/news
+20011.htm .
+Mudholkar, Govind S., and E. Olusegun George. 1979.“The Logit Method for Com-
+bining Probablilities.” Edited by J. Rustagi. Symposium on Optimizing Methods
+in Statistics.” Academic Press. 345–366. https://apps.dtic.mil/dtic/tr/fulltext/u2/
+a049993.pdf.
+Mueller, Hendrik, and Aaron Sedley. 2014.“HaTS: Large-Scale In-Product Measure-
+ment of User Attitudes & Experiences with Happiness Tracking Surveys. ”
+OZCHI, December.
+Neumann, Chris. 2017.Does Optimizely Slow Down a Site’s Performance?October 18.
+https://www.quora.com/Does-Optimizely-slow-down-a-sites-performance.
+Newcomer, Kathryn E., Harry P. Hatry, and Joseph S. Wholey. 2015.Handbook of
+Practical Program Evaluation (Essential Tests for Nonproﬁt and Publish Leader-
+ship and Management). Wiley.
+Neyman, J. 1923.“On the Application of Probability Theory of Agricultural Experi-
+ments.” Statistical Science465–472.
+NSF. 2018.Frequently Asked Questions and Vignettes: Interpreting the Common Rule
+for the Protection of Human Subjects for Behavioral and Social Science Research.
+www.nsf.gov/bfa/dias/policy/hsfaqs.jsp.
+Ofﬁce for Human Research Protections. 1991.Federal Policy for the Protection of
+Human Subjects ( ‘Common Rule’). www.hhs.gov/ohrp/regulations-and-policy/
+regulations/common-rule/index.html.
+Optimizely. 2018.“A/A Testing.” Optimizely. www.optimizely.com/optimization-gloss
+ary/aa-testing/.
+Optimizely. 2018. “Implement the One-Line Snippet for Optimizely X.” Optimizely.
+February 28. https://help.optimizely.com/Set_Up_Optimizely/Implement_the_one-
+line_snippet_for_Optimizely_X.
+Optimizely. 2018.Optimizely Maturity Model.www.optimizely.com/maturity-model/.
+Orlin, Ben. 2016. Why Not to Trust Statistics. July 13. https://mathwithbaddrawings
+.com/2016/07/13/why-not-to-trust-statistics/.
+Owen, Art, and Hal Varian. 2018.Optimizing the Tie-Breaker Regression Discontinuity
+Design. August. http://statweb.stanford.edu/~owen/reports/tiebreaker.pdf.
+Owen, Art, and Hal Varian. 2009.Oxford Centre for Evidence-based Medicine– Levels
+of Evidence. March. www.cebm.net/oxford-centre-evidence-based-medicine-
+levels-evidence-march-2009/.
+References 259
+
+Park, David K., Andrew Gelman, and Joseph Bafumi. 2004.“Bayesian Multilevel
+Estimation with Poststratiﬁcation: State-Level Estimates from National Polls.”
+Political Analysis375–385.
+Parmenter, David. 2015.Key Performance Indicators: Developing, Implementing, and
+Using Winning KPIs. 3rd edition. John Wiley & Sons, Inc.
+Pearl, Judea. 2009. Causality: Models, Reasoning and Inference. 2nd edition. Cam-
+bridge University Press.
+Pekelis, Leonid. 2015.“Statistics for the Internet Age: The Story behind Optimizely’s
+New Stats Engine.” Optimizely. January 20.https://blog.optimizely.com/2015/01/
+20/statistics-for-the-internet-age-the-story-behind-optimizelys-new-stats-engine/.
+Pekelis, Leonid, David Walsh, and Ramesh Johari. 2015.“The New Stats Engine.”
+Optimizely. www.optimizely.com/resources/stats-engine-whitepaper/.
+Pekelis, Leonid, David Walsh, and Ramesh Johari. 2005. Web Site Measurement
+Hacks.O ’Reilly Media.
+Peterson, Eric T. 2005.Web Site Measurement Hacks.O ’Reilly Media.
+Peterson, Eric T. 2004.Web Analytics Demystiﬁed: A Marketer’s Guide to Understand-
+ing How Your Web Site Affects Your Business. Celilo Group Media and CafePress.
+Pfeffer, Jeffrey, and Robert I Sutton. 1999.The Knowing-Doing Gap: How Smart
+Companies Turn Knowledge into Action. Harvard Business Review Press.
+Phillips, A. W. 1958.“The Relation between Unemployment and the Rate of Change of
+Money Wage Rates in the United Kingdom, 1861–1957.” Economica, New Series
+25 (100): 283– 299. www.jstor.org/stable/2550759.
+Porter, Michael E. 1998.Competitive Strategy: Techniques for Analyzing Industries
+and Competitors. Free Press.
+Porter, Michael E. 1996.“What is Strategy.” Harvard Business Review61–78.
+Quarto-vonTivadar, John. 2006. “AB Testing: Too Little, Too Soon.” Future Now.
+www.futurenowinc.com/abtesting.pdf.
+Radlinski, Filip, and Nick Craswell. 2013. “Optimized Interleaving For Online
+Retrieval Evaluation.” International Conference on Web Search and Data Mining.
+Rome, IT: ASM. 245–254.
+Rae, Barclay. 2014.“Watermelon SLAs – Making Sense of Green and Red Alerts.”
+Computer Weekly. September. https://www.computerweekly.com/opinion/Water
+melon-SLAs-making-sense-of-green-and-red-alerts.
+RAND. 1955. A Million Random Digits with 100,000 Normal Deviates. Glencoe, Ill:
+Free Press.www.rand.org/pubs/monograph_reports/MR1418.html.
+Rawat, Girish. 2018.“Why Most Redesigns fail.” freeCodeCamp. December 4.https://
+medium.freecodecamp.org/why-most-redesigns-fail-6ecaaf1b584e.
+Razali, Nornadiah Mohd, and Yap Bee Wah. 2011.“Power comparisons of Shapiro-
+Wilk, Kolmogorov-Smirnov, Lillefors and Anderson-Darling tests.” Journal of
+Statistical Modeling and Analytics, January1: 21–33.
+Reinhardt, Peter. 2016.Effect of Mobile App Size on Downloads.October 5. https://
+segment.com/blog/mobile-app-size-effect-on-downloads/.
+Resnick, David. 2015.What is Ethics in Research & Why is it Important?December 1.
+www.niehs.nih.gov/research/resources/bioethics/whatis/index.cfm.
+Ries, Eric. 2011. The Lean Startup: How Today’s Entrepreneurs Use Continuous
+Innovation to Create Radically Successful Businesses. Crown Business.
+260 References
+
+Rodden, Kerry, Hilary Hutchinson, and Xin Fu. 2010.“Measuring the User Experience
+on a Large Scale: User-Centered Metrics for Web Applications.” Proceedings of
+CHI, April.https://ai.google/research/pubs/pub36299
+Romano, Joseph, Azeem M. Shaikh, and Michael Wolf. 2016.“Multiple Testing.” In
+The New Palgrave Dictionary of Economics. Palgram Macmillan.
+Rosenbaum, Paul R, and Donald B Rubin. 1983.“The Central Role of the Propensity
+Score in Observational Studies for Causal Effects.” Biometrika 70 (1): 41–55.
+doi:http://dx.doi.org/10.1093/biomet/70.1.41.
+Rossi, Peter H., Mark W. Lipsey, and Howard E. Freeman. 2004. Evaluation:
+A Systematic Approach. 7th edition. Sage Publications, Inc.
+Roy, Ranjit K. 2001.Design of Experiments using the Taguchi Approach : 16 Steps to
+Product and Process Improvement. John Wiley & Sons, Inc.
+Rubin, Donald B. 1990.“Formal Mode of Statistical Inference for Causal Effects.”
+Journal of Statistical Planning and Inference25, (3) 279–292.
+Rubin, Donald 1974. “Estimating Causal Effects of Treatment in Randomized and
+Nonrandomized Studies.” Journal of Educational Psychology66 (5): 688–701.
+Rubin, Kenneth S. 2012.Essential Scrum: A Practical Guide to the Most Popular Agile
+Process. Addison-Wesley Professional.
+Russell, Daniel M., and Carrie Grimes. 2007.“Assigned Tasks Are Not the Same as
+Self-Chosen Web Searches.” HICSS'07: 40th Annual Hawaii International Con-
+ference on System Sciences, January.https://doi.org/10.1109/HICSS.2007.91.
+Saint-Jacques, Guillaume B., Sinan Aral, Edoardo Airoldi, Erik Brynjolfsson, and Ya
+Xu. 2018.“The Strength of Weak Ties: Causal Evidence using People-You-May-
+Know Randomizations.” 141–152.
+Saint-Jacques, Guillaume, Maneesh: Simpson, Jeremy Varshney, and Ya Xu. 2018.
+“Using Ego-Clusters to Measure Network Effects at LinkedIn.” Workshop on
+Information Systems and Exonomics. San Francisco, CA.
+Samarati, Pierangela, and Latanya Sweeney. 1998.“Protecting Privacy When Disclos-
+ing Information: k-anonymity and its Enforcement through Generalization and
+Suppression.” Proceedings of the IEEE Symposium on Research in Security and
+Privacy.
+Schrage, Michael. 2014. The Innovator’s Hypothesis: How Cheap Experiments Are
+Worth More than Good Ideas. MIT Press.
+Schrijvers, Ard. 2017.“Mobile Website Too Slow? Your Personalization Tools May Be
+to Blame.” Bloomreach. February 2. www.bloomreach.com/en/blog/2017/01/
+server-side-personalization-for-fast-mobile-pagespeed.html.
+Schurman, Eric, and Jake Brutlag. 2009.“Performance Related Changes and their User
+Impact.” Velocity 09: Velocity Web Performance and Operations Conference.
+www.youtube.com/watch?v=bQSE51-gr2s and www.slideshare.net/dyninc/the-
+user-and-business-impact-of-server-delays-additional-bytes-and-http-chunking-in-
+web-search-presentation.
+Scott, Steven L. 2010.“A modern Bayesian look at the multi-armed bandit.” Applied
+Stochastic Models in Business and Industry26 (6): 639–658. doi:https://doi.org/
+10.1002/asmb.874.
+Segall, Ken. 2012. Insanely Simple: The Obsession That Drives Apple’s Success.
+Portfolio Hardcover.
+References 261
+
+Senn, Stephen. 2012. “Seven myths of randomisation in clinical trials.” Statistics in
+Medicine. doi:10.1002/sim.5713.
+Shadish, William R., Thomas D. Cook, and Donald T. Campbell. 2001.Experimental
+and Quasi-Experimental Designs for Generalized Causal Inference. 2nd edition.
+Cengage Learning.
+Simpson, Edward H. 1951.“The Interpretation of Interaction in Contingency Tables.”
+Journal of the Royal Statistical Society, Ser. B, 238–241.
+Sinofsky, Steven, and Marco Iansiti. 2009.One Strategy: Organization, Planning, and
+Decision Making. Wiley.
+Siroker, Dan, and Pete Koomen. 2013.A/B Testing: The Most Powerful Way to Turn
+Clicks Into Customers. Wiley.
+Soriano, Jacopo. 2017. “Percent Change Estimation in Large Scale Online Experi-
+ments.” arXiv.org. November 3.https://arciv.org/pdf/1711.00562.pdf.
+Souders, Steve. 2013. “Moving Beyond window.onload().” High Performance Web
+Sites Blog. May 13. www.stevesouders.com/blog/2013/05/13/moving-beyond-
+window-onload/.
+Souders, Steve. 2009. Even Faster Web Sites: Performance Best Practices for Web
+Developers.O ’Reilly Media.
+Souders, Steve. 2007.High Performance Web Sites: Essential Knowledge for Front-
+End Engineers.O ’Reilly Media.
+Spitzer, Dean R. 2007.Transforming Performance Measurement: Rethinking the Way
+We Measure and Drive Organizational Success. AMACOM.
+Stephens-Davidowitz, Seth, Hal Varian, and Michael D. Smith. 2017.“Super Returns
+to Super Bowl Ads?” Quantitative Marketing and Economics, March 1: 1– 28.
+Sterne, Jim. 2002.Web Metrics: Proven Methods for Measuring Web Site Success. John
+Wiley & Sons, Inc.
+Strathern, Marilyn. 1997. “‘Improving ratings’: Audit in the British University
+System.” European Review 5 (3): 305 –321. doi:10.1002/(SICI)1234-981X
+(199707)5:33.0.CO;2-4.
+Student. 1908. “The Probable Error of a Mean.” Biometrika 6 (1): 1–25. https://www
+.jstor.org/stable/2331554.
+Sullivan, Nicole. 2008. “Design Fast Websites.” Slideshare. October 14. www.slide
+share.net/stubbornella/designing-fast-websites-presentation.
+Tang, Diane, Ashish Agarwal, Deirdre O’Brien, and Mike Meyer. 2010.“Overlapping
+Experiment Infrastructure: More, Better, Faster Experimentation.” Proceedings
+16th Conference on Knowledge Discovery and Data Mining.
+The Guardian. 2014. OKCupid: We Experiment on Users. Everyone does. July 29.
+www.theguardian.com/technology/2014/jul/29/okcupid-experiment-human-beings-
+dating.
+The National Commission for the Protection of Human Subjects of Biomedical and
+Behavioral Research. 1979. The Belmont Report. April 18. www.hhs.gov/ohrp/
+regulations-and-policy/belmont-report/index.html.
+Thistlewaite, Donald L., and Donald T. Campbell. 1960.“Regression-Discontinuity
+Analysis: An Alternative to the Ex-Post Facto Experiment.” Journal of Educa-
+tional Psychology51 (6): 309–317. doi:https://doi.org/10.1037%2Fh0044319.
+Thomke, Stefan H. 2003.“Experimentation Matters: Unlocking the Potential of New
+Technologies for Innovation.”
+262 References
+
+Tiffany, Kaitlyn. 2017. “This Instagram Story Ad with a Fake Hair in It is Sort of
+Disturbing.” The Verge . December 11. www.theverge.com/tldr/2017/12/11/
+16763664/sneaker-ad-instagram-stories-swipe-up-trick.
+Tolomei, Sam. 2017.Shrinking APKs, growing installs. November 20.https://medium
+.com/googleplaydev/shrinking-apks-growing-installs-5d3fcba23ce2.
+Tutterow, Craig, and Guillaume Saint-Jacques. 2019.Estimating Network Effects Using
+Naturally Occurring Peer Noti ﬁcation Queue Counterfactuals. February 19.
+https://arxiv.org/abs/1902.07133.
+Tyler, Mary E., and Jerri Ledford. 2006.Google Analytics. Wiley Publishing, Inc.
+Tyurin, I.S. 2009.“On the Accuracy of the Gaussian Approximation.” Doklady Math-
+ematics 429 (3): 312–316.
+Ugander, Johan, Brian Karrer, Lars Backstrom, and Jon Kleinberg. 2013. “Graph
+Cluster Randomization: Network Exposure to Multiple Universes.” Proceedings
+of the 19th ACM SIGKDD International Conference on Knowledge Discovery and
+Data Mining329–337.
+van Belle, Gerald. 2008.Statistical Rules of Thumb. 2nd edition. Wiley-Interscience.
+Vann, Michael G. 2003.“Of Rats, Rice, and Race: The Great Hanoi Rat Massacre, an
+Episode in French Colonial History.” French Colonial History4: 191–203. https://
+muse.jhu.edu/article/42110.
+Varian, Hal. 2016. “Causal inference in economics and marketing. ” Proceedings
+of the National Academy of Sciences of the United States of America
+7310–7315.
+Varian, Hal R. 2007.“Kaizen, That Continuous Improvement Strategy, Finds Its Ideal
+Environment.” The New York Times.February 8.www.nytimes.com/2007/02/08/
+business/08scene.html.
+Vaver, Jon, and Jim Koehler. 2012.Periodic Measuement of Advertising Effectiveness
+Using Multiple-Test Period Geo Experiments. Google Inc.
+Vaver, Jon, and Jim Koehler. 2011.Measuring Ad Effectiveness Using Geo Experi-
+ments. Google, Inc.
+Vickers, Andrew J. 2009.What Is a p-value Anyway? 34 Stories to Help You Actually
+Understand Statistics . Pearson. www.amazon.com/p-value-Stories-Actually-
+Understand-Statistics/dp/0321629302.
+Vigen, Tyler. 2018.Spurious Correlations.http://tylervigen.com/spurious-correlations.
+Wager, Stefan, and Susan Athey. 2018.“Estimation and Inference of Heterogeneous
+Treatment Effects using Random Forests.” Journal of the American Statistical
+Association 13 (523): 1228 – 1242. doi: https://doi.org/10.1080/01621459.2017
+.1319839.
+Wagner, Jeremy. 2019.“Why Performance Matters.” Web Fundamentals. May. https://
+developers.google.com/web/fundamentals/performance/why-performance-matters/
+#performance_is_about_improving_conversions.
+Wasserman, Larry. 2004.All of Statistics: A Concise Course in Statistical Inference.
+Springer.
+Weiss, Carol H. 1997.Evaluation: Methods for Studying Programs and Policies. 2nd
+edition. Prentice Hall.
+Wider Funnel. 2018. “The State of Experimentation Maturity 2018.” Wider Funnel.
+www.widerfunnel.com/ wp-content/uploads/2 018/04/State-of-Experimentation-
+2018-Original-Research-Report.pdf .
+References 263
+
+Wikipedia contributors, Above the Fold. 2014.Wikipedia, The Free Encyclopedia. Jan.
+http://en.wikipedia.org/wiki/Above_the_fold.
+Wikipedia contributors, Cobra Effect. 2019.Wikipedia, The Free Encyclopedia.https://
+en.wikipedia.org/wiki/Cobra_effect.
+Wikipedia contributors, Data Dredging. 2019.Data dredging.https://en.wikipedia.org/
+wiki/Data_dredging.
+Wikipedia contributors, Eastern Air Lines Flight 401. 2019. Wikipedia, The Free
+Encyclopedia. https://en.wikipedia.org/wiki/Eastern_Air_Lines_Flight_401.
+Wikipedia contributors, List of .NET libraries and frameworks. 2019.https://en.wikipedia
+.org/wiki/List_of_.NET_libraries_and_frameworks#Logging_Frameworks.
+Wikipedia contributors, Logging as a Service. 2019.Logging as a Service. https://
+en.wikipedia.org/wiki/Logging_as_a_service.
+Wikipedia contributors, Multiple Comparisons Problem. 2019.Wikipedia, The Free
+Encyclopedia. https://en.wikipedia.org/wiki/Multiple_comparisons_problem.
+Wikipedia contributors, Perverse Incentive. 2019. https://en.wikipedia.org/wiki/Per
+verse_incentive.
+Wikipedia contributors, Privacy by Design. 2019.Wikipedia, The Free Encyclopedia.
+https://en.wikipedia.org/wiki/Privacy_by_design.
+Wikipedia contributors, Semmelweis Reﬂex. 2019.Wikipedia, The Free Encyclopedia.
+https://en.wikipedia.org/wiki/Semmelweis_reﬂex.
+Wikipedia contributors, Simpson’s Paradox. 2019.Wikipedia, The Free Encyclopedia.
+Accessed February 28, 2008.http://en.wikipedia.org/wiki/Simpson%27s_paradox.
+Wolf, Talia. 2018. “Why Most Redesigns Fail (and How to Make Sure Yours
+Doesn’t).” GetUplift. https://getuplift.co/why-most-redesigns-fail.
+Xia, Tong, Sumit Bhardwaj, Pavel Dmitriev, and Aleksander Fabijan. 2019.“Safe
+Velocity: A Practical Guide to Software Deployment at Scale using Controlled
+Rollout.” ICSE: 41st ACM/IEEE International Conference on Software Engineer-
+ing. Montreal, Canada. www.researchgate.net/publication/333614382_Safe_Vel
+ocity_A_Practical_Guide_to_Software_Deployment_at_Scale_using_Controlled_
+Rollout.
+Xie, Huizhi, and Juliette Aurisset. 2016.“Improving the Sensitivity of Online Con-
+trolled Experiments: Case Studies at Netﬂix.” KDD ’16: Proceedings of the 22nd
+ACM SIGKDD International Conference on Knowledge Discovery and Data
+Mining. New York, NY: ACM. 645 – 654. http://doi.acm.org/10.1145/
+2939672.2939733.
+Xu, Ya, and Nanyu Chen. 2016.“Evaluating Mobile Apps with A/B and Quasi A/B
+Tests.” KDD ’16: Proceedings of the 22nd ACM SIGKDD International Confer-
+ence on Knowledge Discovery and Data Mining. San Francisco, California, USA:
+ACM. 313–322. http://doi.acm.org/10.1145/2939672.2939703.
+Xu, Ya, Weitao Duan, and Shaochen Huang. 2018.“SQR: Balancing Speed, Quality
+and Risk in Online Experiments.” 24th ACM SIGKDD Conference on Knowledge
+Discovery and Data Mining. London: Association for Computing Machinery.
+895–904.
+Xu, Ya, Nanyu Chen, Adrian Fernandez, Omar Sinno, and Anmol Bhasin. 2015.“From
+Infrastructure to Culture: A/B Testing Challenges in Large Scale Social Net-
+works.” KDD ’15: Proceedings of the 21th ACM SIGKDD International
+264 References
+
+Conference on Knowledge Discovery and Data Mining. Sydney, NSW, Australia:
+ACM. 2227–2236. http://doi.acm.org/10.1145/2783258.2788602.
+Yoon, Sangho. 2018. Designing A/B Tests in a Collaboration Network. www
+.unofﬁcialgoogledatascience.com/2018/01/designing-ab-tests-in-collaboration.html.
+Young, S. Stanley, and Allan Karr. 2011.“Deming, data and observational studies:
+A process out of control and needingﬁxing.” Signiﬁcance 8 (3).
+Zhang, Fan, Joshy Joseph, and Alexander James, Zhuang, Peng Rickabaugh. 2018.
+Client-Side Activity Monitoring.US Patent US 10,165,071 B2. December 25.
+Zhao, Zhenyu, Miao Chen, Don Matheson, and Maria Stone. 2016.“Online Experi-
+mentation Diagnosis and Troubleshooting Beyond AA Validation.” DSAA 2016:
+IEEE International Conference on Data Science and Advanced Analytics.IEEE.
+498–507. doi:https://ieeexplore.ieee.org/document/7796936.
+References 265
+
+Index
+A/A tests, 200
+how to run,205
+uneven splits and,204
+Above the fold time (AFT),88
+Acquisition, Activation, Retention, Referral,
+Revenue, 91
+Agile software development,13
+analysis
+automated, 76
+cohort, 241
+edge-level, 234
+logs-based, 129
+post-period, 242
+triggered, 159
+analysis results
+review meetings,62
+analysis unit,168
+annotating data,178
+atomicity, 70
+automated analysis,76
+backend algorithmic changes,19
+backend delay model,87
+Bayes rule,186
+Bayesian evalutation,114
+Bayesian structural time series analysis,140
+Benjamini-Hochberg procedure,191
+Bernoulli randomization,231
+bias, 191, 240
+biases, 201
+binarization, 197
+blocking, 197
+Bonferroni correction,191
+bootstrap, 169
+bootstrap method,195
+bot ﬁltering, 48
+Campbell’s law,109
+capping, 197
+carryover effects,74
+cart recommendations,17
+causal model,96
+causal relationship,96
+causality, 8, 137
+Central Limit Theorem,187
+centralized experimentation platform,
+181
+churn rate,8
+click logging,178
+click tracking,52
+client crashes metric,99
+client-side instrumentation,163
+cohort analysis,241
+conﬁdence interval,30, 37, 187, 193
+conﬁdence intervals,43
+constraints-based design,76
+constructed propensity score,143
+Control, 6–7
+cooking data,77
+correlation, 9
+counterfactual logging,73
+cultural norms,61
+data
+annotating, 178
+data analysis pipeline,151
+data collection,121
+data computation,178
+data enrichment,178
+data pipeline impact,47
+data sharing,65
+data visualization,77
+day-of-week effect,33
+266
+
+deceptive correlations,145
+delayed experience,237
+delayed logging,157
+delta method,169, 195
+density, 199
+dependent variable,7
+deploying experiments,69
+designated market area,138
+difference in differences,143
+driver metrics,91
+ecosystem impact,231
+edge-level analysis,234
+educational processes,61
+empirical evidence,114
+equipoise, 118
+ethics, 116
+anonymous, 123
+corporate culture and,122
+equipoise, 118
+identiﬁed data,123
+risk, 118
+exclusion restriction,142
+experiments
+long-term, 61
+experiment
+objective, 6
+OEC, 6
+results, 181
+experiment assignment,71
+experiment hypothesis,112
+experiment IDs,67
+experiment lifecycle,67
+experiment platform
+performance, 72
+experiment scorecard,179, 216, See also:
+visualizations
+experimentation maturity model,180
+experimentation maturity models
+crawling, 59
+ﬂying, 59
+running, 59
+walking, 59
+experimentation platform
+centralizing, 181
+experiments
+A/A, 200
+analysis, 67
+analytics, 177
+automated analysis,76
+best practices,113
+bias, 191
+browser redirects,45
+channels, 5
+client-side, 153
+client-side implications,156
+constraints-based design,76
+culture, and,179
+data collection,121
+deception, 120
+deployment, 69
+design, 32
+design and analysis,27
+design example,33
+design platform,58
+determining length,33
+duration, 190
+edge-level analysis,234
+evaluation, 128
+failure, 226
+generating ideas for,129
+historical data retention,231
+holdback, 245
+human evaluation and,130
+IDs, 69
+impact, 174
+infrastructure, 34
+instrumentation, 34, 121, 162
+interference, 226
+interleaved, 141
+isolating shared resources,231
+isolation, 231
+iterations, 67
+just-in-time processes,61
+length, 42
+long-term effect,236
+nested design,76
+observation, 127
+ofﬂine simulation and,188
+organizational goals and,112
+paired, 198
+performance testing,17
+platform, 66
+platform architechture,68
+platform components,67
+platform for managing,67
+power, 34, 189
+power-of-suggestion, 120
+production code,70
+randomization, 114
+raters, 130
+replication, 176
+Index 267
+
+experiments (cont.)
+replication experiment,15
+reusing, 231
+reverse, 176, 245
+risk, 118
+sample size,188, 197
+scaling, 73
+segments, 52
+sensitivity, 28
+server-side, 153
+short-term effect,235
+side-by-side, 131
+slow-down, 81, 86
+trafﬁc allocation,33, 192
+trustworthiness, 174
+validation, 135
+vocabulary, 179
+when they are not possible,137
+external data services,133
+external validity,33, 135
+factor. See parameter
+false discovery rate,42
+ﬁrst-order actions,230
+Fisher’s meta-analysis,192
+focus groups,132
+gameability, 100, 107
+geo-based randomization,232
+goal metrics,91
+goals, 91
+alignment, 93
+articulation, 93
+Goodhart’s law,109
+granularity, 167
+guardrail metrics,35, 92, 159, 174, 219
+cookie write rate,224
+latency, 81
+organizational, 35, 98
+quick queries,225
+trust-related, 35
+HEART framework,91
+heterogeneous Treatment effects,52
+hierarchy of evidence,9, 138
+holdbacks, 175
+holdouts, 175
+HTML response size per page metrics,99
+human evaluation,130
+hypothesis testing,185, 189
+Type I/II errors,189
+ideas funnel, 127
+independence assumption
+violation, 203
+independent identically distributed samples,193
+independently identically distributed,195
+information accessibility,180
+infrastructure, 34, 66
+innovation productivity,114
+institutional memory,63, 111, 181
+Instrumental Variable method,231
+Instrumental Variables,142
+instrumentation, 34, 59–60, 67, 72, 128, 151,
+162, 177
+client-side, 163
+corporate culture and,165
+server-side, 164
+intellectual integrity,63
+interference, 174
+detecting, 234
+direct connections,227
+indirect connections,228
+interleaved experiments,141
+internal validity,43
+Interrupted Time Series,139
+invariants, 35
+isolation, 231
+JavaScript errors,99
+key metrics,14
+latency, 99, 135, 156
+layer ID,75
+leadership buy-in,59
+learning effect, 243
+least-squares regression model,142
+lifetime value,95
+log transformation,197
+logs, 164
+common identiﬁer, 164
+logs, joining,177
+logs-based analyses,129
+long-term effects,51
+long-term holdbacks,175
+long-term holdouts,175
+long-term impact,173
+long-term Treatment effect,235
+lossy implementations,46, 224
+maturity models,58
+Maximum Power Ramp,172
+268 Index
+
+mean, 29
+measuring impact,61
+meta-analysis, 78, 112
+metrics, 14
+analysis unit,169
+asset, 92
+binary, 197
+business, 92
+categorizing, 181
+clicks-per-user, 47
+client crashes,99
+data quality,92
+debug, 62, 92
+deﬁning, 179
+developing goal and driver,94
+diagnosis, 92
+driver, 91
+early indicator,175
+engagement, 92
+evaluation, 96
+feature-level, 104
+gameability, 107
+goal, 62, 91
+guardrail, 35, 62, 81, 92, 159, 174, 219
+how they relate to each other,114
+HTML response size per page,99
+improvements, 60
+indirect, 91
+invariants, 35
+irrelevant metrics signiﬁcance, 191
+JavaScript errors,99
+logs-based, 164
+longitudinal stability,170
+negative, 95
+normalizing, 105
+operational, 92
+organizational, 91
+organizational guardrail,98
+pageviews-per-user, 99
+page-load-time, 18
+per-experiment, 179
+per-metric results,181
+per-user, 179
+predictive, 91
+quality, 62
+related, 182
+revenue-per-user, 99
+sample ratio mismatch,219
+sensitivity, 103, 114
+sessions-per-user, 18
+short-term, 239
+short-term revenue,101
+sign post,91
+statistical models and,95
+success, 91
+surrogate, 91, 104
+taxonomy, 90
+true north,91
+t-tests and,187
+user-level, 195
+validation, 96
+variablity, 29
+minimum detectable effect, 190
+model training, 229
+multiple comparisons problem,42
+multiple hypothesis testing,42
+Multivariate Tests (MVTs), 7
+nested design,76
+network effects,237
+network egocentric randomization,
+233
+network-cluster randomization,233
+NHST. See Null hypothesis signiﬁcant
+testing
+normality assumption,188
+novelty effect,33, 49, 174
+detecting, 51
+Null hypothesis,30, 106, 185, 192
+conditioning, 40
+Null hypothesis signiﬁcant testing,40
+Null test.See A/A test
+Objectives and Key Results, 90
+observational study,139
+limitations of,144
+OEC. Seeoverall evaluation criterion
+clicks-per-user, 47
+ofﬂine simulation,188
+One Metric that Matters,104
+online conrtolled experiments
+website optimization example,26
+backend algorithmic changes,19
+beneﬁts, 10
+key tenets,11
+operational concerns,173
+organizational goals,91
+organizational guardrail metrics,98
+orthogonal randomization,176
+orthogonality guarantees,71
+Outcome, Evaluation and Fitness function, 7
+outliers, 196
+Index 269
+
+overall evaluation critereon,180
+for e-mail,106
+for search engines,108
+revenue-per-user, 109
+teams and,112
+triggering and,212
+overall evaluation criterion,5, 27, 102
+deﬁnition, 6
+purchase indicator,32
+page-load-time (PLT),88
+Page phase time,88
+pageviews per-user metrics,99
+paired experiments,198
+parameter
+deﬁnition, 7
+parameters, 67
+system, 70
+peeking, 42
+perceived performance,88
+percent delta,194
+performance, 135, 156, 179
+impact on key metrics,18, 82
+performance testing,17
+per-metric results,181
+permutation test,188
+personal recommendations,17
+PIRATE framework,91
+platform architecture,68
+platform components,67
+platform tools for managing experiments,
+67
+population segments,52
+post-period analysis,242
+power, 189
+primacy and novelty effects,33
+primacy effect,33, 49, 174
+detecting, 51
+propensity score matching,143
+p-value, 30, 106, 178, 186, 193, 220
+misinterpretation, 40
+p-value threshold,181
+p-value thresholds,77
+query share,108
+ramping, 55, 66, 113, 151, 171, 234,
+245
+Maximum Power Ramp,172
+phase 1
+pre-MPR, 174
+phase 2
+MPR, 174
+phase 3
+post-MPR, 175
+phase 4
+long-term effects,175
+randomization, 8
+randomization unit,65, 151, 195
+deﬁnition, 7
+functional, 170
+granularity, 167
+reading list,24
+Regression Discontinuity Design,
+141
+regression model,142
+related metrics,182
+replication, 176
+replication experiment,15
+Response variable, 7
+revenue-per-user metric,99
+reverse experiment,245
+reverse experiments,176
+rings of test populations,174
+risk mitigation,173
+Rubin causal model,226
+sample ratio mismatch,45, 215,
+219
+sample size,188
+sampling, 55
+scaling, 73
+manual methods,74
+numberline method,74
+single-layer, 73
+single-layer method drawback,74
+scorecard, 7
+scorecard visualizations,180
+search engine results page,113
+segments, 52, 178, 180
+poorly behaving,180
+selection bias,158
+sensitivity, 103, 114, 196
+sequential tests,42
+server-side instrumentation,164
+sessionized data,129
+shared goals,60
+shared resources,44
+short-term revenue metric,101
+short-term Treatment effect,235
+side-by-side experiments,131
+signiﬁcance boundary,32
+270 Index
+
+Simple Ratio Mismatch
+debugging, 222
+simple ratio mismatch,180
+Simpson’s paradox,54
+single-layer scaling,73
+skewness coefﬁcient, 187
+slow-down experiments,81, 86
+speed, 179
+Speed Index,88
+speed, quality, and risk,172
+spurious correlations,146
+SRM. See sample ratio mismatch
+Stable Unit Treatment Value Assumption,43,
+168, 226
+standard error,29
+statistical power,30, 185, 190, 198
+statistics, 178
+conﬁdence interval,187
+practical signiﬁcance, 189
+two-sample t-tests,185
+surrogate metrics,104
+surveys, 132
+SUTVA. See Stable Unit Treatment Value
+Assumption
+system parameters,70
+system-learned effect,243
+Taylor-series linear approximation,
+83
+technical debt,72
+thick client,153
+thick clients,151
+thin client,153
+time toﬁrst result,88
+time-based effects,140
+time-based randomization,232
+time-staggered Treatment,244
+time-to-successful-click, 89
+timing effects,47
+trafﬁc allocation,174
+Treatment, 6
+Treatment effect,41, 175, 214, 236
+learning, 243
+system-learned, 243
+time-staggered, 244
+user-learned, 243
+Treatment effect dilution,240
+triggering, 40, 47, 72, 159, 180, 209
+attributes, 222
+t-statistic, 186
+Twyman’s law,39
+type I error rates,41
+Type I errors,201
+Type I/II errors,189
+uber holdouts,176
+user experience research,95, 131
+User Ready Time,88
+user-learned effect,243
+validation, 135
+value of ideas,11
+variable. See also parameter
+variables
+Instrumental, 142
+variance, 193
+variance estimation,236
+variant
+deﬁnition, 7
+mapping, 7
+variants, 6, 67
+allocation, 27
+assignment, 69
+balanced, 198
+visualization tool,181
+visualizations, 180
+scorecard, 180
+web beacons,163
+website performance,84
+Index 271
+

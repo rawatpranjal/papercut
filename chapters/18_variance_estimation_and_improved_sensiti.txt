@@ -1,0 +1,254 @@
+18
+Variance Estimation and Improved Sensitivity:
+Pitfalls and Solutions
+With great power comes small effect size
+– Unknown
+Why you care: What is the point of running an experiment if you cannot
+analyze it in a trustworthy way? Variance is the core of experiment analysis.
+Almost all the key statistical concepts we have introduced are related to
+variance, such as statistical signi ﬁcance, p-value, power, and con ﬁdence
+interval. It is imperative to not only correctly estimate variance, but also to
+understand how to achieve variance reduction to gain sensitivity of the statis-
+tical hypothesis tests.
+This chapter covers variance, which is the most critical element for comput-
+ing p-values and conﬁdence intervals. We primarily focus on two topics: the
+common pitfalls (and solutions) in variance estimation and the techniques for
+reducing variance that result in better sensitivity.
+Let’s review the standard procedure for computing the variance of an average
+metric, withi =1 ,... , n independent identically distributed (i.i.d.) samples. In
+most cases,i is a user, but it can also be a session, a page, a user day, and so on:
+● Compute the metric (the average):/C22Y ¼ 1
+n
+Pn
+i¼1Yi
+● Compute the sample variance:var YðÞ ¼ ^σ2 ¼ 1
+n/C0 1
+Pn
+i¼1 Yi /C0 /C22YðÞ 2
+● Compute the variance of the average metric which is the sample variance
+scaled by a factor ofn: var /C22YðÞ ¼ var 1
+n
+Pn
+i¼1Yi
+/C0/C1
+¼ 1
+n2 ∗n∗var YðÞ ¼ ^σ2
+n
+Common Pitfalls
+If you incorrectly estimate the variance, then the p-value and conﬁdence
+interval will be incorrect, making your conclusions from the hypothesis test
+193
+
+wrong. Overestimated variance leads to false negatives and underestimated
+variance leads to false positives. Here are a few common pitfalls when it comes
+to variance estimation.
+Delta vs. Delta %
+It is very common to use the relative difference instead of the absolute
+difference when reporting results from an experiment. It is difﬁcult to know
+if 0.01 more sessions from an average user are a lot or how it compares with
+the impact on other metrics. Decision makers usually understand the magni-
+tude of a 1% session increase. The relative difference, calledpercent delta is
+deﬁned as:
+Δ% ¼ Δ
+Yc (18.1)
+To properly estimate the conﬁdence interval on Δ%, we need to estimate
+its variance. Variance for the delta is the sum of the variances of each
+component:
+var ΔðÞ ¼ var Yt /C0 Yc
+/C16/C17
+¼ var Yt
+/C16/C17
+þ var Yc/C0/C1
+(18.2)
+To estimate the variance ofΔ%, a common mistake is to dividevar(Δ)b y Yc 2
+,
+that is, var ΔðÞ
+Yc 2 . This is incorrect because Yc itself is a random variable. The
+correct way to estimate the variance is:
+var Δ%ðÞ ¼ var Yt /C0 Yc
+Yc
+ !
+¼ var Yt
+Yc
+ !
+: (18.3)
+We will discuss how to estimate the variance of the ratio in the section below.
+Ratio Metrics. When Analysis Unit Is Different from
+Experiment Unit
+Many important metrics come from the ratio of two metrics. For example,
+click-through rate (CTR) is usually deﬁned as the ratio of total clicks to total
+pageviews; revenue-per-click is deﬁned as the ratio of total revenue to total
+clicks. Unlike metrics such as clicks-per-user or revenue-per-user, when you
+use a ratio of two metrics, the analysis unit is no longer a user, but a pageview
+or click. When the experiment is randomized by the unit of a user, this can
+create a challenge for estimating variance.
+The variance formulavar YðÞ ¼ ^σ2 ¼ 1
+n/C0 1
+Pn
+i¼1 Yi /C0 /C22YðÞ 2 is so simple and
+elegant that it’s easy to forget a critical assumption behind it: the samples
+194 18 Variance Estimation and Improved Sensitivity
+
+(Y1, ... , Yn) need to be i.i.d. (independently identically distributed) or at least
+uncorrelated. This assumption is satisﬁed if the analysis unit is the same as the
+experimental (randomization) unit. It is usually violated otherwise. For user-
+level metrics, eachYi represents the measurement for a user. The analysis unit
+matches the experiment unit and hence the i.i.d. assumption is valid. However,
+for page-level metrics, eachYi represents a measurement for a page while the
+experiment is randomized by user, soY1, Y2 and Y3 could all be from the same
+user and are“correlated.” Because of such“within user correlation,” variance
+computed using the simple formula would be biased.
+To correctly estimate the variance, you can write the ratio metric as the ratio
+of “average of user level metrics,” (see Equation 18.4)
+M ¼
+/C22X
+/C22Y : (18.4)
+Because /C22X and /C22Y are jointly bivariate normal in the limit,M, as the ratio of the
+two averages, is also normally distributed. Therefore, by the delta method we
+can estimate the variance as (Deng et al.2017) (seeEquation 18.5):
+var MðÞ ¼ 1
+/C22Y2 var /C22XðÞ þ X2
+/C22Y4 var /C22YðÞ /C0 2
+/C22X
+/C22Y3 cov /C22X; /C22YðÞ : (18.5)
+In the case ofΔ%, Yt and Yc are independent, hence (seeEquation 18.6)
+var Δ%ðÞ ¼ 1
+Yc 2 var Yt
+/C16/C17
+þ Yt 2
+Yc 4 var Yc/C0/C1
+: (18.6)
+Note that when the Treatment and Control means differ signiﬁcantly, this is
+substantially different from the incorrect estimate ofvar ΔðÞ
+Yc 2 .
+Note that there are metrics that cannot be written in the form of the ratio of
+two user-level metrics, for example, 90th percentile of page load time. For
+these metrics, we may need to resort to bootstrap method (Efron and Tibshriani
+1994) where you simulate randomization by sampling with replacement and
+estimate the variance from many repeated simulations. Even though bootstrap
+is computationally expensive, it is a powerful technique, broadly applicable,
+and a good complement to the delta method.
+Outliers
+Outliers come in various forms. The most common are those introduced by
+bots or spam behaviors clicking or performing many pageviews. Outliers have
+a big impact on both the mean and variance. In statistical testing, the impact on
+Common Pitfalls 195
+
+the variance tends to outweigh the impact on the mean, as we demonstrate
+using the following simulation.
+In the simulation, the Treatment has a positive true delta against Control.
+We add a single, positive outlier to the Treatment group. The size of the outlier
+is a multiple of the size of the delta. As we vary the multiplier (the relative
+size), we notice that while the outlier increases the average of the Treatment, it
+increases the variance (or the standard deviation) even more. As a result, you
+can see inFigure 18.1 that the t-statistic decreases as the relative size of the
+outlier increases and eventually the test is no longer statistically signiﬁcant.
+It is critical to remove outliers when estimating variance. A practical and
+effective method is to simply cap observations at a reasonable threshold. For
+example, human users are unlikely to perform a search over 500 times or have
+over 1,000 pageviews in one day. There are many other outlier removal
+techniques as well (Hodge and Austin2004).
+Improving Sensitivity
+When running a controlled experiment, we want to detect the Treatment effect
+when it exists. This detection ability is generally referred to as power or
+8642
+Outlier size (relative to true delta)
+t-statistic of the two-sample test
+Statistical 
+significance
+0 50 100 150 200
+Figure 18.1 In the simulation, as we increase the size of the (single) outlier, the
+two-sample test goes from being very signiﬁcant to not signiﬁcant at all
+196 18 Variance Estimation and Improved Sensitivity
+
+sensitivity. One way to improve sensitivity is reducing variance. Here are some
+of the many ways to achieve a smaller variance:
+● Create an evaluation metric with a smaller variance while capturing similar
+information. For example, the number of searches has a higher variance
+than the number of searchers; purchase amount (real valued) has higher
+variance than purchase (Boolean). Kohavi et al. (2009) gives a concrete
+example where using conversion rate instead of purchasing spend reduced
+the sample size needed by a factor of 3.3.
+● Transform a metric through capping, binarization, or log transformation.
+For example, instead of using average streaming hour, Netﬂix uses binary
+metrics to indicate whether the user streamed more than x hours in a
+speciﬁed time period (Xie and Aurisset 2016). For heavy long-tailed
+metrics, consider log transformation, especially if interpretability is not a
+concern. However, there are some metrics, such as revenue, where a log-
+transformed version may not be the right goal to optimize for the business.
+● Use triggered analysis (seeChapter 20). This is a great way to remove noise
+introduced by people not affected by the Treatment.
+● Use stratiﬁcation, Control-variates or CUPED (Deng et al.2013). In strati-
+ﬁcation, you divide the sampling region into strata, sample within each
+stratum separately, and then combine results from individual strata for the
+overall estimate, which usually has smaller variance than estimating without
+stratiﬁcation. The common strata include platforms (desktop and mobile),
+browser types (Chrome, Firefox and Edge) and day of week and so on.
+While stratiﬁcation is most commonly conducted during the sampling phase
+(at runtime), it is usually expensive to implement at large scale. Therefore,
+most applications use post-stratiﬁcation, which applies stratiﬁcation retro-
+spectively during the analysis phase. When the sample size is large, this
+performs like stratiﬁed sampling, though it may not reduce variance as well
+if the sample size is small and variability among samples is big. Control-
+variates is based on a similar idea, but it uses covariates as regression
+variables instead of using them to construct the strata. CUPED is an
+application of these techniques for online experiments, that emphasizes
+utilization of pre-experiment data (Soriano2017, Xie and Aurisset2016,
+Jackson 2018, Deb et al. 2018). Xie and Aurisset (2016) compare the
+performance of stratiﬁcation, post-stratiﬁcation, and CUPED on Netﬂix
+experiments.
+● Randomize at a more granular unit. For example, if you care about the page
+load time metric, you can substantially increase sample size by randomizing
+per page. You can also randomize per search query to reduce variance if
+Improving Sensitivity 197
+
+you’re looking at per query metrics. Note that there are disadvantages with a
+randomization unit smaller than a user:
+◦ If the experiment is about making a noticeable change to the UI, giving
+the same user inconsistent UIs makes it a bad user experience.
+◦ It is impossible to measure any user-level impact over time (e.g. user
+retention).
+● Design a paired experiment. If you can show the same user both Treatment
+and Control in a paired design, you can remove between-user variability and
+achieve a smaller variance. One popular method for evaluating ranked lists
+is the interleaving design, where you interleave two ranked lists and present
+the joint list to user at the same time (Chapelle et al.2012, Radlinski and
+Craswell 2013).
+● Pool Control groups. If you have several experiments splitting trafﬁca n d
+each has their own Control, consider pooling the separate controls to form a
+larger, shared Control group. Comparing each Treatment with this shared
+Control group increases the power for all experiments involved. If you
+know the sizes of all Treatments you’re comparing the Control group with,
+you can mathematically derive the optimal size for the shared Control. Here
+are considerations for implementing this in practice:
+◦ If each experiment has its own trigger condition, it may be hard to
+instrument them all on the same Control.
+◦ You may want to compare Treatments against each other directly. How
+much does statistical power matter in such comparisons relative to testing
+against the Control?
+◦ There are beneﬁts of having the same sized Treatment and Control in the
+comparison, even though the pooled Control is more than likely bigger
+than the Treatment groups. Balanced variants lead to a faster normality
+convergence (seeChapter 17) and less potential concern about cache sizes
+(depending on how you cache implementation).
+Variance of Other Statistics
+In most discussions in the book, we assume that the statistic of interest is the
+mean. What if you’re interested in other statistics, such as quantiles? When it
+comes to time-based metrics, such as page-load-time (PLT), it is common to
+use quantiles, not the mean, to measure site-speed performance. For instance,
+the 90th or 95th percentiles usually measure user engagement-related
+load times, while the 99th percentile is more often server-side latency
+measurements.
+198 18 Variance Estimation and Improved Sensitivity
+
+While you can always resort to bootstrap for conducting the statistical test
+by ﬁnding the tail probabilities, it gets expensive computationally as data size
+grows. On the other hand, if the statistic follows a normal distribution asymp-
+totically, you can estimate variance cheaply. For example, the asymptotic
+variance for quantile metrics is a function of the density (Lehmann and
+Romano 2005). By estimating density, you can estimate variance.
+There is another layer of complication. Most time-based metrics are at the
+event/page level, while the experiment is randomized at user level. In this case,
+apply a combination of density estimation and the delta method (Liu et al.
+2018).
+Variance of Other Statistics 199

@@ -1,0 +1,319 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[margin=1in]{geometry}
+\usepackage{ebgaramond}
+\usepackage{parskip}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{enumitem}
+
+% Colors
+\definecolor{accent}{HTML}{2C3E50}
+\definecolor{lightgray}{HTML}{7F8C8D}
+\definecolor{quotecolor}{HTML}{34495E}
+
+% Configure hyperlinks
+\hypersetup{
+    colorlinks=true,
+    linkcolor=accent,
+    urlcolor=accent,
+}
+
+% Section formatting
+\titleformat{\section}{\Large\bfseries\color{accent}}{}{0em}{}
+\titlespacing*{\section}{0pt}{0pt}{0.5em}
+
+% Header/footer
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\textcolor{lightgray}{Trustworthy Online Controlled Experiments}}
+\fancyhead[R]{\small\textcolor{lightgray}{\thepage}}
+\renewcommand{\headrulewidth}{0pt}
+\setlength{\headheight}{14pt}
+
+\setlength{\parskip}{1em}
+\setlength{\parindent}{0pt}
+
+\begin{document}
+
+% ═══════════════════════════════════════════════════════════════════════════
+% TITLE PAGE
+% ═══════════════════════════════════════════════════════════════════════════
+
+\begin{center}
+\vspace*{2cm}
+
+{\Huge\bfseries\color{accent}Trustworthy Online Controlled Experiments}
+
+\vspace{1cm}
+
+{\large A Chapter-by-Chapter Summary}
+
+\vspace{0.5cm}
+
+{\small 5 chapters $\cdot$ \today}
+
+\vspace{2cm}
+
+\hrule
+\vspace{1.5cm}
+
+\begin{minipage}{0.85\textwidth}
+\large\itshape
+Trustworthy Online Controlled Experiments presents a comprehensive guide to implementing rigorous A/B testing as the core methodology for data-driven decision-making in digital products. It establishes that most ideas fail to improve key metrics, making systematic experimentation essential. The book details the entire process from foundational concepts like the Overall Evaluation Criterion (OEC) and experiment design, to critical diagnostics like Sample Ratio Mismatch checks governed by Twyman's Law, to scaling an experimentation platform and culture through a defined maturity model. It concludes with advanced techniques like slowdown experiments to quantify the business value of performance, arguing that a trustworthy, scaled experimentation system is fundamental for incremental innovation and reliable causal inference.
+\end{minipage}
+
+\vspace{1.5cm}
+
+{\normalsize\textsc{Key Themes}}\\[0.5em]
+Trustworthy Causal Inference \,$\cdot$\, Systematic Experimentation Culture \,$\cdot$\, Quantifying Business Value
+
+\end{center}
+
+\newpage
+
+% ═══════════════════════════════════════════════════════════════════════════
+% TABLE OF CONTENTS
+% ═══════════════════════════════════════════════════════════════════════════
+
+\section*{Contents}
+
+
+\noindent\textbf{1. Introduction and Motivation} \hfill \textit{p.\,3}\\
+{\small Online controlled experiments (A/B tests) are the gold standard for establishing causality in digital product development, providing unparalleled ability to make trustworthy, data-driven...}
+
+\vspace{0.5em}
+
+\noindent\textbf{2. Running and Analyzing Experiments} \hfill \textit{p.\,4}\\
+{\small Running trustworthy online controlled experiments requires a systematic, end-to-end process from hypothesis formulation through data-driven decision-making, not just statistical analysis. The...}
+
+\vspace{0.5em}
+
+\noindent\textbf{3. Twyman's Law and Experimentation Trustworthiness} \hfill \textit{p.\,5}\\
+{\small Twyman's Law—that any figure that looks interesting or different is usually wrong—is the most important law in data analysis for experimentation. Extreme or surprising results in online controlled...}
+
+\vspace{0.5em}
+
+\noindent\textbf{4. Experimentation Platform and Culture} \hfill \textit{p.\,6}\\
+{\small Building a robust experimentation platform and culture accelerates innovation by making controlled experiments easy to run, decreasing the cost of trying new ideas, and creating a virtuous...}
+
+\vspace{0.5em}
+
+\noindent\textbf{5. Speed Matters} \hfill \textit{p.\,7}\\
+{\small Speed matters significantly for digital products, where even small performance improvements can yield substantial business value, and slowdown experiments provide a powerful method to quantify...}
+
+\vspace{0.5em}
+
+
+\newpage
+
+% ═══════════════════════════════════════════════════════════════════════════
+% CHAPTER SUMMARIES
+% ═══════════════════════════════════════════════════════════════════════════
+
+
+\section{Introduction and Motivation}
+
+
+\begin{center}
+\begin{minipage}{0.8\textwidth}
+\large\itshape\color{quotecolor}
+``Online controlled experiments are: The best scientific way to establish causality with high probability.''
+\end{minipage}
+\end{center}
+\vspace{0.5em}
+
+
+Online controlled experiments (A/B tests) are the gold standard for establishing causality in digital product development, providing unparalleled ability to make trustworthy, data-driven decisions. Organizations are poor at assessing the value of ideas, and controlled experiments reveal that most ideas fail to improve key metrics, making systematic experimentation essential for incremental improvement.
+
+The chapter introduces the Overall Evaluation Criterion (OEC) as a quantitative measure that must be measurable in the short term yet believed to causally drive long-term strategic objectives. It also presents the 'three tenets' framework for organizations: 1) wanting to make data-driven decisions with a formalized OEC, 2) willingness to invest in experimentation infrastructure, and 3) recognizing poor ability to assess idea value. The hierarchy of evidence positions randomized controlled experiments at the top for establishing causality.
+
+
+
+Bing's ad headline experiment (2012) increased revenue by 12\% (\$100M annually in US alone) with minimal user experience impact. Amazon's shopping cart credit card offer increased annual profit by tens of millions. Microsoft's performance improvements showed each 10ms speed improvement paid for an engineer's annual cost, and by 2015 each 4ms improvement funded an engineer. Amazon's 'People who searched for X bought Y' algorithm increased overall revenue by 3\% (hundreds of millions). Microsoft data shows only one-third of ideas improve intended metrics, while Bing/Google success rates are 10-20\%.
+
+
+This is NOT correlation-based inference—the chapter warns against assuming causality from observational data, as demonstrated by Microsoft Office 365 where users seeing error messages had lower churn rates (correlation) but this didn't mean showing more errors would reduce churn.
+
+
+
+Organizations should implement experimentation platforms to run thousands of controlled experiments annually, define clear OECs that balance multiple objectives, and accept that most ideas will fail while pursuing incremental improvements. Practitioners should randomize properly, use users as randomization units, and recognize that small changes (0.1-2\% improvements) accumulate over time.
+
+
+\vspace{1em}
+\noindent\rule{\textwidth}{0.3pt}
+\vspace{0.5em}
+
+
+{\small\textsc{Key Concepts:} Overall Evaluation Criterion (OEC), Randomization Unit, Variant, Parameter, Hierarchy of Evidence}
+
+
+\hfill{\small\textit{pp.\,21--43}}
+
+\newpage
+
+\section{Running and Analyzing Experiments}
+
+
+\begin{center}
+\begin{minipage}{0.8\textwidth}
+\large\itshape\color{quotecolor}
+``A/B testing with a painted door saved us a large effort!''
+\end{minipage}
+\end{center}
+\vspace{0.5em}
+
+
+Running trustworthy online controlled experiments requires a systematic, end-to-end process from hypothesis formulation through data-driven decision-making, not just statistical analysis. The chapter demonstrates that proper experiment design—including careful metric selection, power analysis, and sanity checks—is essential for obtaining valid, actionable results. A/B testing with a 'painted door' approach can efficiently test business ideas before full implementation, saving significant resources.
+
+The chapter introduces the 'painted door' or 'fake door' approach to experimentation, where you implement a minimal UI change (like adding a non-functional coupon code field) to assess user behavior impact before building the full feature. It also provides a comprehensive decision framework that distinguishes between statistical significance (p-value < 0.05) and practical significance (business-relevant effect size), showing how to make launch decisions across six different result scenarios. The framework emphasizes that experiment design must consider both measurement precision and broader context like implementation costs and tradeoffs between metrics.
+
+
+
+The fictional e-commerce case study shows that adding a coupon code field decreased revenue-per-user by 2.8\% for Treatment One and 7.8\% for Treatment Two, with p-values of 0.0003 and 1.5e-23 respectively, confirming the hypothesis that it would degrade revenue. The chapter cites Dr. Footcare's significant revenue loss after adding coupon codes (Kohavi, Longbottom et al. 2009) and GoodUI.org's pattern that removing coupon codes improves performance (Linowski 2018) as external evidence supporting the concern. Results indicated the decrease occurred because fewer users completed the purchase process, demonstrating how the painted door approach saved the company from implementing a full coupon system that would have harmed revenue.
+
+
+This is NOT simply running an A/B test with revenue as the metric—the chapter warns against using total revenue (which depends on sample size) instead of normalized revenue-per-user, and against including unaffected users (like those who never visit checkout) in the denominator, which dilutes sensitivity.
+
+
+
+Practitioners should use the painted door approach to test ideas cheaply before full implementation, carefully define metrics normalized by affected users (e.g., revenue-per-user for checkout starters), and establish both statistical (p < 0.05) and practical (business-relevant \%) significance thresholds before running experiments. They must also run sanity checks using guardrail metrics and consider implementation costs and metric tradeoffs when making launch decisions.
+
+
+\vspace{1em}
+\noindent\rule{\textwidth}{0.3pt}
+\vspace{0.5em}
+
+
+{\small\textsc{Key Concepts:} Painted door / Fake door approach, Practical significance, Guardrail metrics / Invariants, Power analysis, Randomization unit}
+
+
+\hfill{\small\textit{pp.\,44--56}}
+
+\newpage
+
+\section{Twyman's Law and Experimentation Trustworthiness}
+
+
+\begin{center}
+\begin{minipage}{0.8\textwidth}
+\large\itshape\color{quotecolor}
+``Good data scientists are skeptics: they look at anomalies, they question results, and they invoke Twyman’s law when the results look too good.''
+\end{minipage}
+\end{center}
+\vspace{0.5em}
+
+
+Twyman's Law—that any figure that looks interesting or different is usually wrong—is the most important law in data analysis for experimentation. Extreme or surprising results in online controlled experiments are more likely to be caused by errors in instrumentation, data loss, computational mistakes, or misinterpretation than by genuine effects. To build trustworthy experimentation systems, organizations must implement systematic checks and cultivate healthy skepticism rather than celebrating unusual results.
+
+This chapter introduces Sample Ratio Mismatch (SRM) as a critical diagnostic tool for experiment trustworthiness. SRM occurs when the actual ratio of users between variants deviates from the designed ratio, indicating underlying problems like browser redirects, lossy instrumentation, or bad hash functions. The chapter provides a systematic framework for detecting threats to internal validity (like SUTVA violations and survivorship bias) and external validity (like primacy and novelty effects) through segmented analysis and time-series examination.
+
+
+
+The MSN portal experiment showed a 3.3\% increase in user engagement after correcting for SRM caused by bot filtering—initially it appeared as a significant decrease. At LinkedIn, a new People You May Know algorithm created carryover effects that caused SRM when the experiment was restarted. The chapter cites how 50\% of US traffic on Bing comes from bots (over 90\% in China and Russia), and how redirect implementations consistently cause SRM due to performance differences, bot behavior, and asymmetric contamination. GoodUI.org's evaluation of 115 A/B tests found most were underpowered (Georgiev 2018).
+
+
+This is NOT about celebrating surprising positive results—the chapter warns against building stories around unusually good outcomes without rigorous validation, as exemplified by the MSN Outlook.com link change where a 28\% click increase turned out to be user confusion rather than genuine improvement.
+
+
+
+Practitioners should implement SRM checks with warnings for ratios outside 0.99-1.01 for equally sized variants and hide reports when p-values are below 0.001. They should avoid redirect implementations, use server-side mechanisms instead, plot usage over time to detect novelty/primacy effects, and analyze segments impacted by treatment carefully to avoid misleading conclusions from user migration between segments.
+
+
+\vspace{1em}
+\noindent\rule{\textwidth}{0.3pt}
+\vspace{0.5em}
+
+
+{\small\textsc{Key Concepts:} Twyman's Law, Sample Ratio Mismatch (SRM), Stable Unit Treatment Value Assumption (SUTVA), Heterogeneous Treatment Effects, Simpson's Paradox}
+
+
+\hfill{\small\textit{pp.\,57--75}}
+
+\newpage
+
+\section{Experimentation Platform and Culture}
+
+
+\begin{center}
+\begin{minipage}{0.8\textwidth}
+\large\itshape\color{quotecolor}
+``If you have to kiss a lot of frogs to find a prince, find more frogs and kiss them faster and faster.''
+\end{minipage}
+\end{center}
+\vspace{0.5em}
+
+
+Building a robust experimentation platform and culture accelerates innovation by making controlled experiments easy to run, decreasing the cost of trying new ideas, and creating a virtuous feedback loop for learning. Organizations progress through four maturity phases (Crawl, Walk, Run, Fly) that require evolving technical infrastructure, leadership engagement, and cultural norms to scale trustworthy experimentation.
+
+The chapter introduces the Experimentation Maturity Model with four distinct phases: Crawl (building foundational prerequisites and running \textasciitilde{}10 experiments/year), Walk (defining standard metrics and running \textasciitilde{}50 experiments/year), Run (comprehensive metrics and running \textasciitilde{}250 experiments/year), and Fly (experimentation as the norm with thousands/year). Each phase requires specific technical capabilities, organizational processes, and cultural shifts, with experimentation volume increasing 4-5x between phases. The model provides a roadmap for organizations to systematically scale their experimentation capabilities.
+
+
+
+Google, LinkedIn, and Microsoft scaled to over 20,000 controlled experiments/year, with Google shifting from a code-fork architecture to a parameterized system for performance and technical debt reasons. Microsoft Office grew experiments by over 600\% in 2018 after adopting Bing's platform. The chapter cites specific growth patterns: organizations in Walk phase run \textasciitilde{}50 experiments/year, Run phase \textasciitilde{}250/year, and Fly phase reaches thousands/year. Case studies show manual traffic allocation methods at LinkedIn (email negotiations), Bing (program manager office packed with people begging for traffic), and Google (email/IM negotiations) before shifting to programmatic systems.
+
+
+This is NOT just providing an experimentation platform without leadership engagement and cultural change—the chapter warns that leaders cannot just provide tools but must provide the right incentives, processes, and empowerment for data-driven decisions.
+
+
+
+Organizations should assess their current experimentation maturity phase and implement phase-appropriate infrastructure (Single-Layer vs. Concurrent Experiments), establish leadership buy-in through shared goal-setting and metric transparency, and create just-in-time educational processes like experiment checklists and review meetings. Practitioners should evaluate build vs. buy decisions based on functionality needs, cost trajectory, and integration requirements with their deployment systems.
+
+
+\vspace{1em}
+\noindent\rule{\textwidth}{0.3pt}
+\vspace{0.5em}
+
+
+{\small\textsc{Key Concepts:} Experimentation Maturity Model, Single-Layer Method, Concurrent Experiments, Institutional Memory, Variant Assignment Service}
+
+
+\hfill{\small\textit{pp.\,76--98}}
+
+\newpage
+
+\section{Speed Matters}
+
+
+\begin{center}
+\begin{minipage}{0.8\textwidth}
+\large\itshape\color{quotecolor}
+``Every millisecond counts''
+\end{minipage}
+\end{center}
+\vspace{0.5em}
+
+
+Speed matters significantly for digital products, where even small performance improvements can yield substantial business value, and slowdown experiments provide a powerful method to quantify this impact. The chapter demonstrates that controlled experiments can isolate performance effects through deliberate slowdowns, allowing organizations to measure the precise relationship between latency and key metrics like revenue and user satisfaction. This approach enables data-driven decisions about performance optimization investments.
+
+This chapter introduces the slowdown experiment technique, where researchers deliberately slow down a product's performance for a treatment group to measure the impact on key metrics. The key assumption is local linear approximation—that the relationship between performance and metrics is approximately linear around current performance levels, meaning the negative impact measured from slowing down can be used to estimate the positive impact of speeding up. This method allows organizations to quantify the return-on-investment for performance improvements without actually implementing them first.
+
+
+
+At Amazon, a 100 msec slowdown experiment decreased sales by 1\% (Linden 2006). Bing research showed every 100 msec speedup improves revenue by 0.6\% (Kohavi et al. 2013), and by 2017, every tenth of a second improvement for Bing was worth \$18 million in incremental annual revenue. A 2015 Bing follow-up study found each millisecond in improved performance was worth more than in the past, with every four milliseconds funding an engineer for a year. Bing also found that delaying right-pane elements by 250 msec showed no statistically significant impact despite 20 million users in the experiment, demonstrating that different page elements have varying importance.
+
+
+This is NOT assuming that all performance changes have equal impact—the chapter warns against overstating results like Marissa Mayer's claim that increasing search results from 10 to 30 caused a 20\% traffic drop due to half-second slowdown, where multiple factors changed and performance likely accounted for only a small percentage of the loss.
+
+
+
+Practitioners should run slowdown experiments to quantify the business value of performance improvements before investing in optimization efforts. They should use server-side personalization and optimization instead of client-side JavaScript snippets that block page loading, and they should measure perceived performance using metrics like time-to-first-result or above-the-fold time rather than relying solely on window.onload events.
+
+
+\vspace{1em}
+\noindent\rule{\textwidth}{0.3pt}
+\vspace{0.5em}
+
+
+{\small\textsc{Key Concepts:} slowdown experiment, local linear approximation, perceived performance, Page Load Time (PLT), Above the Fold Time (AFT)}
+
+
+\hfill{\small\textit{pp.\,99--107}}
+
+\newpage
+
+
+\end{document}

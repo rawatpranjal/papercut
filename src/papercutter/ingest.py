@@ -53,6 +53,50 @@ def _check_docling() -> bool:
         return False
 
 
+def is_garbage_content(text: str) -> bool:
+    """Detect PDF encoding failures like /G31 hex codes.
+
+    Some PDFs use Type 3 fonts or glyph subsets that extractors can't decode,
+    resulting in garbage like '/G31/G25/G28' instead of readable text.
+
+    Args:
+        text: The extracted text content.
+
+    Returns:
+        True if content appears to be garbage/unreadable.
+    """
+    if len(text) < 100:
+        return True
+
+    # Count garbage patterns in first 1000 chars
+    sample = text[:1000]
+    garbage_patterns = ["/G", "\\x", "\x00", "\ufffd"]
+    garbage_count = sum(sample.count(p) for p in garbage_patterns)
+
+    # If >10% is garbage patterns, flag it
+    return garbage_count > len(sample) * 0.1
+
+
+def pypdf_extract(pdf_path: Path) -> str:
+    """Simple text extraction via pypdf as fallback.
+
+    Args:
+        pdf_path: Path to the PDF file.
+
+    Returns:
+        Extracted text content.
+    """
+    from pypdf import PdfReader
+
+    reader = PdfReader(pdf_path)
+    text = ""
+    for page in reader.pages:
+        page_text = page.extract_text()
+        if page_text:
+            text += page_text + "\n\n"
+    return text
+
+
 def convert_pdf(pdf_path: Path, figures_dir: Path | None = None) -> IngestResult:
     """Convert a PDF to Markdown + Tables + Figures using Docling.
 
@@ -211,6 +255,27 @@ def run_ingest(source: Path) -> None:
             # Create per-paper figures directory
             paper_figures_dir = figures_base_dir / pdf.stem
             result = convert_pdf(pdf, figures_dir=paper_figures_dir)
+
+            # Check for garbage content and try pypdf fallback
+            if is_garbage_content(result.markdown):
+                console.print(
+                    f"[yellow]Warning:[/yellow] {pdf.name} has unreadable content (font encoding issue)"
+                )
+                console.print("[dim]Trying pypdf fallback...[/dim]")
+                fallback_text = pypdf_extract(pdf)
+                if not is_garbage_content(fallback_text):
+                    console.print("[green]pypdf fallback succeeded[/green]")
+                    result = IngestResult(
+                        markdown=fallback_text,
+                        tables=[],  # pypdf doesn't extract tables
+                        figures=[],
+                        title=result.title,
+                        page_count=result.page_count,
+                    )
+                else:
+                    console.print(
+                        f"[red]Both extractors failed for {pdf.name}[/red] - content may be unusable"
+                    )
 
             # Save markdown
             md_path = md_dir / f"{pdf.stem}.md"

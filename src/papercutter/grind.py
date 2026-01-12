@@ -11,8 +11,194 @@ import yaml
 from rich.console import Console
 from rich.progress import track
 
+from papercutter.ingest import is_garbage_content
+
 logger = logging.getLogger(__name__)
 console = Console()
+
+
+def extract_metadata_from_markdown(content: str) -> dict[str, str | None]:
+    """Extract title, authors, and year from first lines of markdown.
+
+    Handles two formats:
+    1. Concatenated: "Title Authors NBER Working Paper No. XXXX Month Year"
+    2. Heading-based: "## TITLE" then "Authors" then "Working Paper...Year"
+
+    Returns dict with keys: title, authors, year (any can be None).
+    """
+    import re
+
+    lines = content.strip().split('\n')
+    result = {"title": None, "authors": None, "year": None}
+
+    # Look for year pattern (4 digits, 1990-2030)
+    year_pattern = re.compile(r'\b(19[89]\d|20[0-2]\d)\b')
+
+    # Author name patterns (first names)
+    author_first_names = [
+        'Joshua', 'David', 'Victor', 'Alan', 'Michael',
+        'John', 'Robert', 'James', 'William', 'Richard',
+        'Esther', 'Amy', 'Janet', 'Susan', 'Rebecca',
+    ]
+
+    # Skip patterns (not titles)
+    skip_patterns = ["NBER WORKING PAPER SERIES", "Working Paper No", "NATIONAL BUREAU"]
+
+    for i, line in enumerate(lines[:15]):
+        line = line.strip()
+        if not line:
+            continue
+
+        # FORMAT 1: Concatenated line with Title + Authors + NBER + Year
+        if len(line) > 80 and 'NBER' in line.upper() and not line.startswith('#'):
+            year_match = year_pattern.search(line)
+            if year_match:
+                result["year"] = year_match.group(1)
+
+            nber_idx = line.upper().find('NBER')
+            before_nber = line[:nber_idx].strip()
+
+            for name in author_first_names:
+                pattern = f' {name} '
+                if pattern in before_nber:
+                    idx = before_nber.find(pattern)
+                    result["title"] = before_nber[:idx].strip()
+                    result["authors"] = before_nber[idx:].strip()
+                    if result["authors"]:
+                        result["authors"] = re.sub(r'\s+and\s*$', '', result["authors"])
+                    break
+
+            if result["title"]:
+                return result
+
+        # FORMAT 2: Heading-based (## TITLE on one line, authors on another)
+        if line.startswith('## '):
+            title_text = line[3:].strip()
+            # Skip headers like "## NBER WORKING PAPER SERIES"
+            if any(skip.lower() in title_text.lower() for skip in skip_patterns):
+                continue
+            if len(title_text) > 20:
+                result["title"] = title_text
+
+                # Look for authors in next few lines (line with 2+ capitalized names)
+                for j in range(i + 1, min(i + 5, len(lines))):
+                    next_line = lines[j].strip()
+                    if not next_line or next_line.startswith('#'):
+                        continue
+                    # Check if line looks like author names (has known first names)
+                    name_count = sum(1 for name in author_first_names if name in next_line)
+                    if name_count >= 1 and len(next_line) < 100:
+                        result["authors"] = next_line
+                        break
+
+                # Look for year in first 15 lines
+                for j in range(min(15, len(lines))):
+                    year_match = year_pattern.search(lines[j])
+                    if year_match:
+                        result["year"] = year_match.group(1)
+                        break
+
+                return result
+
+    return result
+
+
+def extract_title_from_markdown(content: str) -> str | None:
+    """Extract title from first lines of markdown, handling Docling inconsistencies.
+
+    Docling produces inconsistent markdown:
+    - Some papers: `## TITLE` (heading)
+    - Some papers: Title as plain text on first line (maybe concatenated with authors/metadata)
+
+    This function handles both cases programmatically before LLM extraction.
+    """
+    lines = content.strip().split('\n')
+
+    # Patterns that indicate NON-title content (skip entire line if it's ONLY this)
+    skip_patterns = [
+        "NBER WORKING PAPER SERIES",  # Standalone header
+        "JEL No",
+        "Labor Studies",
+        "ABSTRACT",
+        "Department of",
+        "National Bureau",
+        "This paper",
+        "We study",
+        "We examine",
+    ]
+
+    # Patterns that indicate metadata appended to a title (should be split off)
+    metadata_patterns = [
+        " NBER Working Paper",
+        " Working Paper No",
+        " NBER ",
+    ]
+
+    # Author name patterns (used to split title from authors)
+    author_indicators = [
+        ' Joshua ', ' David ', ' Victor ', ' Alan ', ' Michael ',
+        ' John ', ' Robert ', ' James ', ' William ', ' Richard ',
+        ' Esther ', ' Amy ', ' Janet ', ' Susan ', ' Rebecca ',
+        ' by ', ' By ',
+    ]
+
+    for line in lines[:15]:
+        line = line.strip()
+        if not line:
+            continue
+
+        # If the ENTIRE line is a skip pattern, skip it
+        if any(p.lower() in line.lower() for p in skip_patterns):
+            # But first check if line starts with a title before the skip pattern
+            # (e.g., "Title Text... NBER Working Paper No. 5888")
+            for meta in metadata_patterns:
+                if meta.lower() in line.lower():
+                    # Split at metadata and check if prefix looks like a title
+                    idx = line.lower().find(meta.lower())
+                    potential = line[:idx].strip()
+                    # Also try to split off author names from the potential title
+                    for author in author_indicators:
+                        if author in potential:
+                            potential = potential.split(author)[0].strip()
+                            break
+                    if len(potential) > 30:  # Real titles are substantial
+                        return potential
+            continue
+
+        # If markdown heading (## Title), extract it
+        if line.startswith('## '):
+            title = line[3:].strip()
+            # Real titles are substantial (>20 chars) and don't look like metadata
+            if len(title) > 20 and not any(p.lower() in title.lower() for p in skip_patterns):
+                return title
+
+        # If plain text and long, likely title (maybe concatenated with authors/metadata)
+        if len(line) > 40 and not line.startswith('#'):
+            # First try to split off metadata
+            for meta in metadata_patterns:
+                if meta.lower() in line.lower():
+                    idx = line.lower().find(meta.lower())
+                    potential = line[:idx].strip()
+                    # Then try to split off authors
+                    for author in author_indicators:
+                        if author in potential:
+                            potential = potential.split(author)[0].strip()
+                            break
+                    if len(potential) > 30:
+                        return potential
+
+            # Try to split off author names directly
+            for splitter in author_indicators:
+                if splitter in line:
+                    potential_title = line.split(splitter)[0].strip()
+                    if len(potential_title) > 20:
+                        return potential_title
+
+            # If line is short enough and no split found, might be a full title
+            if len(line) < 150:
+                return line
+
+    return None
 
 
 def _check_litellm() -> bool:
@@ -120,10 +306,18 @@ def _plan_extraction(completion_fn: Any, content: str) -> dict[str, Any]:
     prompt = f"""Analyze this paper for a PhD-level literature review.
 
 EXTRACT METADATA:
-- title: The actual paper title. SKIP series headers like "NBER WORKING PAPER SERIES".
-  Look for the main title, usually in large font or after the header.
-- authors: "First Author et al." format
-- year: Publication year or "n.d."
+- title: The research paper's ACTUAL TITLE (not series/journal name).
+  SKIP: "NBER WORKING PAPER SERIES", "JEL Nos.", "Working Paper No.", journal headers.
+  The title describes WHAT the paper studies (e.g., "Minimum Wages and Employment").
+  NOT: classification codes, journal names, or author affiliations.
+  If text contains garbage like "/G31" or hex codes, return "Unknown".
+- authors: Full author names, comma-separated.
+  LOOK FOR: Names immediately after title, before "Working Paper" or "Abstract".
+  These are typically 2-4 proper names with no numbers or abbreviations.
+  EXAMPLE: "David Card, Alan Krueger" or "Joshua Angrist, Victor Lavy"
+- year: Publication year (4 digits like 1994, 1999, 2001).
+  LOOK FOR: Year near "Working Paper No.", after month names, or in header.
+  EXAMPLE: Extract "1997" from "January 1997" or "1993" from "October, 1993"
 - paper_type: THEORY (if mainly model/proofs) | EMPIRICAL (if mainly data/regressions) | SURVEY | ML
 
 ASSESS CONTENT:
@@ -521,6 +715,25 @@ def run_extraction() -> None:
 
             content = md_path.read_text(encoding="utf-8")
 
+            # Check for garbage content and skip to prevent hallucination
+            if is_garbage_content(content):
+                console.print(
+                    f"[red]Skipping {paper.id}:[/red] Content unreadable (PDF encoding issue)"
+                )
+                console.print("[dim]The PDF uses fonts that couldn't be decoded. Try a different source.[/dim]")
+                # Add minimal error entry
+                results.append({
+                    "paper_id": paper.id,
+                    "title": "[Unreadable - PDF encoding error]",
+                    "authors": "Unknown",
+                    "year": "n.d.",
+                    "paper_type": "UNKNOWN",
+                    "context": "This paper's PDF could not be decoded due to font encoding issues.",
+                    "error": "PDF content unreadable - extraction skipped to prevent hallucination",
+                })
+                paper.status = "error"
+                continue
+
             # Load tables if available
             tables: list[dict] = []
             if tables_path and tables_path.exists():
@@ -568,27 +781,54 @@ def run_extraction() -> None:
             except Exception:
                 sections = json.loads(raw_sections)
 
-            # Use LLM-extracted title, fallback to markdown
-            title = plan.get("title")
-            if not title or "NBER" in title.upper() or "WORKING PAPER" in title.upper():
-                # Fallback: search first 20 lines for a real title
-                lines = content.split("\n")[:20]
-                for line in lines:
-                    line = line.strip("# ").strip()
-                    if line and len(line) > 10 and "NBER" not in line.upper() and "WORKING PAPER" not in line.upper():
-                        title = line
-                        break
-                else:
-                    title = "Untitled Paper"
+            # METADATA EXTRACTION: Programmatic first, then LLM fallback
+            # Reason: Docling produces inconsistent markdown (some titles as headings,
+            # some as plain text). Programmatic extraction is more reliable.
+            pre_meta = extract_metadata_from_markdown(content)
+            pre_title = pre_meta.get("title") or extract_title_from_markdown(content)
+
+            if pre_title:
+                # Programmatic extraction succeeded - use it
+                title = pre_title
+            else:
+                # Fallback to LLM-extracted title
+                title = plan.get("title")
+                if not title or "NBER" in title.upper() or "WORKING PAPER" in title.upper() or "JEL" in title.upper():
+                    # Last resort: search first 20 lines
+                    lines = content.split("\n")[:20]
+                    for line in lines:
+                        line = line.strip("# ").strip()
+                        if line and len(line) > 10 and "NBER" not in line.upper() and "WORKING PAPER" not in line.upper():
+                            title = line
+                            break
+                    else:
+                        title = "Untitled Paper"
+
+            # Authors: programmatic first, then LLM
+            authors = pre_meta.get("authors") or plan.get("authors", "Unknown")
+
+            # Year: programmatic first, then LLM
+            year = pre_meta.get("year") or plan.get("year", "n.d.")
+
+            # Truncate overly long titles
             if len(title) > 200:
                 title = title[:200] + "..."
+
+            # Create short title for display (before colon, max 50 chars)
+            short_title = title
+            if ':' in title:
+                short_title = title.split(':')[0].strip()
+            if len(short_title) > 50:
+                # Take first 50 chars, break at word boundary
+                short_title = short_title[:50].rsplit(' ', 1)[0] + "..."
 
             # Build result combining metadata from plan + sections from extraction
             result = {
                 "paper_id": paper.id,
                 "title": title,
-                "authors": plan.get("authors", "Unknown"),
-                "year": plan.get("year", "n.d."),
+                "short_title": short_title,
+                "authors": authors,
+                "year": year,
                 "paper_type": plan.get("paper_type", "EMPIRICAL"),
                 "context": sections.get("context", ""),
                 "method": sections.get("method", ""),

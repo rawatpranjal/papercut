@@ -65,7 +65,7 @@
 \newpage
 
 <% for paper in papers %>
-\section{<< paper.title | latex_escape | truncate(75) >>}
+\section{<< paper.short_title | default(paper.title) | latex_escape | truncate(60) >>}
 \textit{<< paper.authors | latex_escape >>} (<< paper.year | latex_escape >>) \hfill \textsc{\small << paper.paper_type | latex_escape >>}
 
 <% if paper.golden_quote %>
