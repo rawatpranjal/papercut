@@ -228,3 +228,16 @@ Chapter 2: Network Effects
        "Cross-side effects"
      ]
    }
+
+
+Real Example Outputs
+--------------------
+
+See real outputs from processing "Trustworthy Online Controlled Experiments" (Kohavi, Tang & Xu):
+
+`examples/book-ab-testing on GitHub <https://github.com/rawatpranjal/papercutter/tree/main/examples/book-ab-testing>`_
+
+Includes:
+
+- ``book_inventory.json`` - Chapter detection (23 chapters)
+- ``book_extractions.json`` - LLM summaries with thesis, insights, evidence, key terms

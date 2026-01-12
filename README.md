@@ -96,6 +96,16 @@ Output: `output/book_summary.pdf`
 | `matrix.csv` | Flattened dataset for R/Stata/Python |
 | `review.pdf` | LaTeX report with structured summaries |
 
+## Examples
+
+See real pipeline outputs in [`examples/`](examples/):
+
+- **book-ab-testing/** - Output from processing "Trustworthy Online Controlled Experiments" (Kohavi, Tang & Xu, 2020). Includes chapter detection (23 chapters) and LLM-generated summaries.
+
+## Documentation
+
+Full documentation: [papercutter.readthedocs.io](https://papercutter.readthedocs.io)
+
 ## License
 
 MIT
