@@ -36,7 +36,8 @@ Output: `markdown/`, `tables/`, `figures/`, `inventory.json`
 Generate an extraction schema from paper abstracts.
 
 ```bash
-papercutter configure
+papercutter configure                                    # Default (meta-analysis)
+papercutter configure --prompt "Extract model accuracy"  # Custom prompt
 ```
 
 Output: `columns.yaml`
