@@ -9,6 +9,6 @@ The Razor Pipeline:
     papercutter report     # Generate matrix.csv + review.pdf
 """
 
-__version__ = "3.0.1"
+__version__ = "3.0.2"
 
 __all__ = ["__version__"]

@@ -2,11 +2,11 @@
 
 ## Overview
 
-PDF to Data Factory: Extract structured data from academic papers.
+Extract structured data from academic papers.
 
 **Entry point**: `papercutter` CLI (or `python3 -m papercutter`)
 
-**Version**: 3.0.0
+**Version**: 3.0.2
 
 ## Project Structure
 

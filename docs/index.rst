@@ -45,18 +45,8 @@ Pipeline
 
 ----
 
-Features
---------
-
-- **Batch processing** — Process entire PDF collections with per-file status tracking
-- **Table extraction** — Preserve tabular data structure via Docling
-- **Schema validation** — Define typed extraction fields in YAML
-- **Book support** — Chapter detection and summarization for handbooks
-
-----
-
-Quick Example
--------------
+Example
+-------
 
 .. code-block:: bash
 
