@@ -1,0 +1,44 @@
+{
+  "papers": {
+    "batch-normalization": {
+      "id": "batch-normalization",
+      "filename": "batch-normalization.pdf",
+      "markdown_path": "/Users/pranjal/Code/pdf-split-summarize/input/ml-papers/markdown/batch-normalization.md",
+      "tables_path": "/Users/pranjal/Code/pdf-split-summarize/input/ml-papers/tables/batch-normalization.json",
+      "figures_path": "/Users/pranjal/Code/pdf-split-summarize/input/ml-papers/figures/batch-normalization.json",
+      "status": "extracted"
+    },
+    "adam-optimizer": {
+      "id": "adam-optimizer",
+      "filename": "adam-optimizer.pdf",
+      "markdown_path": "/Users/pranjal/Code/pdf-split-summarize/input/ml-papers/markdown/adam-optimizer.md",
+      "tables_path": "/Users/pranjal/Code/pdf-split-summarize/input/ml-papers/tables/adam-optimizer.json",
+      "figures_path": "/Users/pranjal/Code/pdf-split-summarize/input/ml-papers/figures/adam-optimizer.json",
+      "status": "extracted"
+    },
+    "attention-is-all-you-need": {
+      "id": "attention-is-all-you-need",
+      "filename": "attention-is-all-you-need.pdf",
+      "markdown_path": "/Users/pranjal/Code/pdf-split-summarize/input/ml-papers/markdown/attention-is-all-you-need.md",
+      "tables_path": "/Users/pranjal/Code/pdf-split-summarize/input/ml-papers/tables/attention-is-all-you-need.json",
+      "figures_path": "/Users/pranjal/Code/pdf-split-summarize/input/ml-papers/figures/attention-is-all-you-need.json",
+      "status": "extracted"
+    },
+    "bert": {
+      "id": "bert",
+      "filename": "bert.pdf",
+      "markdown_path": "/Users/pranjal/Code/pdf-split-summarize/input/ml-papers/markdown/bert.md",
+      "tables_path": "/Users/pranjal/Code/pdf-split-summarize/input/ml-papers/tables/bert.json",
+      "figures_path": "/Users/pranjal/Code/pdf-split-summarize/input/ml-papers/figures/bert.json",
+      "status": "extracted"
+    },
+    "dropout": {
+      "id": "dropout",
+      "filename": "dropout.pdf",
+      "markdown_path": "/Users/pranjal/Code/pdf-split-summarize/input/ml-papers/markdown/dropout.md",
+      "tables_path": "/Users/pranjal/Code/pdf-split-summarize/input/ml-papers/tables/dropout.json",
+      "figures_path": "/Users/pranjal/Code/pdf-split-summarize/input/ml-papers/figures/dropout.json",
+      "status": "extracted"
+    }
+  }
+}

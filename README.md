@@ -100,7 +100,8 @@ Output: `output/book_summary.pdf`
 
 See real pipeline outputs in [`examples/`](examples/):
 
-- **book-ab-testing/** - Output from processing "Trustworthy Online Controlled Experiments" (Kohavi, Tang & Xu, 2020). Includes chapter detection (23 chapters) and LLM-generated summaries.
+- **book-ab-testing/** - Book pipeline output from "Trustworthy Online Controlled Experiments" (Kohavi, Tang & Xu, 2020). Chapter detection and LLM summaries.
+- **papers-ml/** - Paper pipeline output from 5 seminal ML papers (Transformers, BERT, Adam, BatchNorm, Dropout). Executive summary, extractions, and analysis-ready CSV.
 
 ## Documentation
 

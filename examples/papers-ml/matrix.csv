@@ -1,0 +1,6 @@
+paper_id,title,benchmark_task,effect_size,methodology,model_variant,performance_improvement,sample_size,training_compute
+batch-normalization,Batch Normalization: Accelerating Deep Network Training by Reducing Internal Covariate Shift,ImageNet Classification,74.8,Batch Normalization,BN-x30,2.6,1200000,Not specified
+dropout,Improving neural networks by preventing co-adaptation of feature detectors,CIFAR-10 object recognition,0.156,Dropout regularization for neural networks,Feedforward neural networks with dropout,0.029,60,"Single NVIDIA GTX 580 GPU, 90 minutes for CIFAR-10, 4 days for ImageNet with dropout"
+adam-optimizer,ADAM: A METHOD FOR STOCHASTIC OPTIMIZATION,Stochastic optimization of machine learning models,,Adaptive Moment Estimation (Adam),"Adam with default α=0.001, β₁=0.9, β₂=0.999, ε=10⁻⁸",,128,
+attention-is-all-you-need,Attention Is All You Need,WMT 2014 English-to-German translation,28.4,Transformer architecture with multi-head self-attention,big,2.0,4500000,3.5 days on 8 P100 GPUs
+bert,BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding,GLUE,82.1,Masked Language Modeling with Bidirectional Transformer,BERT LARGE,7.0,0,Not specified

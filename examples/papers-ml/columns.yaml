@@ -1,0 +1,22 @@
+columns:
+  - key: sample_size
+    description: "Number of observations or training examples in the study"
+    type: integer
+  - key: effect_size
+    description: "Main reported performance metric (e.g., BLEU, accuracy, F1 score)"
+    type: float
+  - key: methodology
+    description: "Primary research methodology or model architecture"
+    type: string
+  - key: benchmark_task
+    description: "Name of the primary benchmark task used for evaluation"
+    type: string
+  - key: performance_improvement
+    description: "Absolute improvement over previous state-of-the-art or baseline"
+    type: float
+  - key: training_compute
+    description: "Reported computational cost of training (e.g., GPU days)"
+    type: string
+  - key: model_variant
+    description: "Specific model variant or configuration name (e.g., Base, Large)"
+    type: string

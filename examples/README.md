@@ -32,3 +32,44 @@ papercutter book report
 ```
 
 Output: `output/book_summary.pdf`
+
+## papers-ml/
+
+Output from processing 5 seminal machine learning papers from ArXiv:
+- Attention Is All You Need (Transformers)
+- BERT
+- Adam Optimizer
+- Batch Normalization
+- Dropout
+
+| File | Description |
+|------|-------------|
+| `inventory.json` | Processing status for each paper |
+| `columns.yaml` | LLM-generated extraction schema |
+| `extractions.json` | Extracted data with executive summary |
+| `matrix.csv` | Analysis-ready flat dataset |
+
+### What the pipeline extracted
+
+For each paper:
+- **Context** - Research question, approach, and headline finding
+- **Core mechanism** - Key insight explained for PhD-level understanding
+- **Method** - Identification strategy with mathematical details
+- **Results** - Key estimates with interpretation
+- **Contribution** - What's new and why it matters
+- **Limitations** - Caveats and boundary conditions
+
+Plus an executive summary synthesizing all 5 papers and thematic categorization.
+
+### Running this yourself
+
+```bash
+mkdir my-review && cd my-review
+# Add PDFs here
+papercutter ingest ./
+papercutter configure
+papercutter extract
+papercutter report
+```
+
+Output: `matrix.csv` + `review.pdf`
