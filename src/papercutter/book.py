@@ -617,7 +617,7 @@ def run_book_extract(use_docling: bool = False) -> None:
     console.print(f"[dim]Saved to:[/dim] {chapters_dir}")
 
 
-def run_book_grind() -> None:
+def run_book_summarize() -> None:
     """Summarize each chapter with LLM."""
     try:
         from litellm import completion
@@ -705,7 +705,7 @@ def run_book_report() -> None:
 
     if not inventory.synthesis:
         console.print(
-            "[red]Error:[/red] No synthesis found. Run 'papercutter book grind' first."
+            "[red]Error:[/red] No synthesis found. Run 'papercutter book summarize' first."
         )
         return
 

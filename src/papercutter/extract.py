@@ -211,10 +211,14 @@ def _check_litellm() -> bool:
         return False
 
 
-def generate_schema() -> None:
+def generate_schema(custom_prompt: str | None = None) -> None:
     """Auto-generate columns.yaml from random paper abstracts.
 
     Samples 3 papers and uses LLM to suggest extraction fields.
+
+    Args:
+        custom_prompt: Optional custom prompt for schema generation.
+                      If provided, replaces the default meta-analysis prompt.
     """
     if not _check_litellm():
         raise ImportError(
@@ -242,20 +246,47 @@ def generate_schema() -> None:
     # Read first 3000 chars from each (abstracts)
     abstracts = "\n\n---\n\n".join([f.read_text(encoding="utf-8")[:3000] for f in samples])
 
-    prompt = f"""Based on these paper abstracts, suggest 5-8 data fields to extract.
+    if custom_prompt:
+        # User-provided prompt
+        prompt = f"""{custom_prompt}
 
-Focus on quantitative data that can be compared across papers (sample sizes, effect sizes, etc).
+Return ONLY valid YAML in this format:
+columns:
+  - key: field_name
+    description: "Field description"
+    type: string|integer|float
+
+Paper abstracts:
+{abstracts}"""
+    else:
+        # Default meta-analysis focused prompt
+        prompt = f"""Based on these paper abstracts, suggest 5-8 data fields to extract for a meta-analysis dataset.
+
+REQUIRED for meta-analysis (always include if present in papers):
+- effect_size: Main treatment effect or coefficient
+- standard_error: SE of the main effect (or confidence interval bounds)
+- sample_size: Total N in the study
+- p_value: Statistical significance (if reported)
+
+CONTEXT fields (for heterogeneity analysis):
+- Study characteristics (year, country, setting)
+- Sample characteristics (age, demographics)
+- Methodology (RCT vs quasi-experimental, estimation method)
+- Outcome measure definition
 
 Return ONLY valid YAML in this exact format:
 columns:
-  - key: sample_size
-    description: "Number of observations in the study"
-    type: integer
   - key: effect_size
     description: "Main treatment effect coefficient"
     type: float
+  - key: standard_error
+    description: "Standard error of main effect"
+    type: float
+  - key: sample_size
+    description: "Total observations in analysis"
+    type: integer
   - key: methodology
-    description: "Research methodology used"
+    description: "Research design (RCT, DiD, RDD, IV)"
     type: string
 
 Paper abstracts:
@@ -288,7 +319,7 @@ Paper abstracts:
         output_path.write_text(yaml_text, encoding="utf-8")
 
         console.print(f"[green]Schema saved to:[/green] {output_path}")
-        console.print("[dim]Review and edit columns.yaml before running 'papercutter grind'[/dim]")
+        console.print("[dim]Review and edit columns.yaml before running 'papercutter extract'[/dim]")
 
     except Exception as e:
         # Check for authentication errors (missing/invalid API key)
@@ -703,7 +734,7 @@ def run_extraction() -> None:
 
     results: list[dict[str, Any]] = []
 
-    for paper in track(ingested, description="Grinding papers..."):
+    for paper in track(ingested, description="Extracting..."):
         try:
             # Load content
             md_path = paper.get_markdown_path()

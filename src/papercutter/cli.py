@@ -34,17 +34,22 @@ def ingest(
 
 
 @app.command()
-def configure() -> None:
+def configure(
+    prompt: Annotated[
+        str | None,
+        typer.Option("--prompt", "-p", help="Custom prompt for schema generation")
+    ] = None,
+) -> None:
     """Generate extraction schema from paper abstracts."""
-    from papercutter.grind import generate_schema
+    from papercutter.extract import generate_schema
 
-    generate_schema()
+    generate_schema(custom_prompt=prompt)
 
 
 @app.command()
 def extract() -> None:
     """Extract data fields from papers using LLM."""
-    from papercutter.grind import run_extraction
+    from papercutter.extract import run_extraction
 
     run_extraction()
 
@@ -105,9 +110,9 @@ def book_extract(
 @book_app.command("summarize")
 def book_summarize() -> None:
     """Summarize each chapter with LLM."""
-    from papercutter.book import run_book_grind
+    from papercutter.book import run_book_summarize
 
-    run_book_grind()
+    run_book_summarize()
 
 
 @book_app.command("report")

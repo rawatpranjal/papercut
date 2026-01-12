@@ -123,7 +123,7 @@ def build_report() -> None:
     # Load extractions
     extractions_path = project_dir / "extractions.json"
     if not extractions_path.exists():
-        console.print("[red]Error:[/red] No extractions.json found. Run 'papercutter grind' first.")
+        console.print("[red]Error:[/red] No extractions.json found. Run 'papercutter extract' first.")
         return
 
     data = json.loads(extractions_path.read_text(encoding="utf-8"))
@@ -429,7 +429,7 @@ def build_condensed() -> None:
     # Load extractions
     extractions_path = project_dir / "extractions.json"
     if not extractions_path.exists():
-        console.print("[red]Error:[/red] No extractions.json found. Run 'papercutter grind' first.")
+        console.print("[red]Error:[/red] No extractions.json found. Run 'papercutter extract' first.")
         return
 
     data = json.loads(extractions_path.read_text(encoding="utf-8"))

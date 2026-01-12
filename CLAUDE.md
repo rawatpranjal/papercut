@@ -17,7 +17,7 @@ src/papercutter/
 ├── cli.py           # Typer CLI (4 commands)
 ├── project.py       # Inventory management
 ├── ingest.py        # Docling PDF processing
-├── grind.py         # LLM extraction (internal)
+├── extract.py       # LLM extraction
 ├── report.py        # CSV + PDF generation
 └── templates/
     └── review.tex.j2
