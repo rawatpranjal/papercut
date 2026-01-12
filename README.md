@@ -12,56 +12,59 @@ It addresses the specific tooling gap between reference managers (Zotero, Mendel
 
 *   **Pipeline Architecture:** A stateless, resumable workflow. Processing status is tracked per file, allowing large batches to be paused and resumed without data loss.
 *   **High-Fidelity Digitization:** Utilizes IBM's **Docling** to convert PDFs into structured Markdown, preserving table geometry and section hierarchy better than standard text extraction.
-*   **Intelligent Splitting:** Automatically detects large volumes (e.g., handbooks, dissertations) and splits them into chapter-level units for granular analysis.
-*   **Schema Validation (Pilot Mode):** Includes a "Pilot Protocol" to test extraction schemas on a random sample. Includes source quotes for every extracted data point to verify accuracy before processing the full library.
-*   **Bibliographic Linking:** Fuzzy-matches PDF contents to existing BibTeX records to ensure metadata consistency.
+*   **Schema Validation:** Test extraction schemas on samples with source quotes for every extracted data point to verify accuracy.
+*   **Book Summarization:** Process entire books or handbooks with chapter detection, extraction, and synthesis into formatted PDF reports.
 
 ---
 
 ## Installation
 
-Papercutter is a comprehensive toolkit that relies on PyTorch and Docling for document layout analysis. A standard installation requires Python 3.10+.
-
 ```bash
-pip install papercutter
+pip install papercutter[full]
 ```
 
 **System Requirements:**
-*   **Hardware:** A GPU is recommended for optimal OCR and layout analysis speed, though the system functions on CPU.
-*   **API Access:** Requires an active API key for OpenAI (`export OPENAI_API_KEY=...`) or Anthropic.
-*   **Optional:** Tesseract OCR (for legacy scanned documents).
+*   Python 3.10 or higher
+*   **API Access:** Requires `OPENAI_API_KEY` environment variable (or Anthropic API key)
+*   **For PDF Reports:** LaTeX installation (MacTeX, TeX Live, or MiKTeX)
+
+**Modular Installation:**
+```bash
+pip install papercutter           # Core only
+pip install papercutter[docling]  # PDF processing
+pip install papercutter[llm]      # LLM extraction
+pip install papercutter[report]   # PDF report generation
+```
 
 ---
 
 ## Workflow Overview
 
-The system operates in four distinct phases to ensure data integrity.
+The system operates in four phases to ensure data integrity.
 
 ### 1. Ingest (Digitization)
-Initializes the project structure and converts raw PDFs into a unified internal format.
+
+Converts raw PDFs into structured Markdown and extracts tables.
 
 ```bash
-# Initialize a new review project
-papercutter init my_project
-
-# Process PDFs and link to metadata
-cd my_project
-papercutter ingest ./raw_pdfs/ --bib references.bib
+papercutter ingest ./pdfs/
 ```
 
-*   **Process:** Scans directories, identifies duplicates via SHA256, splits large volumes, and runs Docling conversion.
-*   **Metadata:** If a BibTeX file is provided, PDFs are linked to citations via fuzzy title matching.
+*   **Process:** Scans directory, runs Docling conversion (PDF -> Markdown + Tables)
+*   **Output:** `markdown/`, `tables/`, `figures/`, `inventory.json`
 
 ### 2. Configure (Schema Definition)
-Defines the variables to be extracted from the literature.
+
+Generates an extraction schema by analyzing paper abstracts.
 
 ```bash
 papercutter configure
 ```
 
-*   **Process:** The system analyzes abstracts from the ingested library and proposes a draft schema. The user generates a `config.yaml` file to enforce strict types on extracted data.
+*   **Process:** Samples papers and uses LLM to propose extraction fields
+*   **Output:** `columns.yaml`
 
-**Example `config.yaml`:**
+**Example `columns.yaml`:**
 ```yaml
 columns:
   - key: sample_size
@@ -75,23 +78,19 @@ columns:
     type: float
 ```
 
-### 3. Grind (Extraction Loop)
-Executes the LLM-based extraction and summarization.
+### 3. Grind (Extraction)
+
+Executes LLM-based extraction for all papers.
 
 ```bash
-# Step A: Pilot Run (Validation)
-papercutter grind --pilot
+papercutter grind
 ```
-*   Processes a random 5-paper sample.
-*   Generates a **Traceability Report** (`pilot_matrix.csv`) containing the extracted value alongside the *exact quote* from the text used to derive it. This allows researchers to audit LLM performance.
 
-```bash
-# Step B: Full Execution
-papercutter grind --full
-```
-*   Processes the remaining library. This step is idempotent; already processed papers are skipped.
+*   **Process:** Extracts metadata, narrative fields, and custom schema fields
+*   **Output:** `extractions.json`
 
 ### 4. Report (Synthesis)
+
 Compiles final artifacts for analysis and reading.
 
 ```bash
@@ -99,43 +98,56 @@ papercutter report
 ```
 
 *   **Outputs:**
-    *   `matrix.csv`: A flattened dataset of all extracted variables, ready for import into R/Stata/Pandas.
-    *   `systematic_review.pdf`: A compiled LaTeX document containing:
-        *   **Structured Summaries:** One-page standardized syntheses of every paper.
-        *   **Contribution Grid:** A consolidated appendix layout for rapid comparison.
+    *   `matrix.csv`: Flattened dataset ready for R/Stata/Pandas
+    *   `review.pdf`: LaTeX document with structured summaries
+
+**Condensed Mode** (for appendix tables):
+```bash
+papercutter report --condensed
+```
+
+---
+
+## Book Summarization Pipeline
+
+Process entire books, textbooks, or handbooks with chapter-level analysis.
+
+```bash
+# 1. Detect chapters from PDF bookmarks
+papercutter book index ./book.pdf
+
+# 2. Extract chapter text
+papercutter book extract
+
+# 3. Summarize each chapter with LLM
+papercutter book grind
+
+# 4. Generate formatted PDF report
+papercutter book report
+```
+
+**Output:** `output/book_summary.pdf` with one page per chapter including:
+- Main thesis and unique insights
+- Key evidence and counterexamples
+- Key terms and definitions
+- Book-level synthesis with themes and intellectual journey
 
 ---
 
 ## Project Structure
 
-Papercutter enforces a standardized directory structure to manage state.
-
 ```text
 my_project/
-├── input/                  # Raw PDF repository
-├── config.yaml             # Extraction schema definition
-├── .papercutter/           # Internal state (Markdown cache, Inventory)
-└── output/
-    ├── matrix.csv          # Final dataset for analysis
-    ├── systematic_review.pdf
-    └── pilot_trace.csv     # Audit trail for verification
+├── pdfs/                   # Raw PDF repository
+├── markdown/               # Docling-converted Markdown
+├── tables/                 # Extracted tables (JSON)
+├── figures/                # Extracted figures
+├── columns.yaml            # Extraction schema
+├── inventory.json          # Processing status tracker
+├── extractions.json        # Extracted data
+├── matrix.csv              # Final dataset
+└── review.pdf              # Compiled report
 ```
-
----
-
-## Common Use Cases
-
-**Meta-Regression Analysis**
-> *Goal:* Extract specific regression coefficients and standard errors from 50+ empirical papers.
-> *Workflow:* Define `coefficient`, `standard_error`, and `model_specification` in the schema. Use the Pilot Mode to ensure the LLM distinguishes between "Main Results" and "Robustness Checks."
-
-**Large Volume Processing**
-> *Goal:* Analyze a Handbook or multi-chapter Report.
-> *Workflow:* The Ingest phase detects the volume size. The Splitter module separates chapters into individual units. The Report phase generates a "Flashcard" style appendix for rapid review.
-
-**Library Remediation**
-> *Goal:* Organize a messy folder of PDFs with inconsistent filenames.
-> *Workflow:* The Ingest phase uses header analysis to identify papers and links them to a clean BibTeX file, generating a structured inventory of the collection.
 
 ---
 
