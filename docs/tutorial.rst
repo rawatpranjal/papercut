@@ -1,7 +1,7 @@
 Tutorial
 ========
 
-This tutorial walks through papercutter's two main pipelines with real examples.
+This tutorial walks through papercutter's two main pipelines with examples.
 
 Paper Collection Pipeline
 -------------------------
@@ -110,18 +110,17 @@ Point papercutter at your PDF:
 
 .. code-block:: bash
 
-   papercutter book index ./trustworthy-experiments.pdf
+   papercutter book index ./platform-economics.pdf
 
 This detects chapters from PDF bookmarks or text patterns:
 
 .. code-block:: text
 
-   Found 5 chapters:
-    1. Introduction and Motivation (pp. 21-43)
-    2. Running and Analyzing Experiments (pp. 44-56)
-    3. Twyman's Law and Experimentation Trustworthiness (pp. 57-75)
-    4. Experimentation Platform and Culture (pp. 76-98)
-    5. Speed Matters (pp. 99-107)
+   Found 4 chapters:
+    1. What Makes a Platform (pp. 1-45)
+    2. Network Effects and Critical Mass (pp. 46-98)
+    3. Pricing Multi-Sided Markets (pp. 99-156)
+    4. Platform Competition (pp. 157-210)
 
    Saved to: book_inventory.json
 
@@ -137,7 +136,7 @@ Creates ``chapters/`` directory with one file per chapter.
 
 **Step 3: Summarize chapters**
 
-Run LLM extraction on each chapter:
+Run LLM summarization on each chapter:
 
 .. code-block:: bash
 
@@ -165,10 +164,10 @@ Create the final report:
 Generates ``output/book_summary.pdf`` with title page, TOC, and one page per chapter.
 
 
-Sample Outputs
---------------
+Sample Output: Platform Economics
+---------------------------------
 
-Real outputs from processing "Trustworthy Online Controlled Experiments" by Kohavi, Tang & Xu.
+Illustrative output from processing a platform economics textbook.
 
 Book Synthesis
 ^^^^^^^^^^^^^^
@@ -176,56 +175,56 @@ Book Synthesis
 .. code-block:: json
 
    {
-     "book_thesis": "This book argues that trustworthy online controlled experiments (A/B tests) are the essential, systematic methodology for making valid, data-driven decisions in digital product development.",
+     "book_thesis": "Multi-sided platforms create value by reducing transaction costs between distinct user groups who could not efficiently find each other otherwise. Success requires solving the chicken-and-egg problem through strategic subsidization and achieving critical mass before network effects can sustain growth.",
      "key_themes": [
-       "Trustworthy Causal Inference",
-       "Systematic Experimentation Culture",
-       "Quantifying Business Value"
+       "Network Effects and Critical Mass",
+       "Multi-Sided Pricing Strategy",
+       "Platform Competition Dynamics"
      ],
-     "intellectual_journey": "The book begins by establishing the foundational principles and necessity of controlled experiments (Chapter 1), then details the process for designing and running valid tests (Chapter 2). It builds by introducing critical laws for detecting errors and ensuring trustworthiness (Chapter 3), before scaling up to discuss platform infrastructure and organizational maturity (Chapter 4), and concludes with an advanced application for quantifying performance impact (Chapter 5).",
-     "one_paragraph_summary": "Trustworthy Online Controlled Experiments presents a comprehensive guide to implementing rigorous A/B testing as the core methodology for data-driven decision-making in digital products. It establishes that most ideas fail to improve key metrics, making systematic experimentation essential. The book details the entire process from foundational concepts like the Overall Evaluation Criterion (OEC) and experiment design, to critical diagnostics like Sample Ratio Mismatch checks governed by Twyman's Law, to scaling an experimentation platform and culture through a defined maturity model."
+     "intellectual_journey": "The book establishes what distinguishes platforms from traditional businesses (Chapter 1), then analyzes the network effects that make them valuable but difficult to launch (Chapter 2). It develops pricing frameworks for multi-sided markets (Chapter 3) before examining competitive dynamics and winner-take-all outcomes (Chapter 4).",
+     "one_paragraph_summary": "Platform businesses differ fundamentally from traditional firms because they create value by facilitating interactions rather than producing goods. The central challenge is the chicken-and-egg problem: users on each side only join if the other side is already present. Successful platforms solve this through subsidization strategies, pricing one side below cost to attract them first. Once critical mass is achieved, network effects create powerful competitive moats, often leading to winner-take-all market structures."
    }
 
-Chapter Summary (Chapter 1)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Chapter 1: What Makes a Platform
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: json
 
    {
      "chapter_num": 1,
-     "main_thesis": "Online controlled experiments (A/B tests) are the gold standard for establishing causality in digital product development, providing unparalleled ability to make trustworthy, data-driven decisions. Organizations are poor at assessing the value of ideas, and controlled experiments reveal that most ideas fail to improve key metrics.",
-     "unique_insight": "The chapter introduces the Overall Evaluation Criterion (OEC) as a quantitative measure that must be measurable in the short term yet believed to causally drive long-term strategic objectives. It also presents the 'three tenets' framework for organizations.",
-     "how_to": "Implement experimentation platforms to run thousands of controlled experiments annually. Define clear OECs that balance multiple objectives. Randomize properly using users as randomization units. Accept that most ideas will fail while pursuing incremental improvements.",
-     "key_evidence": "Bing's ad headline experiment (2012) increased revenue by 12% ($100M annually in US alone). Amazon's 'People who searched for X bought Y' algorithm increased overall revenue by 3%. Microsoft data shows only one-third of ideas improve intended metrics, while Bing/Google success rates are 10-20%.",
-     "counterexample": "This is NOT correlation-based inference—the chapter warns against assuming causality from observational data, as demonstrated by Microsoft Office 365 where users seeing error messages had lower churn rates but showing more errors would not reduce churn.",
-     "golden_quote": "Online controlled experiments are: The best scientific way to establish causality with high probability.",
+     "main_thesis": "Platforms are fundamentally different from traditional businesses because they create value by facilitating exchanges between two or more interdependent groups rather than by producing and selling products directly.",
+     "unique_insight": "The chapter introduces the concept of 'matchmakers' as businesses whose primary function is reducing search and transaction costs between groups who benefit from finding each other.",
+     "how_to": "Identify whether your business model involves facilitating interactions between distinct user groups. Map out which groups need each other and what frictions prevent them from transacting directly. Design the platform to reduce these specific frictions.",
+     "key_evidence": "Credit card networks connect cardholders with merchants. Shopping malls connect shoppers with retailers. Dating apps connect people seeking relationships. In each case, neither side would show up without the other.",
+     "counterexample": "This is NOT about any business with multiple customer segments. A grocery store has suppliers and customers but is not a platform—it buys goods, takes ownership, and resells them. Platforms facilitate direct interactions without taking ownership.",
+     "golden_quote": "The platform does not produce the value; it enables others to produce and exchange value with each other.",
      "key_terms": [
-       "Overall Evaluation Criterion (OEC)",
-       "Randomization Unit",
-       "Variant",
-       "Parameter",
-       "Hierarchy of Evidence"
+       "Multi-sided platform",
+       "Transaction costs",
+       "Matchmaker",
+       "Indirect network effects",
+       "Platform participants"
      ]
    }
 
-Chapter Summary (Chapter 3)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Chapter 2: Network Effects
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: json
 
    {
-     "chapter_num": 3,
-     "main_thesis": "Twyman's Law—that any figure that looks interesting or different is usually wrong—is the most important law in data analysis for experimentation. Extreme or surprising results are more likely to be caused by errors than by genuine effects.",
-     "unique_insight": "This chapter introduces Sample Ratio Mismatch (SRM) as a critical diagnostic tool. SRM occurs when the actual ratio of users between variants deviates from the designed ratio, indicating underlying problems like browser redirects, lossy instrumentation, or bad hash functions.",
-     "how_to": "Implement SRM checks with warnings for ratios outside 0.99-1.01 for equally sized variants. Hide reports when p-values are below 0.001. Avoid redirect implementations, use server-side mechanisms instead. Plot usage over time to detect novelty/primacy effects.",
-     "key_evidence": "The MSN portal experiment showed a 3.3% increase in user engagement after correcting for SRM caused by bot filtering. 50% of US traffic on Bing comes from bots (over 90% in China and Russia). GoodUI.org's evaluation of 115 A/B tests found most were underpowered.",
-     "counterexample": "This is NOT about celebrating surprising positive results—the chapter warns against building stories around unusually good outcomes without rigorous validation.",
-     "golden_quote": "Good data scientists are skeptics: they look at anomalies, they question results, and they invoke Twyman's law when the results look too good.",
+     "chapter_num": 2,
+     "main_thesis": "Platforms exhibit indirect network effects where value to users on one side increases with the number of users on the other side. This creates the chicken-and-egg problem: neither side joins without the other, making platform launches extremely difficult.",
+     "unique_insight": "The chapter distinguishes between same-side effects (users valuing other users on their own side, which can be positive or negative) and cross-side effects (users valuing participants on the other side). Most platforms have positive cross-side effects but may have negative same-side effects due to competition.",
+     "how_to": "Map the network effects structure of your platform. Identify which side is more price-sensitive and which side generates more cross-side value. Launch by subsidizing the more price-sensitive side to achieve critical mass, then monetize the side that values access to the now-large user base.",
+     "key_evidence": "Video game consoles subsidize hardware (sold at or below cost) to attract gamers, then charge game developers for access to the installed base. Nightclubs let women in free to attract men who pay cover charges. Search engines provide free search to users and charge advertisers for access.",
+     "counterexample": "This is NOT about traditional economies of scale where unit costs fall with volume. Network effects are demand-side: the product becomes more valuable to each user as more users join, regardless of production costs.",
+     "golden_quote": "Getting the first users is the hardest part. After critical mass, the platform can grow on its own momentum.",
      "key_terms": [
-       "Twyman's Law",
-       "Sample Ratio Mismatch (SRM)",
-       "Stable Unit Treatment Value Assumption (SUTVA)",
-       "Heterogeneous Treatment Effects",
-       "Simpson's Paradox"
+       "Indirect network effects",
+       "Chicken-and-egg problem",
+       "Critical mass",
+       "Same-side effects",
+       "Cross-side effects"
      ]
    }
